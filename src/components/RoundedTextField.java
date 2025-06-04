@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package components;
 import javax.swing.*;
 import javax.swing.border.AbstractBorder;
@@ -17,7 +13,7 @@ public class RoundedTextField extends JTextField {
     private Color focusBorderColor = new Color(100, 150, 255);
     private int cornerRadius = 8;
     private int borderThickness = 1;
-    private boolean isPlaceholderVisible = true;
+    private boolean isPlaceholderVisible = false;
     private boolean hasFocus = false;
 
     public RoundedTextField() {
@@ -54,10 +50,11 @@ public class RoundedTextField extends JTextField {
             @Override
             public void focusGained(FocusEvent e) {
                 hasFocus = true;
-                if (isPlaceholderVisible && placeholder != null) {
-                    setText("");
-                    setForeground(Color.BLACK);
+                // Jika placeholder sedang ditampilkan, hapus dan set ke mode normal
+                if (isPlaceholderVisible) {
                     isPlaceholderVisible = false;
+                    setText(""); // Clear text
+                    setForeground(Color.BLACK);
                 }
                 repaint();
             }
@@ -65,23 +62,18 @@ public class RoundedTextField extends JTextField {
             @Override
             public void focusLost(FocusEvent e) {
                 hasFocus = false;
-                if (getText().isEmpty() && placeholder != null) {
+                // Jika field kosong dan ada placeholder, tampilkan placeholder
+                if (getText().isEmpty() && placeholder != null && !placeholder.isEmpty()) {
                     isPlaceholderVisible = true;
-                    repaint();
                 }
                 repaint();
             }
         });
 
-        // Set placeholder pada awal
-        if (placeholder != null) {
-            showPlaceholder();
+        // Set placeholder pada awal jika ada
+        if (placeholder != null && !placeholder.isEmpty()) {
+            isPlaceholderVisible = true;
         }
-    }
-
-    private void showPlaceholder() {
-        isPlaceholderVisible = true;
-        repaint();
     }
 
     @Override
@@ -93,25 +85,51 @@ public class RoundedTextField extends JTextField {
         g2d.setColor(getBackground());
         g2d.fillRoundRect(0, 0, getWidth(), getHeight(), cornerRadius, cornerRadius);
 
-        // Jika placeholder visible dan field kosong
-        if (isPlaceholderVisible && placeholder != null && getText().isEmpty()) {
-            g2d.setColor(placeholderColor);
-            g2d.setFont(getFont());
+        g2d.dispose();
+        
+        // Paint the text field content FIRST
+        super.paintComponent(g);
+        
+        // Gambar placeholder jika diperlukan
+        if (isPlaceholderVisible && placeholder != null && !placeholder.isEmpty()) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             
-            FontMetrics fm = g2d.getFontMetrics();
-            int x = getInsets().left;
+            g2.setColor(placeholderColor);
+            g2.setFont(getFont());
+            
+            FontMetrics fm = g2.getFontMetrics();
+            Insets insets = getInsets();
+            int x = insets.left;
             int y = (getHeight() + fm.getAscent() - fm.getDescent()) / 2;
             
-            g2d.drawString(placeholder, x, y);
+            g2.drawString(placeholder, x, y);
+            g2.dispose();
         }
-
-        g2d.dispose();
-        super.paintComponent(g);
     }
 
     @Override
     public String getText() {
-        return isPlaceholderVisible ? "" : super.getText();
+        // Jika placeholder sedang ditampilkan, return empty string
+        if (isPlaceholderVisible) {
+            return "";
+        }
+        return super.getText();
+    }
+
+    @Override
+    public void setText(String text) {
+        super.setText(text);
+        // Jika text di-set dari luar dan tidak kosong, hilangkan placeholder
+        if (text != null && !text.isEmpty()) {
+            isPlaceholderVisible = false;
+        } else if (text == null || text.isEmpty()) {
+            // Jika text kosong dan ada placeholder, tampilkan placeholder
+            if (placeholder != null && !placeholder.isEmpty() && !hasFocus) {
+                isPlaceholderVisible = true;
+            }
+        }
+        repaint();
     }
 
     // Custom Border Class
@@ -159,9 +177,16 @@ public class RoundedTextField extends JTextField {
 
     public void setPlaceholder(String placeholder) {
         this.placeholder = placeholder;
-        if (getText().isEmpty()) {
-            showPlaceholder();
+        
+        // Jika field kosong dan tidak focus, tampilkan placeholder
+        if ((super.getText() == null || super.getText().isEmpty()) && !hasFocus) {
+            if (placeholder != null && !placeholder.isEmpty()) {
+                isPlaceholderVisible = true;
+            } else {
+                isPlaceholderVisible = false;
+            }
         }
+        repaint();
     }
 
     public Color getPlaceholderColor() {
@@ -208,38 +233,136 @@ public class RoundedTextField extends JTextField {
         repaint();
     }
 
-    // Contoh penggunaan
+    // Test method to demonstrate working placeholder
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Rounded TextField Example");
+            try {
+//                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeel());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            JFrame frame = new JFrame("Fixed RoundedTextField with Working Placeholder");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setLayout(new FlowLayout());
+            frame.setLayout(new GridBagLayout());
+            frame.getContentPane().setBackground(new Color(240, 240, 240));
 
-            // TextField seperti gambar
-            RoundedTextField textField1 = new RoundedTextField("Masukkan User ID");
-            textField1.setPreferredSize(new Dimension(250, 40));
-            textField1.setBackground(Color.WHITE);
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.insets = new Insets(10, 10, 10, 10);
+            gbc.anchor = GridBagConstraints.WEST;
 
-            // TextField dengan customization
-            RoundedTextField textField2 = new RoundedTextField("Enter Password");
-            textField2.setPreferredSize(new Dimension(250, 40));
-            textField2.setBackground(new Color(248, 248, 248));
-            textField2.setBorderColor(new Color(180, 180, 180));
-            textField2.setFocusBorderColor(new Color(0, 123, 255));
+            // Create multiple text fields with different placeholders
+            RoundedTextField userIdField = new RoundedTextField("Masukkan User ID");
+            userIdField.setPreferredSize(new Dimension(250, 40));
+            userIdField.setBackground(Color.WHITE);
 
-            // TextField dengan corner radius berbeda
-            RoundedTextField textField3 = new RoundedTextField("Email Address");
-            textField3.setPreferredSize(new Dimension(250, 40));
-            textField3.setCornerRadius(15);
-            textField3.setBackground(Color.WHITE);
+            RoundedTextField passwordField = new RoundedTextField("Enter Password");
+            passwordField.setPreferredSize(new Dimension(250, 40));
+            passwordField.setBackground(new Color(248, 248, 248));
+            passwordField.setBorderColor(new Color(180, 180, 180));
+            passwordField.setFocusBorderColor(new Color(0, 123, 255));
 
-            frame.add(textField1);
-            frame.add(textField2);
-            frame.add(textField3);
+            RoundedTextField emailField = new RoundedTextField();
+            emailField.setPlaceholder("Email Address");
+            emailField.setPreferredSize(new Dimension(250, 40));
+            emailField.setCornerRadius(15);
+            emailField.setBackground(Color.WHITE);
 
-            frame.setSize(300, 200);
+            RoundedTextField phoneField = new RoundedTextField("Phone Number", 20);
+            phoneField.setPreferredSize(new Dimension(250, 40));
+            phoneField.setPlaceholderColor(new Color(100, 100, 100));
+            phoneField.setBackground(new Color(255, 255, 255));
+
+            // Test field with pre-filled text
+            RoundedTextField prefilledField = new RoundedTextField("Search...");
+            prefilledField.setPreferredSize(new Dimension(250, 40));
+            prefilledField.setText("Pre-filled text"); // This should hide placeholder
+            prefilledField.setBackground(Color.WHITE);
+
+            // Add labels and fields
+            gbc.gridx = 0; gbc.gridy = 0;
+            frame.add(new JLabel("User ID:"), gbc);
+            gbc.gridx = 1;
+            frame.add(userIdField, gbc);
+
+            gbc.gridx = 0; gbc.gridy = 1;
+            frame.add(new JLabel("Password:"), gbc);
+            gbc.gridx = 1;
+            frame.add(passwordField, gbc);
+
+            gbc.gridx = 0; gbc.gridy = 2;
+            frame.add(new JLabel("Email:"), gbc);
+            gbc.gridx = 1;
+            frame.add(emailField, gbc);
+
+            gbc.gridx = 0; gbc.gridy = 3;
+            frame.add(new JLabel("Phone:"), gbc);
+            gbc.gridx = 1;
+            frame.add(phoneField, gbc);
+
+            gbc.gridx = 0; gbc.gridy = 4;
+            frame.add(new JLabel("Pre-filled:"), gbc);
+            gbc.gridx = 1;
+            frame.add(prefilledField, gbc);
+
+            // Add test buttons
+            gbc.gridx = 0; gbc.gridy = 5;
+            gbc.gridwidth = 2;
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+
+            JPanel buttonPanel = new JPanel(new FlowLayout());
+            buttonPanel.setOpaque(false);
+
+            JButton clearButton = new JButton("Clear All");
+            clearButton.addActionListener(e -> {
+                userIdField.setText("");
+                passwordField.setText("");
+                emailField.setText("");
+                phoneField.setText("");
+                prefilledField.setText("");
+            });
+
+            JButton fillButton = new JButton("Fill Fields");
+            fillButton.addActionListener(e -> {
+                userIdField.setText("admin");
+                passwordField.setText("password123");
+                emailField.setText("user@example.com");
+                phoneField.setText("+1234567890");
+                prefilledField.setText("Filled data");
+            });
+
+            JButton getValuesButton = new JButton("Get Values");
+            getValuesButton.addActionListener(e -> {
+                String message = String.format(
+                    "Values:\nUser ID: '%s'\nPassword: '%s'\nEmail: '%s'\nPhone: '%s'\nPre-filled: '%s'",
+                    userIdField.getText(),
+                    passwordField.getText(),
+                    emailField.getText(),
+                    phoneField.getText(),
+                    prefilledField.getText()
+                );
+                JOptionPane.showMessageDialog(frame, message, "Field Values", JOptionPane.INFORMATION_MESSAGE);
+            });
+
+            buttonPanel.add(clearButton);
+            buttonPanel.add(fillButton);
+            buttonPanel.add(getValuesButton);
+
+            frame.add(buttonPanel, gbc);
+
+            frame.pack();
             frame.setLocationRelativeTo(null);
             frame.setVisible(true);
+
+            // Instructions
+            JOptionPane.showMessageDialog(frame, 
+                "Instructions:\n" +
+                "• Click on any field to see placeholder disappear\n" +
+                "• Click outside to see placeholder reappear (if field is empty)\n" +
+                "• Use buttons to test different scenarios\n" +
+                "• Fields return empty string when placeholder is visible",
+                "How to Test", 
+                JOptionPane.INFORMATION_MESSAGE);
         });
     }
 }

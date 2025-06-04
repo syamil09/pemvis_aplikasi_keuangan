@@ -224,6 +224,80 @@ public class CustomTable extends JPanel implements Serializable {
         }
     }
     
+    /**
+    * Forces solid header background by overriding LAF renderer
+    */
+    private void forceSolidHeaderBackground() {
+       if (table == null || table.getTableHeader() == null) return;
+
+       JTableHeader header = table.getTableHeader();
+
+       // Method 1: Custom HeaderRenderer to override LAF
+       header.setDefaultRenderer(new DefaultTableCellRenderer() {
+           @Override
+           public Component getTableCellRendererComponent(JTable table, Object value,
+                boolean isSelected, boolean hasFocus, int row, int column) {
+
+                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+                // Force solid background - override any LAF gradients
+                setBackground(headerBackgroundColor != null ? headerBackgroundColor : new Color(248, 249, 250));
+                setForeground(headerTextColor != null ? headerTextColor : new Color(73, 80, 87));
+                setFont(headerFont != null ? headerFont : new Font("Segoe UI", Font.BOLD, 14));
+
+                // Center the text
+                setHorizontalAlignment(SwingConstants.CENTER);
+
+                // Remove any borders that might cause gradient effects
+                setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
+
+                // Make sure it's opaque to override LAF transparency
+                setOpaque(true);
+
+                return c;
+            }
+
+            @Override
+            protected void paintComponent(Graphics g) {
+                // Force solid background painting
+                Graphics2D g2d = (Graphics2D) g.create();
+                g2d.setColor(getBackground());
+                g2d.fillRect(0, 0, getWidth(), getHeight());
+                g2d.dispose();
+
+                // Paint text
+                super.paintComponent(g);
+            }
+       });
+
+       // Method 2: Override header UI painting
+       header.setUI(new javax.swing.plaf.basic.BasicTableHeaderUI() {
+           @Override
+           public void paint(Graphics g, JComponent c) {
+               Graphics2D g2d = (Graphics2D) g.create();
+
+               // Paint solid background
+               g2d.setColor(headerBackgroundColor != null ? headerBackgroundColor : new Color(248, 249, 250));
+               g2d.fillRect(0, 0, c.getWidth(), c.getHeight());
+
+               // Paint border
+               g2d.setColor(new Color(220, 220, 220));
+               g2d.drawLine(0, c.getHeight() - 1, c.getWidth(), c.getHeight() - 1);
+
+               g2d.dispose();
+
+               // Let the default renderer paint the text
+               super.paint(g, c);
+           }
+       });
+
+       // Method 3: Force header properties
+       header.setBackground(headerBackgroundColor != null ? headerBackgroundColor : new Color(248, 249, 750));
+       header.setOpaque(true);
+       header.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(220, 220, 220)));
+   }
+
+    
     private void customizeTable() {
         try {
             if (table == null) return;
@@ -244,6 +318,9 @@ public class CustomTable extends JPanel implements Serializable {
                 header.setForeground(headerTextColor != null ? headerTextColor : new Color(73, 80, 87));
                 header.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(220, 220, 220)));
                 header.setReorderingAllowed(false);
+                
+                // FORCE SOLID BACKGROUND - Add this line
+                forceSolidHeaderBackground();
             }
             
             // Auto-resize columns based on content

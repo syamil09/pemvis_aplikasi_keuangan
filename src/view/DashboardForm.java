@@ -132,40 +132,57 @@ public class DashboardForm extends javax.swing.JFrame {
         }
     }
     private void showContentFromPanel(JPanel panel) {
-    try {
-        // Clear current content completely
-        panelMainContent.removeAll();
-        
-        // Set layout to BorderLayout for proper content display
-        panelMainContent.setLayout(new BorderLayout());
-        
-        // Create wrapper panel
-        JPanel wrapperPanel = new JPanel(new BorderLayout());
-        wrapperPanel.setOpaque(false); // Membuat background transparan
-        wrapperPanel.add(panel, BorderLayout.CENTER);
-        
-        // Add to main panel with BorderLayout.CENTER
-        panelMainContent.add(wrapperPanel, BorderLayout.CENTER);
-        
-        // Debug info
-        System.out.println("Panel added successfully");
-        System.out.println("Component count: " + wrapperPanel.getComponentCount());
-        System.out.println("Panel size: " + panel.getPreferredSize());
-        
-        // Force refresh
-        panelMainContent.revalidate();
-        panelMainContent.repaint();
-        
-        // Also refresh parent containers
-        panelMainArea.revalidate();
-        panelMainArea.repaint();
-        this.repaint();
-        
-    } catch (Exception e) {
-        System.err.println("Error loading content from panel: " + e.getMessage());
-        e.printStackTrace();
+        try {
+            // Clear current content completely
+            panelMainContent.removeAll();
+
+            // Set layout to BorderLayout for proper content display
+            panelMainContent.setLayout(new BorderLayout());
+
+            // Create wrapper panel
+            JPanel wrapperPanel = new JPanel(new BorderLayout());
+            wrapperPanel.setOpaque(false); // Membuat background transparan
+            wrapperPanel.add(panel, BorderLayout.CENTER);
+
+            // Add to main panel with BorderLayout.CENTER
+            panelMainContent.add(wrapperPanel, BorderLayout.CENTER);
+
+            // Debug info
+            System.out.println("Panel added successfully");
+            System.out.println("Component count: " + wrapperPanel.getComponentCount());
+            System.out.println("Panel size: " + panel.getPreferredSize());
+
+            // Force refresh
+            panelMainContent.revalidate();
+            panelMainContent.repaint();
+
+            // Also refresh parent containers
+            panelMainArea.revalidate();
+            panelMainArea.repaint();
+            this.repaint();
+
+        } catch (Exception e) {
+            System.err.println("Error loading content from panel: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
-}
+    
+    private JPanel extractContentFromFrame(JFrame frame) {
+        JPanel extractedPanel = new JPanel(new BorderLayout());
+        extractedPanel.setBackground(new Color(236,240,241));
+        
+        // Ambil semua komponen dari frame
+        Container content = frame.getContentPane();
+        Component[] components = content.getComponents();
+        
+        for (Component comp : components) {
+            content.remove(comp);
+            extractedPanel.add(comp);
+        }
+        
+        frame.dispose(); // Hapus frame karena sudah tidak dibutuhkan
+        return extractedPanel;
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -195,6 +212,7 @@ public class DashboardForm extends javax.swing.JFrame {
         lblKeseluruhanJurnal = new javax.swing.JLabel();
         lblKeseluruhanJurnal1 = new javax.swing.JLabel();
         filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
+        roundedButton3 = new components.RoundedButton();
         panelMainArea = new javax.swing.JPanel();
         panelTopBar = new javax.swing.JPanel();
         lblWelcome = new javax.swing.JLabel();
@@ -217,7 +235,6 @@ public class DashboardForm extends javax.swing.JFrame {
         roundedComboBox1 = new components.RoundedComboBox();
         roundedButton2 = new components.RoundedButton();
         customTable1 = new components.CustomTable();
-        roundedButton1 = new components.RoundedButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Aplikasi Keuangan");
@@ -471,6 +488,17 @@ public class DashboardForm extends javax.swing.JFrame {
         gridBagConstraints.weighty = 1.0;
         panelSidebar.add(filler1, gridBagConstraints);
 
+        roundedButton3.setBorder(javax.swing.BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        roundedButton3.setText("❮❮   Logout");
+        roundedButton3.setCustomCornerRadius(20);
+        roundedButton3.setMaximumSize(new java.awt.Dimension(100, 50));
+        roundedButton3.setMinimumSize(new java.awt.Dimension(100, 50));
+        roundedButton3.setPreferredSize(new java.awt.Dimension(130, 60));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 17;
+        panelSidebar.add(roundedButton3, gridBagConstraints);
+
         panelMainArea.setLayout(new java.awt.BorderLayout());
 
         panelTopBar.setBackground(new java.awt.Color(255, 255, 255));
@@ -556,8 +584,6 @@ public class DashboardForm extends javax.swing.JFrame {
             }
         });
 
-        roundedButton1.setText("roundedButton1");
-
         javax.swing.GroupLayout panelPageMenuLayout = new javax.swing.GroupLayout(panelPageMenu);
         panelPageMenu.setLayout(panelPageMenuLayout);
         panelPageMenuLayout.setHorizontalGroup(
@@ -582,13 +608,10 @@ public class DashboardForm extends javax.swing.JFrame {
                                     .addComponent(roundedComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
                             .addGroup(panelPageMenuLayout.createSequentialGroup()
                                 .addGap(20, 20, 20)
-                                .addComponent(roundedButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(panelPageMenuLayout.createSequentialGroup()
-                                .addGap(38, 38, 38)
-                                .addComponent(roundedButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(roundedButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(18, 18, 18)
                         .addComponent(customTable1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGap(0, 24, Short.MAX_VALUE))
         );
         panelPageMenuLayout.setVerticalGroup(
             panelPageMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -596,7 +619,7 @@ public class DashboardForm extends javax.swing.JFrame {
                 .addGap(22, 22, 22)
                 .addComponent(jLabel1)
                 .addGap(17, 17, 17)
-                .addGroup(panelPageMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(panelPageMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelPageMenuLayout.createSequentialGroup()
                         .addGroup(panelPageMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel2)
@@ -616,9 +639,7 @@ public class DashboardForm extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(roundedComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(34, 34, 34)
-                        .addComponent(roundedButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(roundedButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(roundedButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(customTable1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(86, Short.MAX_VALUE))
         );
@@ -691,7 +712,9 @@ public class DashboardForm extends javax.swing.JFrame {
         // TODO add your handling code here:
         selectedMenu = PageMenu.PENGGUNA;
         MasterUserForm userFrame = new MasterUserForm();
-        showContentFromPanel(userFrame.extractMainPanel());
+        //JPanel panel = extractContentFromFrame(userFrame);
+        //showContentFromPanel(panel);
+        showContentFromPanel(userFrame.getMainPanel());
     }//GEN-LAST:event_lblPenggunaMouseClicked
 
     private void txtUsernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtUsernameActionPerformed
@@ -774,8 +797,8 @@ public class DashboardForm extends javax.swing.JFrame {
     private javax.swing.JPanel panelPageMenu;
     private javax.swing.JPanel panelSidebar;
     private javax.swing.JPanel panelTopBar;
-    private components.RoundedButton roundedButton1;
     private components.RoundedButton roundedButton2;
+    private components.RoundedButton roundedButton3;
     private components.RoundedComboBox roundedComboBox1;
     private components.RoundedTextField roundedTextField2;
     private components.RoundedTextField roundedTextField3;
