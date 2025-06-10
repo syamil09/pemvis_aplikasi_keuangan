@@ -1,13 +1,13 @@
 # NetBeans specific
 nbproject/private/
-build/
 nbbuild/
 dist/
 nbdist/
 .nb-gradle/
+build/
 
-# Class Files
-*.class
+# keep compiled components
+!build/classes/components
 
 # Log file
 *.log
