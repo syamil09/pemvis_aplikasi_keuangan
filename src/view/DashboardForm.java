@@ -4,6 +4,7 @@
  */
 package view;
 
+import components.CustomScrollPane;
 import components.CustomTable;
 import java.awt.Color;
 import java.awt.Cursor;
@@ -37,6 +38,10 @@ import constant.PageMenu;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Dimension;
+import java.util.HashMap;
+import javax.swing.JViewport;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -46,13 +51,18 @@ import javax.swing.table.DefaultTableModel;
 public class DashboardForm extends javax.swing.JFrame {
     
     PageMenu selectedMenu = null;
+    HashMap<PageMenu, JLabel> pageMenuMap = new HashMap<>();
 
     /**
      * Creates new form DashboardForm
      */
     public DashboardForm() {
         initComponents();
-        setHoverEffectMenu();
+        setupProperLayout();
+        initPageMenuMap();
+        initActionPageMenu();
+        
+        makeMainContentScrollable();
         
         roundedComboBox1.setBorderColor(new Color(180, 180, 180));
         roundedComboBox1.setFocusBorderColor(new Color(0, 123, 255));
@@ -93,17 +103,115 @@ public class DashboardForm extends javax.swing.JFrame {
                 }
             }
         });
+        
+        validateLayoutStructure();
     }
     
-    private void setHoverEffectMenu() {
-        // Buat List dari label-label menu
-        List<JLabel> menuLabels = Arrays.asList(
-            lblPengguna, lblAkunCOA, lblKategoriTransaksi, lblPelangganKlien, lblProyek, lblFakturPenjualan,
-            lblPengeluaran, lblPenerimaanLainnya, lblLabaRugi, lblNeraca, lblDaftarPiutang, lblKeseluruhanJurnal
-        );
+    private void makeMainContentScrollable() {
+        try {
+            // Get the current layout constraint (should be BorderLayout.CENTER)
+            BorderLayout layout = (BorderLayout) panelMainArea.getLayout();
+            Component centerComponent = layout.getLayoutComponent(BorderLayout.CENTER);
+
+            // Verify we're working with the right component
+            if (centerComponent != panelMainContent) {
+                System.err.println("Warning: panelMainContent is not the center component");
+                return;
+            }
+
+            // Store the preferred size before removing
+            Dimension preferredSize = panelMainContent.getPreferredSize();
+            System.out.println("Original preferred size: " + preferredSize);
+
+            // Remove from parent
+            panelMainArea.remove(panelMainContent);
+
+            // IMPORTANT: Set proper layout for panelMainContent if not already set
+            if (panelMainContent.getLayout() == null) {
+                panelMainContent.setLayout(new BorderLayout());
+            }
+
+            // Create wrapper panel to control sizing
+            JPanel wrapperPanel = new JPanel(new BorderLayout());
+            wrapperPanel.setOpaque(false);
+            wrapperPanel.add(panelMainContent, BorderLayout.CENTER);
+
+            // Create CustomScrollPane with proper sizing
+            CustomScrollPane scrollPane = new CustomScrollPane(wrapperPanel);
+
+            // Configure scroll pane
+            scrollPane.setScrollSpeed(20);
+            scrollPane.setSmoothScrolling(true);
+            scrollPane.setBorder(null);
+            scrollPane.setOpaque(false);
+            scrollPane.getViewport().setOpaque(false);
+
+            // CRITICAL: Set viewport size policy
+            scrollPane.getViewport().setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
+
+            // Add back to parent with same constraint
+            panelMainArea.add(scrollPane, BorderLayout.CENTER);
+
+            // IMPORTANT: Force proper sizing calculation
+            panelMainArea.revalidate();
+            panelMainArea.repaint();
+
+            // Verify the final size
+            SwingUtilities.invokeLater(() -> {
+                Dimension newSize = scrollPane.getSize();
+                System.out.println("ScrollPane final size: " + newSize);
+            });
+
+        } catch (Exception e) {
+            System.err.println("Error making content scrollable: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    
+    private void validateLayoutStructure() {
+        SwingUtilities.invokeLater(() -> {
+            // Check if everything is properly sized
+            Dimension mainAreaSize = panelMainArea.getSize();
+            if (mainAreaSize.width == 0 || mainAreaSize.height == 0) {
+                System.err.println("Warning: panelMainArea has zero size!");
+                // Force a pack/resize
+                pack();
+            }
+
+        });
+    }
+
+    private void setupProperLayout() {
+        // Ensure panelMainArea has BorderLayout
+        if (!(panelMainArea.getLayout() instanceof BorderLayout)) {
+            panelMainArea.setLayout(new BorderLayout());
+        }
+
+        // Ensure panelMainContent has proper layout
+        if (panelMainContent.getLayout() == null) {
+            panelMainContent.setLayout(new BorderLayout());
+        }
+
+        // Set proper sizes
+        panelMainContent.setPreferredSize(null); // Let it calculate naturally
+        panelMainContent.setMaximumSize(null);   // Remove size constraints
+        panelMainContent.setMinimumSize(new Dimension(0, 0)); // Allow shrinking
+
+        // Ensure proper background and opacity
+        panelMainContent.setOpaque(true);
+        panelMainContent.setBackground(new Color(236, 240, 241));
+    }
+
+    
+    private JLabel getMenuLabel(PageMenu menu) {
+        return pageMenuMap.get(menu);
+    }
+    
+    private void initActionPageMenu() {
 
         // Loop untuk memasang listener pada semua menu
-        for (JLabel label : menuLabels) {
+        for (PageMenu menu : pageMenuMap.keySet()) {
+            JLabel label = getMenuLabel(menu);
             // Set properti awal untuk semua label
             label.setOpaque(true);
             label.addMouseListener(new MouseAdapter() {
@@ -115,51 +223,99 @@ public class DashboardForm extends javax.swing.JFrame {
 
                 @Override
                 public void mouseExited(MouseEvent e) {
-                    label.setBackground(new Color(52,73,94));
-                    label.setCursor(Cursor.getDefaultCursor());
-                }
-
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    // Handle klik berdasarkan label yang diklik
-                    if (label == lblPengguna) {
-                        // Action untuk menu Pengguna
-                    } else if (label == lblAkunCOA) {
-                        // Action untuk menu Klien
+                    System.out.println("MENU EXIT : "+label.getText());
+                    if (label != getMenuLabel(selectedMenu)) {
+                        System.out.println("selected menu : "+selectedMenu);
+                        label.setBackground(new Color(52,73,94));
+                        label.setCursor(Cursor.getDefaultCursor());
                     }
                 }
+                
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    // clear previous selected menu
+                    System.out.println("MENU PRESSED : "+label.getText());
+                    removeSelectedMenu();
+                    
+                    // set active selected menu
+                    setSelectedMenu(menu);
+                   
+                }
+               
             });
         }
     }
+    
+    private void initPageMenuMap() {
+        pageMenuMap.put(PageMenu.DASHBOARD, lblDashboard);
+        pageMenuMap.put(PageMenu.PENGGUNA, lblPengguna);
+        pageMenuMap.put(PageMenu.AKUN, lblAkunCOA);
+        pageMenuMap.put(PageMenu.KATEGORI_TRANSAKSI, lblKategoriTransaksi);
+        pageMenuMap.put(PageMenu.PELANGGAN, lblPelangganKlien);
+        pageMenuMap.put(PageMenu.PROYEK, lblProyek);
+        pageMenuMap.put(PageMenu.FAKTUR_PENJUALAN, lblFakturPenjualan);
+        pageMenuMap.put(PageMenu.PENGELUARAN, lblPengeluaran);
+        pageMenuMap.put(PageMenu.PENERIMAAN, lblPenerimaanLainnya);
+        pageMenuMap.put(PageMenu.LABA_RUGI, lblLabaRugi);
+        pageMenuMap.put(PageMenu.NERACA, lblNeraca);
+        pageMenuMap.put(PageMenu.PIUTANG, lblDaftarPiutang);
+        pageMenuMap.put(PageMenu.JURNAL, lblKeseluruhanJurnal);
+    }
+    
+    private void setSelectedMenu(PageMenu menu) {
+        selectedMenu = menu;
+        getMenuLabel(menu).setBackground(new Color(46,204,113));
+        getMenuLabel(menu).setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+    }
+    
+    private void removeSelectedMenu() {
+        if (getMenuLabel(selectedMenu) != null) {
+            getMenuLabel(selectedMenu).setBackground(new Color(52,73,94));
+            getMenuLabel(selectedMenu).setCursor(Cursor.getDefaultCursor());
+        }
+    }
+    
     private void showContentFromPanel(JPanel panel) {
         try {
-            // Clear current content completely
+            // Clear current content
             panelMainContent.removeAll();
 
-            // Set layout to BorderLayout for proper content display
+            // Ensure proper layout
             panelMainContent.setLayout(new BorderLayout());
 
-            // Create wrapper panel
+            // IMPORTANT: Set proper sizing constraints on the incoming panel
+            panel.setMaximumSize(null);  // Remove max size constraints
+            panel.setPreferredSize(null); // Let it calculate naturally
+
+            // Create wrapper with size control
             JPanel wrapperPanel = new JPanel(new BorderLayout());
-            wrapperPanel.setOpaque(false); // Membuat background transparan
+            wrapperPanel.setOpaque(false);
+
+            // CRITICAL: Set size policies to prevent expansion
+            wrapperPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
+
+            // Add panel to wrapper
             wrapperPanel.add(panel, BorderLayout.CENTER);
 
-            // Add to main panel with BorderLayout.CENTER
+            // Add wrapper to main content
             panelMainContent.add(wrapperPanel, BorderLayout.CENTER);
 
-            // Debug info
-            System.out.println("Panel added successfully");
-            System.out.println("Component count: " + wrapperPanel.getComponentCount());
-            System.out.println("Panel size: " + panel.getPreferredSize());
+            // IMPORTANT: Force layout recalculation in proper order
+            wrapperPanel.revalidate();
+            wrapperPanel.repaint();
 
-            // Force refresh
             panelMainContent.revalidate();
             panelMainContent.repaint();
 
-            // Also refresh parent containers
+            // Propagate to parent containers
             panelMainArea.revalidate();
             panelMainArea.repaint();
+
+            // Final repaint of the whole form
+            this.revalidate();
             this.repaint();
+
+            System.out.println("Content panel loaded successfully");
 
         } catch (Exception e) {
             System.err.println("Error loading content from panel: " + e.getMessage());
@@ -195,6 +351,7 @@ public class DashboardForm extends javax.swing.JFrame {
 
         panelSidebar = new javax.swing.JPanel();
         lblHome = new javax.swing.JLabel();
+        lblDashboard = new javax.swing.JLabel();
         lblFormMaster = new javax.swing.JLabel();
         lblPengguna = new javax.swing.JLabel();
         lblAkunCOA = new javax.swing.JLabel();
@@ -247,13 +404,37 @@ public class DashboardForm extends javax.swing.JFrame {
         lblHome.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         lblHome.setText(" Home");
         lblHome.setBorder(javax.swing.BorderFactory.createEmptyBorder(20, 10, 20, 10));
+        lblHome.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                lblHomeMousePressed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.weightx = 1.0;
         panelSidebar.add(lblHome, gridBagConstraints);
+
+        lblDashboard.setBackground(new java.awt.Color(52, 73, 94));
+        lblDashboard.setFont(new java.awt.Font("Segoe UI Emoji", 0, 14)); // NOI18N
+        lblDashboard.setForeground(new java.awt.Color(236, 240, 241));
+        lblDashboard.setText("📈 Dashboard"); // NOI18N
+        lblDashboard.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 20, 5, 10));
+        lblDashboard.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        lblDashboard.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lblDashboardMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                lblDashboardMouseEntered(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        panelSidebar.add(lblDashboard, gridBagConstraints);
 
         lblFormMaster.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
         lblFormMaster.setForeground(new java.awt.Color(149, 165, 166));
@@ -261,7 +442,6 @@ public class DashboardForm extends javax.swing.JFrame {
         lblFormMaster.setBorder(javax.swing.BorderFactory.createEmptyBorder(15, 20, 5, 10));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         panelSidebar.add(lblFormMaster, gridBagConstraints);
@@ -282,7 +462,6 @@ public class DashboardForm extends javax.swing.JFrame {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         panelSidebar.add(lblPengguna, gridBagConstraints);
@@ -303,7 +482,6 @@ public class DashboardForm extends javax.swing.JFrame {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         panelSidebar.add(lblAkunCOA, gridBagConstraints);
@@ -316,7 +494,6 @@ public class DashboardForm extends javax.swing.JFrame {
         lblKategoriTransaksi.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         panelSidebar.add(lblKategoriTransaksi, gridBagConstraints);
@@ -329,7 +506,6 @@ public class DashboardForm extends javax.swing.JFrame {
         lblPelangganKlien.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 5;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         panelSidebar.add(lblPelangganKlien, gridBagConstraints);
@@ -343,7 +519,6 @@ public class DashboardForm extends javax.swing.JFrame {
         lblProyek.setOpaque(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 6;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         panelSidebar.add(lblProyek, gridBagConstraints);
@@ -354,7 +529,6 @@ public class DashboardForm extends javax.swing.JFrame {
         lblTransaksi.setBorder(javax.swing.BorderFactory.createEmptyBorder(15, 20, 5, 10));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 7;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         panelSidebar.add(lblTransaksi, gridBagConstraints);
@@ -368,7 +542,6 @@ public class DashboardForm extends javax.swing.JFrame {
         lblFakturPenjualan.setOpaque(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 8;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         panelSidebar.add(lblFakturPenjualan, gridBagConstraints);
@@ -382,7 +555,6 @@ public class DashboardForm extends javax.swing.JFrame {
         lblPengeluaran.setOpaque(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 9;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         panelSidebar.add(lblPengeluaran, gridBagConstraints);
@@ -396,7 +568,6 @@ public class DashboardForm extends javax.swing.JFrame {
         lblPenerimaanLainnya.setOpaque(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 10;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         panelSidebar.add(lblPenerimaanLainnya, gridBagConstraints);
@@ -407,7 +578,6 @@ public class DashboardForm extends javax.swing.JFrame {
         lblLaporan.setBorder(javax.swing.BorderFactory.createEmptyBorder(15, 20, 5, 10));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 11;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         panelSidebar.add(lblLaporan, gridBagConstraints);
@@ -421,7 +591,6 @@ public class DashboardForm extends javax.swing.JFrame {
         lblLabaRugi.setOpaque(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 12;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         panelSidebar.add(lblLabaRugi, gridBagConstraints);
@@ -435,7 +604,6 @@ public class DashboardForm extends javax.swing.JFrame {
         lblNeraca.setOpaque(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 13;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         panelSidebar.add(lblNeraca, gridBagConstraints);
@@ -449,7 +617,6 @@ public class DashboardForm extends javax.swing.JFrame {
         lblDaftarPiutang.setOpaque(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 14;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         panelSidebar.add(lblDaftarPiutang, gridBagConstraints);
@@ -463,7 +630,6 @@ public class DashboardForm extends javax.swing.JFrame {
         lblKeseluruhanJurnal.setOpaque(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 15;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         panelSidebar.add(lblKeseluruhanJurnal, gridBagConstraints);
@@ -700,12 +866,10 @@ public class DashboardForm extends javax.swing.JFrame {
 
     private void lblAkunCOAMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblAkunCOAMouseEntered
         // TODO add your handling code here:
-        lblAkunCOA.setOpaque(true);
-        lblAkunCOA.setBackground(Color.red);
     }//GEN-LAST:event_lblAkunCOAMouseEntered
 
     private void lblAkunCOAMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblAkunCOAMouseExited
-        lblAkunCOA.setBackground(new Color(52,73,94));
+
     }//GEN-LAST:event_lblAkunCOAMouseExited
 
     private void lblPenggunaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblPenggunaMouseClicked
@@ -717,13 +881,26 @@ public class DashboardForm extends javax.swing.JFrame {
         showContentFromPanel(userFrame.getMainPanel());
     }//GEN-LAST:event_lblPenggunaMouseClicked
 
-    private void txtUsernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtUsernameActionPerformed
+    private void lblHomeMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblHomeMousePressed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtUsernameActionPerformed
+        removeSelectedMenu();
+    }//GEN-LAST:event_lblHomeMousePressed
+
+    private void lblDashboardMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblDashboardMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_lblDashboardMouseClicked
+
+    private void lblDashboardMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblDashboardMouseEntered
+        // TODO add your handling code here:
+    }//GEN-LAST:event_lblDashboardMouseEntered
 
     private void customTable1PropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_customTable1PropertyChange
         // TODO add your handling code here:
     }//GEN-LAST:event_customTable1PropertyChange
+
+    private void txtUsernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtUsernameActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtUsernameActionPerformed
 
     /**
      * @param args the command line arguments
@@ -771,6 +948,7 @@ public class DashboardForm extends javax.swing.JFrame {
     private javax.swing.JLabel lblAkunCOA;
     private javax.swing.JLabel lblChartIcon;
     private javax.swing.JLabel lblDaftarPiutang;
+    private javax.swing.JLabel lblDashboard;
     private javax.swing.JLabel lblFakturPenjualan;
     private javax.swing.JLabel lblFormMaster;
     private javax.swing.JLabel lblHome;

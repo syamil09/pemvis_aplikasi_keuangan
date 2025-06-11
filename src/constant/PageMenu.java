@@ -9,6 +9,7 @@ package constant;
  * @author Leonovo
  */
 public enum PageMenu {
+  DASHBOARD,
   PENGGUNA,
   AKUN,
   KATEGORI_TRANSAKSI,

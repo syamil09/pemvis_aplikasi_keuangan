@@ -24,8 +24,8 @@
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
-              <Component id="mainPanel" min="-2" max="-2" attributes="0"/>
-              <EmptySpace min="0" pref="105" max="32767" attributes="0"/>
+              <Component id="mainPanel" max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -33,7 +33,7 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <Component id="mainPanel" min="-2" max="-2" attributes="0"/>
-              <EmptySpace min="0" pref="550" max="32767" attributes="0"/>
+              <EmptySpace min="0" pref="598" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -64,7 +64,7 @@
                   <Component id="roundedPanel1" min="-2" max="-2" attributes="0"/>
                   <EmptySpace min="-2" pref="32" max="-2" attributes="0"/>
                   <Component id="roundedPanel2" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace pref="45" max="32767" attributes="0"/>
+                  <EmptySpace pref="42" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -113,8 +113,8 @@
                               </Group>
                               <EmptySpace max="32767" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="roundedTextField3" pref="348" max="32767" attributes="0"/>
-                                  <Component id="roundedComboBox1" pref="348" max="32767" attributes="0"/>
+                                  <Component id="roundedTextField3" max="32767" attributes="0"/>
+                                  <Component id="roundedComboBox1" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                       </Group>
@@ -283,7 +283,7 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="25" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="customTable1" pref="818" max="32767" attributes="0"/>
+                          <Component id="customTable1" pref="777" max="32767" attributes="0"/>
                           <Group type="102" attributes="0">
                               <Component id="jLabel6" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="32767" attributes="0"/>
