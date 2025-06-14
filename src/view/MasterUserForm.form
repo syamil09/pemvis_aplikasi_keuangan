@@ -94,27 +94,27 @@
                               <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Component id="txtUsername" min="-2" pref="249" max="-2" attributes="0"/>
-                                  <Component id="txtUsername1" min="-2" pref="249" max="-2" attributes="0"/>
-                                  <Component id="roundedTextField2" min="-2" pref="249" max="-2" attributes="0"/>
-                                  <Component id="roundedButton1" alignment="0" min="-2" pref="101" max="-2" attributes="0"/>
+                                  <Component id="txtUserId" min="-2" pref="249" max="-2" attributes="0"/>
+                                  <Component id="txtPassword" min="-2" pref="249" max="-2" attributes="0"/>
+                                  <Component id="btnSimpan" alignment="0" min="-2" pref="101" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                       </Group>
-                      <EmptySpace type="separate" max="32767" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
-                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                              <EmptySpace type="separate" pref="330" max="32767" attributes="0"/>
                               <Component id="roundedButton2" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <Group type="102" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
+                              <EmptySpace min="-2" pref="74" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
                                   <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace max="32767" attributes="0"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="roundedTextField3" max="32767" attributes="0"/>
-                                  <Component id="roundedComboBox1" max="32767" attributes="0"/>
+                                  <Component id="txtNamaLengkap" max="32767" attributes="0"/>
+                                  <Component id="cbRole" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                       </Group>
@@ -132,14 +132,14 @@
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="roundedTextField3" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="txtNamaLengkap" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="jLabel4" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="jLabel7" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="txtUsername1" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="txtUserId" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="roundedComboBox1" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="cbRole" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="txtUsername" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="jLabel5" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -147,10 +147,10 @@
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="jLabel3" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="roundedTextField2" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="txtPassword" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="roundedButton1" min="-2" pref="39" max="-2" attributes="0"/>
+                      <Component id="btnSimpan" min="-2" pref="39" max="-2" attributes="0"/>
                       <EmptySpace pref="16" max="32767" attributes="0"/>
                   </Group>
               </Group>
@@ -205,20 +205,20 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtUsernameActionPerformed"/>
               </Events>
             </Component>
-            <Component class="components.RoundedTextField" name="roundedTextField2">
+            <Component class="components.RoundedTextField" name="txtPassword">
               <Properties>
                 <Property name="cornerRadius" type="int" value="12"/>
               </Properties>
             </Component>
-            <Component class="components.RoundedTextField" name="roundedTextField3">
+            <Component class="components.RoundedTextField" name="txtNamaLengkap">
               <Properties>
                 <Property name="cornerRadius" type="int" value="12"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="roundedTextField3ActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtNamaLengkapActionPerformed"/>
               </Events>
             </Component>
-            <Component class="components.RoundedComboBox" name="roundedComboBox1">
+            <Component class="components.RoundedComboBox" name="cbRole">
               <Properties>
                 <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
                   <StringArray count="3">
@@ -244,13 +244,13 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="roundedButton2ActionPerformed"/>
               </Events>
             </Component>
-            <Component class="components.RoundedButton" name="roundedButton1">
+            <Component class="components.RoundedButton" name="btnSimpan">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Simpan"/>
                 <Property name="customCornerRadius" type="int" value="12"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="roundedButton1ActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnSimpanActionPerformed"/>
               </Events>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel7">
@@ -261,12 +261,12 @@
                 <Property name="text" type="java.lang.String" value="User ID :"/>
               </Properties>
             </Component>
-            <Component class="components.RoundedTextField" name="txtUsername1">
+            <Component class="components.RoundedTextField" name="txtUserId">
               <Properties>
                 <Property name="cornerRadius" type="int" value="12"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtUsername1ActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtUserIdActionPerformed"/>
               </Events>
             </Component>
           </SubComponents>
@@ -287,9 +287,9 @@
                           <Group type="102" attributes="0">
                               <Component id="jLabel6" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="32767" attributes="0"/>
-                              <Component id="roundedTextField1" min="-2" pref="157" max="-2" attributes="0"/>
+                              <Component id="txtCari" min="-2" pref="157" max="-2" attributes="0"/>
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                              <Component id="roundedButton3" min="-2" pref="77" max="-2" attributes="0"/>
+                              <Component id="btnCari" min="-2" pref="77" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                       <EmptySpace min="-2" pref="34" max="-2" attributes="0"/>
@@ -306,9 +306,9 @@
                                   <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
                                   <Component id="jLabel6" min="-2" max="-2" attributes="0"/>
                               </Group>
-                              <Component id="roundedTextField1" min="-2" pref="33" max="-2" attributes="0"/>
+                              <Component id="txtCari" min="-2" pref="33" max="-2" attributes="0"/>
                           </Group>
-                          <Component id="roundedButton3" alignment="1" min="-2" pref="33" max="-2" attributes="0"/>
+                          <Component id="btnCari" alignment="1" min="-2" pref="33" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="customTable1" min="-2" pref="219" max="-2" attributes="0"/>
@@ -320,28 +320,34 @@
           <SubComponents>
             <Component class="components.CustomTable" name="customTable1">
               <Properties>
+                <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                  <Color blue="f1" green="f0" red="ec" type="rgb"/>
+                </Property>
                 <Property name="headerBackgroundColor" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-                  <Color blue="cc" green="cc" red="cc" type="rgb"/>
+                  <Color blue="f1" green="f0" red="ec" type="rgb"/>
                 </Property>
               </Properties>
               <Events>
                 <EventHandler event="propertyChange" listener="java.beans.PropertyChangeListener" parameters="java.beans.PropertyChangeEvent" handler="customTable1PropertyChange"/>
               </Events>
             </Component>
-            <Component class="components.RoundedTextField" name="roundedTextField1">
+            <Component class="components.RoundedTextField" name="txtCari">
               <Properties>
                 <Property name="cornerRadius" type="int" value="12"/>
                 <Property name="placeholder" type="java.lang.String" value="Cari data ..."/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="roundedTextField1ActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtCariActionPerformed"/>
               </Events>
             </Component>
-            <Component class="components.RoundedButton" name="roundedButton3">
+            <Component class="components.RoundedButton" name="btnCari">
               <Properties>
                 <Property name="text" type="java.lang.String" value="\ud83d\udd0d Cari" containsInvalidXMLChars="true"/>
                 <Property name="customCornerRadius" type="int" value="12"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnCariActionPerformed"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel6">
               <Properties>

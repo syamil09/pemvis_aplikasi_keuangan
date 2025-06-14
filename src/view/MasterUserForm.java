@@ -5,10 +5,13 @@
 package view;
 
 import components.CustomTable;
+import controller.UserController;
 import java.awt.Container;
+import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.table.DefaultTableModel;
+import model.User;
 
 /**
  *
@@ -16,57 +19,94 @@ import javax.swing.table.DefaultTableModel;
  */
 public class MasterUserForm extends javax.swing.JFrame {
 
+    UserController userCtr;
+    DefaultTableModel tableModel;
     /**
      * Creates new form MasterUserForm
      */
     public MasterUserForm() {
-        initComponents();
-        DefaultTableModel tableModel = new DefaultTableModel();
-        Object[] colums = {"ID Pelanggan", "Nama", "Jenis Kelamin", "No. Telepon", "Aksi"};
-        tableModel.setColumnIdentifiers(colums);
-        tableModel.addRow(new Object[]{"PEL001", "John", "Laki-laki", "0912092109", ""});
-        tableModel.addRow(new Object[]{"PEL001", "John", "Laki-laki", "0912092109", ""});
-        tableModel.addRow(new Object[]{"PEL001", "John", "Laki-laki", "0912092109", ""});
-        tableModel.addRow(new Object[]{"PEL001", "John", "Laki-laki", "0912092109", ""});
-        tableModel.addRow(new Object[]{"PEL001", "John", "Laki-laki", "0912092109", ""});
-        tableModel.addRow(new Object[]{"PEL001", "John", "Laki-laki", "0912092109", ""});
-        tableModel.addRow(new Object[]{"PEL001", "John", "Laki-laki", "0912092109", ""});
-
-
-        customTable1.setModel(tableModel);
-        customTable1.setShowActionButtons(true);
+        userCtr = new UserController();
+        tableModel = new DefaultTableModel();
         
-        customTable1.setActionButtonListener(new CustomTable.ActionButtonListener() {
-            @Override
-            public void onEdit(int row, Object[] rowData) {
-                JOptionPane.showMessageDialog(null, "Edit User: " + rowData[2]);
-            }
-            
-            @Override
-            public void onDelete(int row, Object[] rowData) {
-                int result = JOptionPane.showConfirmDialog(null, 
-                    "Delete User " + rowData[2] + "?", 
-                    "Confirm", 
-                    JOptionPane.YES_NO_OPTION);
-                if (result == JOptionPane.YES_OPTION) {
-                    customTable1.removeRow(row);
-                }
-            }
-        });
+        initComponents();
+        
+        loadDataTable();
     }
     
     public JPanel getMainPanel() {
         return mainPanel;
     }
     
-    public JPanel extractMainPanel() {
-        Container parent = roundedPanel1.getParent();
-        if (parent != null) {
-            parent.remove(roundedPanel1);
-        }
-        this.setVisible(false);
-        return roundedPanel1;
+    private void loadDataTable() {
+        tableModel = new DefaultTableModel();
+        try {
+            String cariData = txtCari.getText();
+            List<User> listUser = userCtr.getData(cariData);
+            Object[] colums = {"User ID", "Username", "Nama", "Role", "Aksi"};
+            tableModel.setColumnIdentifiers(colums);
+            
+            for (User user : listUser) {
+                tableModel.addRow(new Object[]{
+                    user.getUserId(), 
+                    user.getUsername(), 
+                    user.getFullname(), 
+                    user.getRole(), 
+                    "", // tambahkan 1 value kosong untuk kolom button action (edit dan delete)
+                });
+            }
+            
+            customTable1.setModel(tableModel);
+            customTable1.setShowActionButtons(true);
+
+            customTable1.setActionButtonListener(new CustomTable.ActionButtonListener() {
+                @Override
+                public void onEdit(int row, Object[] rowData) {
+                    JOptionPane.showMessageDialog(null, "Edit User: " + rowData[2]);
+                }
+
+                @Override
+                public void onDelete(int row, Object[] rowData) {
+                    int result = JOptionPane.showConfirmDialog(null, 
+                        "Delete User " + rowData[2] + "?", 
+                        "Confirm", 
+                        JOptionPane.YES_NO_OPTION);
+                    if (result == JOptionPane.YES_OPTION) {
+                        customTable1.removeRow(row);
+                    }
+                }
+            });
+        
+        } catch (Exception e) {
+            System.out.println(e);
+            JOptionPane.showMessageDialog(null, "data user gagal dipanggil "+e);
+        
+        } 
     }
+    
+    private void save() {
+        User user = new User();
+        user.setUserId(txtUserId.getText());
+        user.setUsername(txtUsername.getText());
+        user.setRole(cbRole.getSelectedItem().toString());
+        user.setPassword(txtPassword.getText());
+        user.setFullname(txtNamaLengkap.getText());
+
+        String create = userCtr.createUser(user);
+        JOptionPane.showMessageDialog(null, create);
+
+        loadDataTable();
+       
+    }
+    
+    private void clearForm() {
+        txtUserId.setText("");
+        txtUsername.setText("");
+        txtPassword.setText("");
+        txtNamaLengkap.setText("");
+        cbRole.setSelectedIndex(0);
+        txtCari.setText("");
+    }
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -85,17 +125,17 @@ public class MasterUserForm extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         txtUsername = new components.RoundedTextField();
-        roundedTextField2 = new components.RoundedTextField();
-        roundedTextField3 = new components.RoundedTextField();
-        roundedComboBox1 = new components.RoundedComboBox();
+        txtPassword = new components.RoundedTextField();
+        txtNamaLengkap = new components.RoundedTextField();
+        cbRole = new components.RoundedComboBox();
         roundedButton2 = new components.RoundedButton();
-        roundedButton1 = new components.RoundedButton();
+        btnSimpan = new components.RoundedButton();
         jLabel7 = new javax.swing.JLabel();
-        txtUsername1 = new components.RoundedTextField();
+        txtUserId = new components.RoundedTextField();
         roundedPanel2 = new components.RoundedPanel();
         customTable1 = new components.CustomTable();
-        roundedTextField1 = new components.RoundedTextField();
-        roundedButton3 = new components.RoundedButton();
+        txtCari = new components.RoundedTextField();
+        btnCari = new components.RoundedButton();
         jLabel6 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -127,18 +167,18 @@ public class MasterUserForm extends javax.swing.JFrame {
             }
         });
 
-        roundedTextField2.setCornerRadius(12);
+        txtPassword.setCornerRadius(12);
 
-        roundedTextField3.setCornerRadius(12);
-        roundedTextField3.addActionListener(new java.awt.event.ActionListener() {
+        txtNamaLengkap.setCornerRadius(12);
+        txtNamaLengkap.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                roundedTextField3ActionPerformed(evt);
+                txtNamaLengkapActionPerformed(evt);
             }
         });
 
-        roundedComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Admin", "Finance", "Manager" }));
-        roundedComboBox1.setCornerRadius(12);
-        roundedComboBox1.setDoubleBuffered(true);
+        cbRole.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Admin", "Finance", "Manager" }));
+        cbRole.setCornerRadius(12);
+        cbRole.setDoubleBuffered(true);
 
         roundedButton2.setText("⟳ reset form");
         roundedButton2.setAutoscrolls(true);
@@ -150,21 +190,21 @@ public class MasterUserForm extends javax.swing.JFrame {
             }
         });
 
-        roundedButton1.setText("Simpan");
-        roundedButton1.setCustomCornerRadius(12);
-        roundedButton1.addActionListener(new java.awt.event.ActionListener() {
+        btnSimpan.setText("Simpan");
+        btnSimpan.setCustomCornerRadius(12);
+        btnSimpan.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                roundedButton1ActionPerformed(evt);
+                btnSimpanActionPerformed(evt);
             }
         });
 
         jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel7.setText("User ID :");
 
-        txtUsername1.setCornerRadius(12);
-        txtUsername1.addActionListener(new java.awt.event.ActionListener() {
+        txtUserId.setCornerRadius(12);
+        txtUserId.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtUsername1ActionPerformed(evt);
+                txtUserIdActionPerformed(evt);
             }
         });
 
@@ -185,22 +225,22 @@ public class MasterUserForm extends javax.swing.JFrame {
                         .addGap(12, 12, 12)
                         .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(txtUsername, javax.swing.GroupLayout.PREFERRED_SIZE, 249, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtUsername1, javax.swing.GroupLayout.PREFERRED_SIZE, 249, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(roundedTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 249, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(roundedButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(18, 18, Short.MAX_VALUE)
+                            .addComponent(txtUserId, javax.swing.GroupLayout.PREFERRED_SIZE, 249, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 249, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnSimpan, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(roundedPanel1Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGap(18, 330, Short.MAX_VALUE)
                         .addComponent(roundedButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(roundedPanel1Layout.createSequentialGroup()
+                        .addGap(74, 74, 74)
                         .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel4)
                             .addComponent(jLabel5))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(18, 18, 18)
                         .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(roundedTextField3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(roundedComboBox1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addComponent(txtNamaLengkap, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(cbRole, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addGap(29, 29, 29))
         );
         roundedPanel1Layout.setVerticalGroup(
@@ -212,45 +252,51 @@ public class MasterUserForm extends javax.swing.JFrame {
                     .addComponent(jLabel1))
                 .addGap(18, 18, 18)
                 .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(roundedTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtNamaLengkap, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel4)
                     .addComponent(jLabel7)
-                    .addComponent(txtUsername1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtUserId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(roundedComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cbRole, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2)
                     .addComponent(txtUsername, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel5))
                 .addGap(18, 18, 18)
                 .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(roundedTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(roundedButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnSimpan, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(16, Short.MAX_VALUE))
         );
 
         roundedPanel2.setCornerRadius(20);
         roundedPanel2.setHasBorder(false);
 
-        customTable1.setHeaderBackgroundColor(new java.awt.Color(204, 204, 204));
+        customTable1.setBackground(new java.awt.Color(236, 240, 241));
+        customTable1.setHeaderBackgroundColor(new java.awt.Color(236, 240, 241));
         customTable1.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
             public void propertyChange(java.beans.PropertyChangeEvent evt) {
                 customTable1PropertyChange(evt);
             }
         });
 
-        roundedTextField1.setCornerRadius(12);
-        roundedTextField1.setPlaceholder("Cari data ...");
-        roundedTextField1.addActionListener(new java.awt.event.ActionListener() {
+        txtCari.setCornerRadius(12);
+        txtCari.setPlaceholder("Cari data ...");
+        txtCari.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                roundedTextField1ActionPerformed(evt);
+                txtCariActionPerformed(evt);
             }
         });
 
-        roundedButton3.setText("🔍 Cari");
-        roundedButton3.setCustomCornerRadius(12);
+        btnCari.setText("🔍 Cari");
+        btnCari.setCustomCornerRadius(12);
+        btnCari.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCariActionPerformed(evt);
+            }
+        });
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel6.setText("Data Pengguna");
@@ -266,9 +312,9 @@ public class MasterUserForm extends javax.swing.JFrame {
                     .addGroup(roundedPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel6)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(roundedTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtCari, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(roundedButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(btnCari, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(34, 34, 34))
         );
         roundedPanel2Layout.setVerticalGroup(
@@ -280,8 +326,8 @@ public class MasterUserForm extends javax.swing.JFrame {
                         .addGroup(roundedPanel2Layout.createSequentialGroup()
                             .addGap(6, 6, 6)
                             .addComponent(jLabel6))
-                        .addComponent(roundedTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(roundedButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(txtCari, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnCari, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(customTable1, javax.swing.GroupLayout.PREFERRED_SIZE, 219, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(37, 37, 37))
@@ -338,21 +384,27 @@ public class MasterUserForm extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_roundedButton2ActionPerformed
 
-    private void roundedTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_roundedTextField1ActionPerformed
+    private void txtCariActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCariActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_roundedTextField1ActionPerformed
+    }//GEN-LAST:event_txtCariActionPerformed
 
-    private void roundedTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_roundedTextField3ActionPerformed
+    private void txtNamaLengkapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNamaLengkapActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_roundedTextField3ActionPerformed
+    }//GEN-LAST:event_txtNamaLengkapActionPerformed
 
-    private void roundedButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_roundedButton1ActionPerformed
+    private void btnSimpanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSimpanActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_roundedButton1ActionPerformed
+        save();
+    }//GEN-LAST:event_btnSimpanActionPerformed
 
-    private void txtUsername1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtUsername1ActionPerformed
+    private void txtUserIdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtUserIdActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtUsername1ActionPerformed
+    }//GEN-LAST:event_txtUserIdActionPerformed
+
+    private void btnCariActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCariActionPerformed
+        // TODO add your handling code here:
+        loadDataTable();
+    }//GEN-LAST:event_btnCariActionPerformed
 
     /**
      * @param args the command line arguments
@@ -390,6 +442,9 @@ public class MasterUserForm extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private components.RoundedButton btnCari;
+    private components.RoundedButton btnSimpan;
+    private components.RoundedComboBox cbRole;
     private components.CustomTable customTable1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -399,16 +454,13 @@ public class MasterUserForm extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel mainPanel;
-    private components.RoundedButton roundedButton1;
     private components.RoundedButton roundedButton2;
-    private components.RoundedButton roundedButton3;
-    private components.RoundedComboBox roundedComboBox1;
     private components.RoundedPanel roundedPanel1;
     private components.RoundedPanel roundedPanel2;
-    private components.RoundedTextField roundedTextField1;
-    private components.RoundedTextField roundedTextField2;
-    private components.RoundedTextField roundedTextField3;
+    private components.RoundedTextField txtCari;
+    private components.RoundedTextField txtNamaLengkap;
+    private components.RoundedTextField txtPassword;
+    private components.RoundedTextField txtUserId;
     private components.RoundedTextField txtUsername;
-    private components.RoundedTextField txtUsername1;
     // End of variables declaration//GEN-END:variables
 }
