@@ -49,7 +49,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Leonovo
  */
-public class DashboardForm extends javax.swing.JFrame {
+public class DashboardMainFrame extends javax.swing.JFrame {
     
     PageMenu selectedMenu = null;
     HashMap<PageMenu, JLabel> pageMenuMap = new HashMap<>();
@@ -57,122 +57,53 @@ public class DashboardForm extends javax.swing.JFrame {
     /**
      * Creates new form DashboardForm
      */
-    public DashboardForm() {
+    public DashboardMainFrame() {
         initComponents();
-        setupProperLayout();
         initPageMenuMap();
+        
+        // tampilkan halaman dashboard pertama kal
+        setSelectedMenu(PageMenu.DASHBOARD);
+        DashboardPage overviewFrame = new DashboardPage();
+        showContentFromPanel(overviewFrame.getMainPanel());
+        
         initActionPageMenu();
         
         makeMainContentScrollable();
         
-        roundedComboBox1.setBorderColor(new Color(180, 180, 180));
-        roundedComboBox1.setFocusBorderColor(new Color(0, 123, 255));
-        
-        txtUsername.setText("default username");
-        txtUsername.setEnabled(false);
-        
-        
-        DefaultTableModel tableModel = new DefaultTableModel();
-        Object[] colums = {"ID Pelanggan", "Nama", "Jenis Kelamin", "No. Telepon", "Aksi"};
-        tableModel.setColumnIdentifiers(colums);
-        tableModel.addRow(new Object[]{"PEL001", "John", "Laki-laki", "0912092109", ""});
-        tableModel.addRow(new Object[]{"PEL001", "John", "Laki-laki", "0912092109", ""});
-        tableModel.addRow(new Object[]{"PEL001", "John", "Laki-laki", "0912092109", ""});
-        tableModel.addRow(new Object[]{"PEL001", "John", "Laki-laki", "0912092109", ""});
-        tableModel.addRow(new Object[]{"PEL001", "John", "Laki-laki", "0912092109", ""});
-        tableModel.addRow(new Object[]{"PEL001", "John", "Laki-laki", "0912092109", ""});
-        tableModel.addRow(new Object[]{"PEL001", "John", "Laki-laki", "0912092109", ""});
-
-
-        customTable1.setModel(tableModel);
-        customTable1.setShowActionButtons(true);
-        
-        customTable1.setActionButtonListener(new CustomTable.ActionButtonListener() {
-            @Override
-            public void onEdit(int row, Object[] rowData) {
-                JOptionPane.showMessageDialog(null, "Edit User: " + rowData[2]);
-            }
-            
-            @Override
-            public void onDelete(int row, Object[] rowData) {
-                int result = JOptionPane.showConfirmDialog(null, 
-                    "Delete User " + rowData[2] + "?", 
-                    "Confirm", 
-                    JOptionPane.YES_NO_OPTION);
-                if (result == JOptionPane.YES_OPTION) {
-                    customTable1.removeRow(row);
-                }
-            }
-        });
-        
-        validateLayoutStructure();
     }
     
     private void makeMainContentScrollable() {
-    try {
-        // Remove panelMainContent from panelMainArea
-        panelMainArea.remove(panelMainContent);
-        
-        // Create CustomScrollPane directly with panelMainContent (no wrapper)
-        CustomScrollPane scrollPane = new CustomScrollPane(panelMainContent);
-        
-        // Configure scroll pane
-        scrollPane.setScrollSpeed(20);
-        scrollPane.setSmoothScrolling(true);
-        scrollPane.setBorder(null);
-        scrollPane.setOpaque(false);
-        scrollPane.getViewport().setOpaque(false);
-        
-        // IMPORTANT: Set proper size constraints
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        
-        // Add back to parent
-        panelMainArea.add(scrollPane, BorderLayout.CENTER);
-        
-        // Force proper sizing calculation
-        panelMainArea.revalidate();
-        panelMainArea.repaint();
-        
-    } catch (Exception e) {
-        System.err.println("Error making content scrollable: " + e.getMessage());
-        e.printStackTrace();
-    }
-}
- 
-    private void validateLayoutStructure() {
-        SwingUtilities.invokeLater(() -> {
-            // Check if everything is properly sized
-            Dimension mainAreaSize = panelMainArea.getSize();
-            if (mainAreaSize.width == 0 || mainAreaSize.height == 0) {
-                System.err.println("Warning: panelMainArea has zero size!");
-                // Force a pack/resize
-                pack();
-            }
-    
-        });
-    }
+        try {
+            // Remove panelMainContent from panelMainArea
+            panelMainArea.remove(panelMainContent);
 
-    private void setupProperLayout() {
-        // Ensure panelMainArea has BorderLayout
-        if (!(panelMainArea.getLayout() instanceof BorderLayout)) {
-            panelMainArea.setLayout(new BorderLayout());
+            // Create CustomScrollPane directly with panelMainContent (no wrapper)
+            CustomScrollPane scrollPane = new CustomScrollPane(panelMainContent);
+
+            // Configure scroll pane
+            scrollPane.setScrollSpeed(20);
+            scrollPane.setSmoothScrolling(true);
+            scrollPane.setBorder(null);
+            scrollPane.setOpaque(false);
+            scrollPane.getViewport().setOpaque(false);
+
+            // IMPORTANT: Set proper size constraints
+            scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+            scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+
+            // Add back to parent
+            panelMainArea.add(scrollPane, BorderLayout.CENTER);
+
+            // Force proper sizing calculation
+            panelMainArea.revalidate();
+            panelMainArea.repaint();
+
+        } catch (Exception e) {
+            System.err.println("Error making content scrollable: " + e.getMessage());
+            e.printStackTrace();
         }
-
-        // Ensure panelMainContent has proper layout
-        if (panelMainContent.getLayout() == null) {
-            panelMainContent.setLayout(new BorderLayout());
-        }
-
-        // Set proper sizes
-        panelMainContent.setPreferredSize(null); // Let it calculate naturally
-        panelMainContent.setMaximumSize(null);   // Remove size constraints
-        panelMainContent.setMinimumSize(new Dimension(0, 0)); // Allow shrinking
-
-        // Ensure proper background and opacity
-        panelMainContent.setOpaque(true);
-        panelMainContent.setBackground(new Color(236, 240, 241));
     }
+
 
     
     private JLabel getMenuLabel(PageMenu menu) {
@@ -325,24 +256,6 @@ public class DashboardForm extends javax.swing.JFrame {
         lblWelcome = new javax.swing.JLabel();
         lblUserProfile = new javax.swing.JLabel();
         panelMainContent = new javax.swing.JPanel();
-        panelHighlight = new javax.swing.JPanel();
-        panelHighlightText = new javax.swing.JPanel();
-        lblPantauKeuangan = new javax.swing.JLabel();
-        lblKelolaSemua = new javax.swing.JLabel();
-        lblChartIcon = new javax.swing.JLabel();
-        panelPageMenu = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
-        txtUsername = new components.RoundedTextField();
-        roundedTextField2 = new components.RoundedTextField();
-        roundedTextField3 = new components.RoundedTextField();
-        roundedComboBox1 = new components.RoundedComboBox();
-        roundedButton2 = new components.RoundedButton();
-        customTable1 = new components.CustomTable();
-        jSpinner1 = new javax.swing.JSpinner();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Aplikasi Keuangan");
@@ -653,152 +566,15 @@ public class DashboardForm extends javax.swing.JFrame {
         panelMainContent.setBackground(new java.awt.Color(236, 240, 241));
         panelMainContent.setBorder(javax.swing.BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        panelHighlight.setBackground(new java.awt.Color(240, 255, 240));
-        panelHighlight.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(220, 220, 200)), javax.swing.BorderFactory.createEmptyBorder(20, 20, 20, 20)));
-        panelHighlight.setLayout(new java.awt.BorderLayout(20, 0));
-
-        panelHighlightText.setOpaque(false);
-        panelHighlightText.setLayout(new javax.swing.BoxLayout(panelHighlightText, javax.swing.BoxLayout.Y_AXIS));
-
-        lblPantauKeuangan.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
-        lblPantauKeuangan.setText("Pantau Keuangan Perusahaan dengan Mudah!");
-        lblPantauKeuangan.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 5, 1));
-        panelHighlightText.add(lblPantauKeuangan);
-
-        lblKelolaSemua.setFont(new java.awt.Font("Segoe UI", 0, 13)); // NOI18N
-        lblKelolaSemua.setText("Kelola semua transaksi, laporan, dan data master dalam satu dashboard yang cerah, bersih, dan menyenangkan.");
-        panelHighlightText.add(lblKelolaSemua);
-
-        panelHighlight.add(panelHighlightText, java.awt.BorderLayout.CENTER);
-
-        lblChartIcon.setFont(new java.awt.Font("Segoe UI", 0, 48)); // NOI18N
-        lblChartIcon.setForeground(new java.awt.Color(46, 204, 113));
-        lblChartIcon.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblChartIcon.setText("📊");
-        lblChartIcon.setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 10, 10, 20));
-        panelHighlight.add(lblChartIcon, java.awt.BorderLayout.EAST);
-
-        panelPageMenu.setBackground(new java.awt.Color(255, 255, 255));
-
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel1.setText("Master Data Penguna");
-
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel2.setText("Username : ");
-
-        jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel3.setText("Password : ");
-
-        jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel4.setText("Nama Lengkap : ");
-
-        jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel5.setText("Role : ");
-
-        txtUsername.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtUsernameActionPerformed(evt);
-            }
-        });
-
-        roundedTextField3.setText("roundedTextField3");
-
-        roundedComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Admin", "Finance", "Manager" }));
-
-        roundedButton2.setText("⟳ reset form");
-        roundedButton2.setAutoscrolls(true);
-        roundedButton2.setCustomColorScheme(components.RoundedButton.ColorScheme.DANGER);
-        roundedButton2.setCustomCornerRadius(20);
-
-        customTable1.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-            public void propertyChange(java.beans.PropertyChangeEvent evt) {
-                customTable1PropertyChange(evt);
-            }
-        });
-
-        jSpinner1.setModel(new javax.swing.SpinnerDateModel());
-
-        javax.swing.GroupLayout panelPageMenuLayout = new javax.swing.GroupLayout(panelPageMenu);
-        panelPageMenu.setLayout(panelPageMenuLayout);
-        panelPageMenuLayout.setHorizontalGroup(
-            panelPageMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelPageMenuLayout.createSequentialGroup()
-                .addGap(14, 14, 14)
-                .addGroup(panelPageMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1)
-                    .addGroup(panelPageMenuLayout.createSequentialGroup()
-                        .addGroup(panelPageMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(panelPageMenuLayout.createSequentialGroup()
-                                .addGroup(panelPageMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel5)
-                                    .addComponent(jLabel4)
-                                    .addComponent(jLabel3)
-                                    .addComponent(jLabel2))
-                                .addGap(12, 12, 12)
-                                .addGroup(panelPageMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(txtUsername, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(roundedTextField3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(roundedTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(roundedComboBox1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                            .addComponent(roundedButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(panelPageMenuLayout.createSequentialGroup()
-                                .addGap(14, 14, 14)
-                                .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(102, 102, 102)
-                        .addComponent(customTable1, javax.swing.GroupLayout.PREFERRED_SIZE, 506, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(0, 28, Short.MAX_VALUE))
-        );
-        panelPageMenuLayout.setVerticalGroup(
-            panelPageMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelPageMenuLayout.createSequentialGroup()
-                .addGap(22, 22, 22)
-                .addComponent(jLabel1)
-                .addGap(17, 17, 17)
-                .addGroup(panelPageMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panelPageMenuLayout.createSequentialGroup()
-                        .addGroup(panelPageMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel2)
-                            .addComponent(txtUsername, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(5, 5, 5)
-                        .addGroup(panelPageMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel3)
-                            .addComponent(roundedTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(panelPageMenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(panelPageMenuLayout.createSequentialGroup()
-                                .addComponent(jLabel4)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jLabel5)
-                                .addGap(18, 18, 18)
-                                .addComponent(roundedButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(panelPageMenuLayout.createSequentialGroup()
-                                .addComponent(roundedTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(roundedComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(36, 36, 36)
-                        .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(customTable1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(86, Short.MAX_VALUE))
-        );
-
         javax.swing.GroupLayout panelMainContentLayout = new javax.swing.GroupLayout(panelMainContent);
         panelMainContent.setLayout(panelMainContentLayout);
         panelMainContentLayout.setHorizontalGroup(
             panelMainContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelMainContentLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(panelMainContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(panelHighlight, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(panelPageMenu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(0, 0, Short.MAX_VALUE))
+            .addGap(0, 910, Short.MAX_VALUE)
         );
         panelMainContentLayout.setVerticalGroup(
             panelMainContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelMainContentLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(panelHighlight, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(panelPageMenu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGap(0, 600, Short.MAX_VALUE)
         );
 
         panelMainArea.add(panelMainContent, java.awt.BorderLayout.CENTER);
@@ -861,27 +637,19 @@ public class DashboardForm extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_lblDashboardMouseEntered
 
-    private void customTable1PropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_customTable1PropertyChange
-        // TODO add your handling code here:
-    }//GEN-LAST:event_customTable1PropertyChange
-
-    private void txtUsernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtUsernameActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtUsernameActionPerformed
-
     private void lblKategoriTransaksiMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblKategoriTransaksiMousePressed
         // TODO add your handling code here:
     }//GEN-LAST:event_lblKategoriTransaksiMousePressed
 
     private void lblDashboardMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblDashboardMousePressed
         // TODO add your handling code here:
-        OverviewFrame overviewFrame = new OverviewFrame();
+        DashboardPage overviewFrame = new DashboardPage();
         showContentFromPanel(overviewFrame.getMainPanel());
     }//GEN-LAST:event_lblDashboardMousePressed
 
     private void lblPenggunaMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblPenggunaMousePressed
         // TODO add your handling code here:
-        MasterUserForm userFrame = new MasterUserForm();
+        MasterUserPage userFrame = new MasterUserPage();
         showContentFromPanel(userFrame.getMainPanel());
     }//GEN-LAST:event_lblPenggunaMousePressed
 
@@ -902,47 +670,38 @@ public class DashboardForm extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(DashboardForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(DashboardMainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(DashboardForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(DashboardMainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(DashboardForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(DashboardMainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(DashboardForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(DashboardMainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new DashboardForm().setVisible(true);
+                new DashboardMainFrame().setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private components.CustomTable customTable1;
     private javax.swing.Box.Filler filler1;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JSpinner jSpinner1;
     private javax.swing.JLabel lblAkunCOA;
-    private javax.swing.JLabel lblChartIcon;
     private javax.swing.JLabel lblDaftarPiutang;
     private javax.swing.JLabel lblDashboard;
     private javax.swing.JLabel lblFakturPenjualan;
     private javax.swing.JLabel lblFormMaster;
     private javax.swing.JLabel lblHome;
     private javax.swing.JLabel lblKategoriTransaksi;
-    private javax.swing.JLabel lblKelolaSemua;
     private javax.swing.JLabel lblKeseluruhanJurnal;
     private javax.swing.JLabel lblLabaRugi;
     private javax.swing.JLabel lblLaporan;
     private javax.swing.JLabel lblNeraca;
-    private javax.swing.JLabel lblPantauKeuangan;
     private javax.swing.JLabel lblPelangganKlien;
     private javax.swing.JLabel lblPenerimaanLainnya;
     private javax.swing.JLabel lblPengeluaran;
@@ -951,19 +710,11 @@ public class DashboardForm extends javax.swing.JFrame {
     private javax.swing.JLabel lblTransaksi;
     private javax.swing.JLabel lblUserProfile;
     private javax.swing.JLabel lblWelcome;
-    private javax.swing.JPanel panelHighlight;
-    private javax.swing.JPanel panelHighlightText;
     private javax.swing.JPanel panelMainArea;
     private javax.swing.JPanel panelMainContent;
-    private javax.swing.JPanel panelPageMenu;
     private javax.swing.JPanel panelSidebar;
     private javax.swing.JPanel panelTopBar;
-    private components.RoundedButton roundedButton2;
     private components.RoundedButton roundedButton3;
-    private components.RoundedComboBox roundedComboBox1;
-    private components.RoundedTextField roundedTextField2;
-    private components.RoundedTextField roundedTextField3;
-    private components.RoundedTextField txtUsername;
     // End of variables declaration//GEN-END:variables
 
 }

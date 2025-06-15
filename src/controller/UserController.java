@@ -129,7 +129,7 @@ public class UserController {
     }
     
     // UPDATE - Update existing user
-    public boolean updateUser(User user) {
+    public String updateUser(User user) {
         System.out.println("---- Updating user: " + user.getUserId() + " -----");
         
         try {
@@ -143,15 +143,13 @@ public class UserController {
             
             int result = ps.executeUpdate();
             if (result > 0) {
-                System.out.println("User updated successfully: " + user.getUserId());
-                return true;
+                return "User updated successfully: " + user.getUserId();
             } else {
-                System.out.println("No user found with ID: " + user.getUserId());
+                return "No user found with ID: " + user.getUserId();
             }
         } catch (SQLException e) {
-            System.out.println("Error updating user: " + e.getMessage());
+            return "Error updating user: " + e.getMessage();
         }
-        return false;
     }
     
     // DELETE - Delete user by ID
@@ -357,7 +355,7 @@ public class UserController {
         System.out.println("\n=== TESTING UPDATE ===");
         if (foundUser != null) {
             foundUser.setFullname("Updated Test User");
-            boolean updated = controller.updateUser(foundUser);
+            String updated = controller.updateUser(foundUser);
             System.out.println("Update result: " + updated);
         }
         

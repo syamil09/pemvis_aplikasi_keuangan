@@ -17,14 +17,14 @@ import model.User;
  *
  * @author Leonovo
  */
-public class MasterUserForm extends javax.swing.JFrame {
+public class MasterUserPage extends javax.swing.JFrame {
 
     UserController userCtr;
     DefaultTableModel tableModel;
     /**
      * Creates new form MasterUserForm
      */
-    public MasterUserForm() {
+    public MasterUserPage() {
         userCtr = new UserController();
         tableModel = new DefaultTableModel();
         
@@ -61,7 +61,8 @@ public class MasterUserForm extends javax.swing.JFrame {
             customTable1.setActionButtonListener(new CustomTable.ActionButtonListener() {
                 @Override
                 public void onEdit(int row, Object[] rowData) {
-                    JOptionPane.showMessageDialog(null, "Edit User: " + rowData[2]);
+                    String userId = rowData[0].toString();
+                    showDataToForm(userId);
                 }
 
                 @Override
@@ -83,6 +84,23 @@ public class MasterUserForm extends javax.swing.JFrame {
         } 
     }
     
+    private void showDataToForm(String userId) {
+        try {
+            User user = userCtr.getUserById(userId);
+            
+            btnSimpan.setText("Update");
+            txtUserId.setText(user.getUserId());
+            txtUsername.setText(user.getUsername());
+            txtNamaLengkap.setText(user.getFullname());
+            txtPassword.setText(user.getPassword());
+            cbRole.setSelectedItem(user.getRole());
+            
+            txtUserId.setEnabled(false);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "data user gagal dipanggil "+e);
+        }
+    }
+    
     private void save() {
         User user = new User();
         user.setUserId(txtUserId.getText());
@@ -90,21 +108,31 @@ public class MasterUserForm extends javax.swing.JFrame {
         user.setRole(cbRole.getSelectedItem().toString());
         user.setPassword(txtPassword.getText());
         user.setFullname(txtNamaLengkap.getText());
+        
+        boolean isCreateUser = btnSimpan.getText().equals("Tambah");
+        
+        if (isCreateUser) {
+            String create = userCtr.createUser(user);
+            JOptionPane.showMessageDialog(null, create);
+        } else {
+            String update = userCtr.updateUser(user);
+            JOptionPane.showMessageDialog(null, update);
+        }
 
-        String create = userCtr.createUser(user);
-        JOptionPane.showMessageDialog(null, create);
 
         loadDataTable();
        
     }
     
-    private void clearForm() {
+    private void resetForm() {
         txtUserId.setText("");
+        txtUserId.setEnabled(true);
         txtUsername.setText("");
         txtPassword.setText("");
         txtNamaLengkap.setText("");
         cbRole.setSelectedIndex(0);
         txtCari.setText("");
+        btnSimpan.setText("Tambah");
     }
     
 
@@ -190,7 +218,7 @@ public class MasterUserForm extends javax.swing.JFrame {
             }
         });
 
-        btnSimpan.setText("Simpan");
+        btnSimpan.setText("Tambah");
         btnSimpan.setCustomCornerRadius(12);
         btnSimpan.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -289,6 +317,11 @@ public class MasterUserForm extends javax.swing.JFrame {
                 txtCariActionPerformed(evt);
             }
         });
+        txtCari.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtCariKeyPressed(evt);
+            }
+        });
 
         btnCari.setText("🔍 Cari");
         btnCari.setCustomCornerRadius(12);
@@ -349,7 +382,7 @@ public class MasterUserForm extends javax.swing.JFrame {
             .addGroup(mainPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(roundedPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(32, 32, 32)
+                .addGap(26, 26, 26)
                 .addComponent(roundedPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(42, Short.MAX_VALUE))
         );
@@ -366,7 +399,7 @@ public class MasterUserForm extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(mainPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 598, Short.MAX_VALUE))
+                .addGap(0, 604, Short.MAX_VALUE))
         );
 
         pack();
@@ -382,6 +415,7 @@ public class MasterUserForm extends javax.swing.JFrame {
 
     private void roundedButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_roundedButton2ActionPerformed
         // TODO add your handling code here:
+        resetForm();
     }//GEN-LAST:event_roundedButton2ActionPerformed
 
     private void txtCariActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCariActionPerformed
@@ -395,6 +429,7 @@ public class MasterUserForm extends javax.swing.JFrame {
     private void btnSimpanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSimpanActionPerformed
         // TODO add your handling code here:
         save();
+        resetForm();
     }//GEN-LAST:event_btnSimpanActionPerformed
 
     private void txtUserIdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtUserIdActionPerformed
@@ -405,6 +440,11 @@ public class MasterUserForm extends javax.swing.JFrame {
         // TODO add your handling code here:
         loadDataTable();
     }//GEN-LAST:event_btnCariActionPerformed
+
+    private void txtCariKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCariKeyPressed
+        // TODO add your handling code here:
+        loadDataTable();
+    }//GEN-LAST:event_txtCariKeyPressed
 
     /**
      * @param args the command line arguments
@@ -423,20 +463,21 @@ public class MasterUserForm extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(MasterUserForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MasterUserPage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(MasterUserForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MasterUserPage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(MasterUserForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MasterUserPage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(MasterUserForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MasterUserPage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new MasterUserForm().setVisible(true);
+                new MasterUserPage().setVisible(true);
             }
         });
     }
