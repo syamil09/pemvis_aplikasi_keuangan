@@ -7,6 +7,7 @@ package view;
 import components.CustomTable;
 import controller.UserController;
 import java.awt.Container;
+import java.awt.event.KeyEvent;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -88,6 +89,8 @@ public class MasterUserPage extends javax.swing.JFrame {
         try {
             User user = userCtr.getUserById(userId);
             
+            lblTitleForm.setText("Form Edit Data Pengguna");
+            
             btnSimpan.setText("Update");
             txtUserId.setText(user.getUserId());
             txtUsername.setText(user.getUsername());
@@ -133,6 +136,7 @@ public class MasterUserPage extends javax.swing.JFrame {
         cbRole.setSelectedIndex(0);
         txtCari.setText("");
         btnSimpan.setText("Tambah");
+        lblTitleForm.setText("Form Tambah Data Pengguna");
     }
     
 
@@ -147,7 +151,7 @@ public class MasterUserPage extends javax.swing.JFrame {
 
         mainPanel = new javax.swing.JPanel();
         roundedPanel1 = new components.RoundedPanel();
-        jLabel1 = new javax.swing.JLabel();
+        lblTitleForm = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
@@ -173,8 +177,8 @@ public class MasterUserPage extends javax.swing.JFrame {
         roundedPanel1.setCornerRadius(20);
         roundedPanel1.setCustomHasBorder(false);
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel1.setText("Form Data Penguna");
+        lblTitleForm.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        lblTitleForm.setText("Form Tambah Data Penguna");
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel2.setText("Username : ");
@@ -243,7 +247,7 @@ public class MasterUserPage extends javax.swing.JFrame {
             .addGroup(roundedPanel1Layout.createSequentialGroup()
                 .addGap(23, 23, 23)
                 .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1)
+                    .addComponent(lblTitleForm)
                     .addGroup(roundedPanel1Layout.createSequentialGroup()
                         .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel3)
@@ -277,7 +281,7 @@ public class MasterUserPage extends javax.swing.JFrame {
                 .addGap(20, 20, 20)
                 .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(roundedButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1))
+                    .addComponent(lblTitleForm))
                 .addGap(18, 18, 18)
                 .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtNamaLengkap, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -443,7 +447,9 @@ public class MasterUserPage extends javax.swing.JFrame {
 
     private void txtCariKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCariKeyPressed
         // TODO add your handling code here:
-        loadDataTable();
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            loadDataTable();
+        }
     }//GEN-LAST:event_txtCariKeyPressed
 
     /**
@@ -487,13 +493,13 @@ public class MasterUserPage extends javax.swing.JFrame {
     private components.RoundedButton btnSimpan;
     private components.RoundedComboBox cbRole;
     private components.CustomTable customTable1;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel lblTitleForm;
     private javax.swing.JPanel mainPanel;
     private components.RoundedButton roundedButton2;
     private components.RoundedPanel roundedPanel1;
