@@ -347,6 +347,9 @@ public class DashboardMainFrame extends javax.swing.JFrame {
         lblAkunCOA.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 20, 5, 10));
         lblAkunCOA.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         lblAkunCOA.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lblAkunCOAMouseClicked(evt);
+            }
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 lblAkunCOAMouseEntered(evt);
             }
@@ -652,6 +655,12 @@ public class DashboardMainFrame extends javax.swing.JFrame {
         MasterUserPage userFrame = new MasterUserPage();
         showContentFromPanel(userFrame.getMainPanel());
     }//GEN-LAST:event_lblPenggunaMousePressed
+
+    private void lblAkunCOAMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblAkunCOAMouseClicked
+        // TODO add your handling code here:
+        MasterAccountPage accountFrame = new MasterAccountPage();
+        showContentFromPanel(accountFrame.getMainPanel());
+    }//GEN-LAST:event_lblAkunCOAMouseClicked
 
     /**
      * @param args the command line arguments
