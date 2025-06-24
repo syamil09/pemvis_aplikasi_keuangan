@@ -3,12 +3,18 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package view;
+import java.sql.*;
+import javax.swing.JOptionPane;
+import connection.DBConnection;
 
 /**
  *
  * @author Leonovo
  */
 public class LoginForm extends javax.swing.JFrame {
+    private Connection conn = new DBConnection().getConnection();
+    private PreparedStatement pstmt = null;
+    private ResultSet rs = null;
 
     /**
      * Creates new form LoginForm
@@ -28,11 +34,11 @@ public class LoginForm extends javax.swing.JFrame {
 
         jPanel2 = new javax.swing.JPanel();
         roundedPanel1 = new components.RoundedPanel();
-        roundedTextField1 = new components.RoundedTextField();
+        textUsername = new components.RoundedTextField();
         jLabel1 = new javax.swing.JLabel();
-        roundedTextField2 = new components.RoundedTextField();
+        textPass = new components.RoundedTextField();
         jLabel2 = new javax.swing.JLabel();
-        roundedButton1 = new components.RoundedButton();
+        buttonLogin = new components.RoundedButton();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
 
@@ -42,9 +48,9 @@ public class LoginForm extends javax.swing.JFrame {
 
         roundedPanel1.setCornerRadius(25);
 
-        roundedTextField1.addActionListener(new java.awt.event.ActionListener() {
+        textUsername.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                roundedTextField1ActionPerformed(evt);
+                textUsernameActionPerformed(evt);
             }
         });
 
@@ -52,9 +58,9 @@ public class LoginForm extends javax.swing.JFrame {
         jLabel1.setForeground(new java.awt.Color(102, 102, 102));
         jLabel1.setText("Username");
 
-        roundedTextField2.addActionListener(new java.awt.event.ActionListener() {
+        textPass.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                roundedTextField2ActionPerformed(evt);
+                textPassActionPerformed(evt);
             }
         });
 
@@ -62,7 +68,12 @@ public class LoginForm extends javax.swing.JFrame {
         jLabel2.setForeground(new java.awt.Color(102, 102, 102));
         jLabel2.setText("Password");
 
-        roundedButton1.setText("Login");
+        buttonLogin.setText("Login");
+        buttonLogin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonLoginActionPerformed(evt);
+            }
+        });
 
         jLabel3.setBackground(new java.awt.Color(34, 139, 34));
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
@@ -84,10 +95,10 @@ public class LoginForm extends javax.swing.JFrame {
                         .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel3)
                             .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(roundedButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(roundedTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(buttonLogin, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(textUsername, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(roundedTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(textPass, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING))))
                     .addGroup(roundedPanel1Layout.createSequentialGroup()
                         .addGap(197, 197, 197)
@@ -104,13 +115,13 @@ public class LoginForm extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(roundedTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(textUsername, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(roundedTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(textPass, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(roundedButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(buttonLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(77, 77, 77))
         );
 
@@ -147,13 +158,51 @@ public class LoginForm extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void roundedTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_roundedTextField1ActionPerformed
+    private void textUsernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_textUsernameActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_roundedTextField1ActionPerformed
+    }//GEN-LAST:event_textUsernameActionPerformed
 
-    private void roundedTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_roundedTextField2ActionPerformed
+    private void textPassActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_textPassActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_roundedTextField2ActionPerformed
+    }//GEN-LAST:event_textPassActionPerformed
+
+    private void buttonLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonLoginActionPerformed
+        // TODO add your handling code here:
+        String userName = textUsername.getText();
+        String password = textPass.getText();
+        if (userName.isEmpty() || password.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Username dan Password Tidak Boleh Kosong");
+            return;
+        }
+        try {
+            String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, userName);
+            pstmt.setString(2, password);
+            rs = pstmt.executeQuery();
+            if (rs.next()) {
+                JOptionPane.showMessageDialog(this, "Login Berhasil", "Sukses", JOptionPane.INFORMATION_MESSAGE);
+                DashboardMainFrame dashboardMainFrame = new DashboardMainFrame();
+                dashboardMainFrame.setVisible(true);
+                this.dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "Username atau Password Salah", "Gagal", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Terjadi error pada database: " + e.getMessage(), "Error Database", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+
+        } finally {
+            // 7. Tutup semua resource untuk menghindari memory leak
+            try {
+                if (rs != null) rs.close();
+                if (pstmt != null) pstmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }//GEN-LAST:event_buttonLoginActionPerformed
 
     /**
      * @param args the command line arguments
@@ -191,14 +240,14 @@ public class LoginForm extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private components.RoundedButton buttonLogin;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel2;
-    private components.RoundedButton roundedButton1;
     private components.RoundedPanel roundedPanel1;
-    private components.RoundedTextField roundedTextField1;
-    private components.RoundedTextField roundedTextField2;
+    private components.RoundedTextField textPass;
+    private components.RoundedTextField textUsername;
     // End of variables declaration//GEN-END:variables
 }
