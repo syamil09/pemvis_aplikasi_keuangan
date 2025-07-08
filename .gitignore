@@ -5,16 +5,3 @@ dist/
 nbdist/
 .nb-gradle/
 build/
-
-# keep compiled components and images
-!build/classes/components
-!build/classes/images
-
-# Log file
-*.log
-
-# BlueJ files
-*.ctxt
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/

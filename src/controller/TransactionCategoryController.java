@@ -7,31 +7,31 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import model.TransactionCategori;
+import model.TransactionCategory;
 
 /**
  * class untuk operasi yg berkaitan dengan database dan user
  * @author Leonovo
  */
-public class TransactionCategoriController {
+public class TransactionCategoryController {
     private final Connection conn;
     private PreparedStatement ps;
     private ResultSet rs;
     
-    public TransactionCategoriController() {
+    public TransactionCategoryController() {
         conn = DBConnection.getConnection();
     }
     
     // CREATE - Add new user
-    public String createCategory(TransactionCategori categori) {
+    public String createCategory(TransactionCategory categori) {
         System.out.println("---- Creating new categori -----");
         try {
-            String sql = "INSERT INTO transaction_categories (category_id, name, account_id, type, description) VALUES (?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO transaction_categories (category_id, name, debit_account_id, credit_account_id, description) VALUES (?, ?, ?, ?, ?)";
             ps = conn.prepareStatement(sql);
             ps.setString(1, categori.getCategoryId());
             ps.setString(2, categori.getNama());
-            ps.setString(3, categori.getAccountId());
-            ps.setString(4, categori.getType());
+            ps.setString(3, categori.getDebitAccountId());
+            ps.setString(4, categori.getCreditAccountId());
             ps.setString(5, categori.getDescription());
             
             int result = ps.executeUpdate();
@@ -46,29 +46,51 @@ public class TransactionCategoriController {
     }
     
     // READ - Get all users with search functionality
-    public List<TransactionCategori> getData(String searchItem) {
-        List<TransactionCategori> listData = new ArrayList<>();
+    public List<TransactionCategory> getData(String searchItem) {
+        List<TransactionCategory> listData = new ArrayList<>();
         System.out.println("---- Getting categori data -----");
         
         try {
             String sql;
             
             if (searchItem != null && !searchItem.trim().isEmpty()) {
-                sql = "SELECT * FROM transaction_categories WHERE " +
-                      "category_id LIKE ? OR " +
-                      "name LIKE ? OR " +
-                      "account_id LIKE ? " +
-                      "ORDER BY category_id";
+                sql = "SELECT " +
+                    "tc.category_id, " +
+                    "tc.name, " +
+                    "tc.debit_account_id, " +
+                    "tc.credit_account_id, " +
+                    "tc.description, " +
+                    "da.name as debit_account_name, " +
+                    "ca.name as credit_account_name " +
+                    "FROM transaction_categories tc " +
+                    "LEFT JOIN accounts da ON tc.debit_account_id = da.account_id " +
+                    "LEFT JOIN accounts ca ON tc.credit_account_id = ca.account_id " +
+                    "WHERE tc.category_id LIKE ? OR tc.name LIKE ? OR tc.debit_account_id LIKE ? OR tc.credit_account_id LIKE ? " +
+                    "ORDER BY tc.category_id";
+//                sql = "SELECT * FROM transaction_categories WHERE " +
+//                      "category_id LIKE ? OR " +
+//                      "name LIKE ? OR " +
+//                      "debit_account_id LIKE ? OR " +
+//                      "credit_account_id LIKE ? " +
+//                      "ORDER BY category_id";
                 ps = conn.prepareStatement(sql);
                 
                 String searchPattern = "%" + searchItem.trim() + "%";
                 ps.setString(1, searchPattern);
                 ps.setString(2, searchPattern);
                 ps.setString(3, searchPattern);
+                ps.setString(4, searchPattern);
                 
                 System.out.println("Searching for: " + searchItem);
             } else {
-                sql = "SELECT * FROM transaction_categories ORDER BY category_id";
+                sql = "SELECT " +
+                    "tc.*, " +
+                    "da.name as debit_account_name, " +
+                    "ca.name as credit_account_name " +
+                    "FROM transaction_categories tc " +
+                    "LEFT JOIN accounts da ON tc.debit_account_id = da.account_id " +
+                    "LEFT JOIN accounts ca ON tc.credit_account_id = ca.account_id " +
+                    "ORDER BY tc.category_id";
                 ps = conn.prepareStatement(sql);
                 System.out.println("Getting all category");
             }
@@ -76,11 +98,13 @@ public class TransactionCategoriController {
             rs = ps.executeQuery();
             
             while (rs.next()) {
-                TransactionCategori category = new TransactionCategori();
+                TransactionCategory category = new TransactionCategory();
                 category.setCategoryId(rs.getString("category_id"));
                 category.setNama(rs.getString("name"));
-                category.setAccountId(rs.getString("account_id"));
-                category.setType(rs.getString("type"));
+                category.setDebitAccountId(rs.getString("debit_account_id"));
+                category.setDebitAccountName(rs.getString("debit_account_name"));
+                category.setCreditAccountId(rs.getString("credit_account_id"));
+                category.setCreditAccountName(rs.getString("credit_account_name"));
                 category.setDescription(rs.getString("description"));
                 listData.add(category);
                 System.out.println("    Categori ID: " + rs.getString("category_id"));
@@ -97,22 +121,35 @@ public class TransactionCategoriController {
     }
     
     // READ - Get category by ID
-    public TransactionCategori getTransactionCategoryById(String categoryId) {
+    public TransactionCategory getTransactionCategoryById(String categoryId) {
         System.out.println("---- Getting category by ID: " + categoryId + " -----");
         
         try {
-            String sql = "SELECT * FROM transaction_categories WHERE category_id = ?";
+            String sql = "SELECT " +
+                    "tc.category_id, " +
+                    "tc.name, " +
+                    "tc.debit_account_id, " +
+                    "tc.credit_account_id, " +
+                    "tc.description, " +
+                    "da.name as debit_account_name, " +
+                    "ca.name as credit_account_name " +
+                    "FROM transaction_categories tc " +
+                    "LEFT JOIN accounts da ON tc.debit_account_id = da.account_id " +
+                    "LEFT JOIN accounts ca ON tc.credit_account_id = ca.account_id " +
+                    "WHERE tc.category_id = ? ";
             ps = conn.prepareStatement(sql);
             ps.setString(1, categoryId);
             
             rs = ps.executeQuery();
             
             if (rs.next()) {
-                TransactionCategori category = new TransactionCategori();
+                TransactionCategory category = new TransactionCategory();
                 category.setCategoryId(rs.getString("category_id"));
                 category.setNama(rs.getString("name"));
-                category.setAccountId(rs.getString("account_id"));
-                category.setType(rs.getString("type"));
+                category.setDebitAccountId(rs.getString("debit_account_id"));
+                category.setDebitAccountName(rs.getString("credit_account_name"));
+                category.setCreditAccountId(rs.getString("credit_account_id"));
+                category.setCreditAccountName(rs.getString("credit_account_name"));
                 category.setDescription(rs.getString("description"));
                 
                 System.out.println("Category found: " + category.getNama());
@@ -129,15 +166,15 @@ public class TransactionCategoriController {
     }
     
     // UPDATE - Update existing CATEGORY
-    public String updateCategory(TransactionCategori category) {
+    public String updateCategory(TransactionCategory category) {
         System.out.println("---- Updating category: " + category.getCategoryId()+ " -----");
         
         try {
-            String sql = "UPDATE transaction_categories SET name = ?, account_id = ?, type = ?, description = ? WHERE category_id = ?";
+            String sql = "UPDATE transaction_categories SET name = ?, debit_account_id = ?, credit_account_id = ?, description = ? WHERE category_id = ?";
             ps = conn.prepareStatement(sql);
             ps.setString(1, category.getNama());
-            ps.setString(2, category.getAccountId());
-            ps.setString(3, category.getType());
+            ps.setString(2, category.getDebitAccountId());
+            ps.setString(3, category.getCreditAccountId());
             ps.setString(4, category.getDescription());
             ps.setString(5, category.getCategoryId());
             
@@ -157,7 +194,7 @@ public class TransactionCategoriController {
         System.out.println("---- Deleting category: " + categoryId + " -----");
         
         try {
-            String sql = "DELETE FROM transaction_category WHERE category_id = ?";
+            String sql = "DELETE FROM transaction_categories WHERE category_id = ?";
             ps = conn.prepareStatement(sql);
             ps.setString(1, categoryId);
             
@@ -179,8 +216,8 @@ public class TransactionCategoriController {
     
     
     // UTILITY - Get category by type
-    public List<TransactionCategori> getUsersByType(String type) {
-        List<TransactionCategori> listData = new ArrayList<>();
+    public List<TransactionCategory> getUsersByType(String type) {
+        List<TransactionCategory> listData = new ArrayList<>();
         System.out.println("---- Getting users by type: " + type + " -----");
         
         try {
@@ -191,11 +228,11 @@ public class TransactionCategoriController {
             rs = ps.executeQuery();
             
             while (rs.next()) {
-                TransactionCategori category = new TransactionCategori();
+                TransactionCategory category = new TransactionCategory();
                 category.setCategoryId(rs.getString("category_id"));
                 category.setNama(rs.getString("name"));
-                category.setAccountId(rs.getString("account_id"));
-                category.setType(rs.getString("type"));
+                category.setDebitAccountId(rs.getString("debit_account_id"));
+                category.setCreditAccountId(rs.getString("credit_account_id"));
                 category.setDescription(rs.getString("description"));
                 listData.add(category);
             }
@@ -215,15 +252,15 @@ public class TransactionCategoriController {
     
     // TESTING - Test all CRUD operations
     public static void main(String[] args) {
-        TransactionCategoriController controller = new TransactionCategoriController();
+        TransactionCategoryController controller = new TransactionCategoryController();
         
         // Test CREATE
         System.out.println("=== TESTING CREATE ===");
-        TransactionCategori newCategory = new TransactionCategori();
+        TransactionCategory newCategory = new TransactionCategory();
         newCategory.setCategoryId("CAT999");
         newCategory.setNama("testuser");
-        newCategory.setAccountId("ACC999");
-        newCategory.setType("debit");
+        newCategory.setDebitAccountId("ACC999");
+        newCategory.setCreditAccountId("debit");
         newCategory.setDescription("LALALALALALALALA LALALALLALA LALALALAL");
         
         String created = controller.createCategory(newCategory);
@@ -231,12 +268,12 @@ public class TransactionCategoriController {
         
         // Test READ
         System.out.println("\n=== TESTING READ ===");
-        List<TransactionCategori> users = controller.getData("");
+        List<TransactionCategory> users = controller.getData("");
         System.out.println("Total category: " + users.size());
         
         // Test READ BY ID
         System.out.println("\n=== TESTING READ BY ID ===");
-        TransactionCategori foundCategory = controller.getTransactionCategoryById("CAT999");
+        TransactionCategory foundCategory = controller.getTransactionCategoryById("CAT999");
         if (foundCategory != null) {
             System.out.println("Found user: " + foundCategory.getNama());
         }

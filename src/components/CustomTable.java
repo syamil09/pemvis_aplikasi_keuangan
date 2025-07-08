@@ -2,6 +2,7 @@ package components;
 
 import javax.swing.*;
 import javax.swing.table.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,7 +11,9 @@ import java.io.Serializable;
 
 /**
  * CustomTable - Reusable table component for NetBeans GUI Builder
+ * Updated with Custom Action Button functionality
  * @author Syamil
+ * @version 2.0
  */
 public class CustomTable extends JPanel implements Serializable {
     
@@ -25,6 +28,13 @@ public class CustomTable extends JPanel implements Serializable {
     private Font tableFont = new Font("Segoe UI Emoji", Font.PLAIN, 14);
     private Font headerFont = new Font("Segoe UI Emoji", Font.BOLD, 14);
     
+    // NEW: Custom Action Button properties
+    private boolean showCustomActionButton = false;
+    private String customActionButtonText = "Custom";
+    private Color customActionButtonBackgroundColor = new Color(0, 123, 255); // Bootstrap blue
+    private Color customActionButtonTextColor = Color.WHITE;
+    private CustomActionButtonListener customActionButtonListener;
+    
     // Components
     private JTable table;
     private DefaultTableModel model;
@@ -34,6 +44,11 @@ public class CustomTable extends JPanel implements Serializable {
     public interface ActionButtonListener {
         void onEdit(int row, Object[] rowData);
         void onDelete(int row, Object[] rowData);
+    }
+    
+    // NEW: Interface for Custom Action Button
+    public interface CustomActionButtonListener {
+        void onCustomAction(int row, Object[] rowData);
     }
     
     // Default constructor for GUI Builder
@@ -151,7 +166,9 @@ public class CustomTable extends JPanel implements Serializable {
                 @Override
                 public boolean isCellEditable(int row, int column) {
                     try {
-                        return column == getColumnCount() - 1 && showActionButtons && hasActionColumn();
+                        return column == getColumnCount() - 1 && 
+                               (showActionButtons || showCustomActionButton) && 
+                               hasActionColumn();
                     } catch (Exception e) {
                         return false;
                     }
@@ -170,7 +187,7 @@ public class CustomTable extends JPanel implements Serializable {
             customizeTable();
             
             // Add custom renderer and editor for action column if exists
-            if (showActionButtons && hasActionColumn()) {
+            if ((showActionButtons || showCustomActionButton) && hasActionColumn()) {
                 try {
                     int actionColumnIndex = table.getColumnCount() - 1;
                     table.getColumnModel().getColumn(actionColumnIndex).setCellRenderer(new ActionButtonRenderer());
@@ -277,7 +294,7 @@ public class CustomTable extends JPanel implements Serializable {
                Graphics2D g2d = (Graphics2D) g.create();
 
                // Paint solid background
-               g2d.setColor(headerBackgroundColor != null ? headerBackgroundColor : new Color(248, 249, 250));
+               g2d.setColor(headerBackgroundColor != null ? headerBackgroundColor : new Color(248, 249, 750));
                g2d.fillRect(0, 0, c.getWidth(), c.getHeight());
 
                // Paint border
@@ -314,7 +331,7 @@ public class CustomTable extends JPanel implements Serializable {
             JTableHeader header = table.getTableHeader();
             if (header != null) {
                 header.setFont(headerFont != null ? headerFont : new Font("Segoe UI", Font.BOLD, 14));
-                header.setBackground(headerBackgroundColor != null ? headerBackgroundColor : new Color(248, 249, 250));
+                header.setBackground(headerBackgroundColor != null ? headerBackgroundColor : new Color(248, 249, 750));
                 header.setForeground(headerTextColor != null ? headerTextColor : new Color(73, 80, 87));
                 header.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(220, 220, 220)));
                 header.setReorderingAllowed(false);
@@ -384,7 +401,7 @@ public class CustomTable extends JPanel implements Serializable {
                     column.setPreferredWidth(200);
                 } else if (lowerColumnName.contains("aksi") || 
                           lowerColumnName.contains("action")) {
-                    column.setPreferredWidth(100);
+                    column.setPreferredWidth(150); // Increased for custom button
                 } else {
                     column.setPreferredWidth(150);
                 }
@@ -484,6 +501,126 @@ public class CustomTable extends JPanel implements Serializable {
         if (model != null) {
             refreshTable();
         }
+    }
+    
+    // NEW: Custom Action Button Properties
+    
+    /**
+     * Gets whether custom action button is shown
+     * @return true if custom action button is visible
+     */
+    public boolean isShowCustomActionButton() {
+        return showCustomActionButton;
+    }
+    
+    /**
+     * Sets whether to show custom action button
+     * @param showCustomActionButton true to show custom action button
+     */
+    public void setShowCustomActionButton(boolean showCustomActionButton) {
+        boolean oldValue = this.showCustomActionButton;
+        this.showCustomActionButton = showCustomActionButton;
+        
+        if (propertySupport != null) {
+            propertySupport.firePropertyChange("showCustomActionButton", oldValue, showCustomActionButton);
+        }
+        
+        if (model != null) {
+            refreshTable();
+        }
+    }
+    
+    /**
+     * Gets the text for custom action button
+     * @return custom action button text
+     */
+    public String getCustomActionButtonText() {
+        return customActionButtonText;
+    }
+    
+    /**
+     * Sets the text for custom action button
+     * @param customActionButtonText text for custom action button
+     */
+    public void setCustomActionButtonText(String customActionButtonText) {
+        String oldValue = this.customActionButtonText;
+        this.customActionButtonText = customActionButtonText != null ? customActionButtonText : "Custom";
+        
+        if (propertySupport != null) {
+            propertySupport.firePropertyChange("customActionButtonText", oldValue, this.customActionButtonText);
+        }
+        
+        if (table != null) {
+            repaint();
+        }
+    }
+    
+    /**
+     * Gets the background color for custom action button
+     * @return custom action button background color
+     */
+    public Color getCustomActionButtonBackgroundColor() {
+        return customActionButtonBackgroundColor;
+    }
+    
+    /**
+     * Sets the background color for custom action button
+     * @param customActionButtonBackgroundColor background color for custom action button
+     */
+    public void setCustomActionButtonBackgroundColor(Color customActionButtonBackgroundColor) {
+        Color oldColor = this.customActionButtonBackgroundColor;
+        this.customActionButtonBackgroundColor = customActionButtonBackgroundColor != null ? 
+            customActionButtonBackgroundColor : new Color(0, 123, 255);
+        
+        if (propertySupport != null) {
+            propertySupport.firePropertyChange("customActionButtonBackgroundColor", oldColor, this.customActionButtonBackgroundColor);
+        }
+        
+        if (table != null) {
+            repaint();
+        }
+    }
+    
+    /**
+     * Gets the text color for custom action button
+     * @return custom action button text color
+     */
+    public Color getCustomActionButtonTextColor() {
+        return customActionButtonTextColor;
+    }
+    
+    /**
+     * Sets the text color for custom action button
+     * @param customActionButtonTextColor text color for custom action button
+     */
+    public void setCustomActionButtonTextColor(Color customActionButtonTextColor) {
+        Color oldColor = this.customActionButtonTextColor;
+        this.customActionButtonTextColor = customActionButtonTextColor != null ? 
+            customActionButtonTextColor : Color.WHITE;
+        
+        if (propertySupport != null) {
+            propertySupport.firePropertyChange("customActionButtonTextColor", oldColor, this.customActionButtonTextColor);
+        }
+        
+        if (table != null) {
+            repaint();
+        }
+    }
+    
+    /**
+     * Sets the custom action button listener
+     * @param listener the CustomActionButtonListener
+     */
+    public void setCustomActionButtonListener(CustomActionButtonListener listener) {
+        this.customActionButtonListener = listener;
+    }
+    
+    /**
+     * Gets the custom action button listener
+     * @return the CustomActionButtonListener
+     */
+    public CustomActionButtonListener getCustomActionButtonListener() {
+        return customActionButtonListener;
     }
     
     /**
@@ -733,7 +870,9 @@ public class CustomTable extends JPanel implements Serializable {
             @Override
             public boolean isCellEditable(int row, int column) {
                 // Check if it's action column and action buttons are enabled
-                if (column == getColumnCount() - 1 && showActionButtons && hasActionColumn()) {
+                if (column == getColumnCount() - 1 && 
+                    (showActionButtons || showCustomActionButton) && 
+                    hasActionColumn()) {
                     return true;
                 }
                 // Otherwise, delegate to original model's editability rules
@@ -858,6 +997,7 @@ public class CustomTable extends JPanel implements Serializable {
         }
     }
     
+    // Helper methods for creating buttons
     private JButton createActionButton(String text, Color backgroundColor, Dimension size) {
         JButton button = new JButton(text);
         button.setFont(new Font("Segoe UI Emoji", Font.BOLD, 12));
@@ -875,26 +1015,96 @@ public class CustomTable extends JPanel implements Serializable {
         return button;
     }
     
-    // Custom renderer for action buttons
+    // NEW: Helper method untuk membuat custom action button menggunakan RoundedButton
+    private RoundedButton createCustomActionButton(String text, Color backgroundColor, Color textColor, Dimension size) {
+        RoundedButton button = new RoundedButton(text);
+        
+        // Set colors using RoundedButton's custom properties
+        button.setCustomBackgroundColor(backgroundColor);
+        button.setCustomTextColor(textColor);
+        button.setCustomHoverColor(backgroundColor.darker());
+        button.setCustomPressedColor(backgroundColor.darker().darker());
+        button.setCustomCornerRadius(8);
+        
+        // Set font
+        button.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        
+        // Set size
+        button.setPreferredSize(size);
+        button.setMinimumSize(size);
+        button.setMaximumSize(size);
+        
+        return button;
+    }
+    
+    // UPDATED: Custom renderer for action buttons (with improved button visibility logic)
     class ActionButtonRenderer extends JPanel implements TableCellRenderer {
         private JButton editButton;
         private JButton deleteButton;
+        private RoundedButton customButton;
         
         public ActionButtonRenderer() {
-            setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+            setLayout(new FlowLayout(FlowLayout.CENTER, 3, 5));
             setOpaque(true);
             
             Dimension buttonSize = new Dimension(30, 30);
+            Dimension customButtonSize = new Dimension(70, 30); // Slightly wider for RoundedButton
+            
             editButton = createActionButton("✏", new Color(255, 193, 7), buttonSize);
             deleteButton = createActionButton("🗑", new Color(220, 53, 69), buttonSize);
             
-            add(editButton);
-            add(deleteButton);
+            // Create custom button with dynamic properties using RoundedButton
+            updateCustomButton(customButtonSize);
+            
+            // Add buttons based on visibility settings
+            updateButtonVisibility();
+        }
+        
+        private void updateCustomButton(Dimension size) {
+            if (customButton != null) {
+                remove(customButton);
+            }
+            
+            customButton = createCustomActionButton(
+                customActionButtonText != null ? customActionButtonText : "Custom",
+                customActionButtonBackgroundColor != null ? customActionButtonBackgroundColor : new Color(0, 123, 255),
+                customActionButtonTextColor != null ? customActionButtonTextColor : Color.WHITE,
+                size
+            );
+        }
+        
+        private void updateButtonVisibility() {
+            removeAll();
+            
+            // Only add buttons if their respective show flags are true
+            if (showCustomActionButton) {
+                add(customButton);
+            }
+            
+            if (showActionButtons) {
+                add(editButton);
+                add(deleteButton);
+            }
+            
+            // If no buttons are shown, add invisible placeholder to maintain layout
+            if (!showCustomActionButton && !showActionButtons) {
+                JLabel placeholder = new JLabel("");
+                placeholder.setPreferredSize(new Dimension(1, 30));
+                add(placeholder);
+            }
+            
+            revalidate();
+            repaint();
         }
         
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
                 boolean isSelected, boolean hasFocus, int row, int column) {
+            
+            // Update custom button properties in case they changed
+            Dimension customButtonSize = new Dimension(70, 30);
+            updateCustomButton(customButtonSize);
+            updateButtonVisibility();
             
             if (isSelected) {
                 setBackground(table.getSelectionBackground());
@@ -910,22 +1120,26 @@ public class CustomTable extends JPanel implements Serializable {
         }
     }
     
-    // Custom editor for action buttons
+    // UPDATED: Custom editor for action buttons (with improved button visibility logic)
     class ActionButtonEditor extends DefaultCellEditor {
         private JPanel panel;
         private JButton editButton;
         private JButton deleteButton;
+        private RoundedButton customButton;
         private int currentRow;
         
         public ActionButtonEditor() {
             super(new JCheckBox());
             
-            panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5));
+            panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 3, 5));
             
             Dimension buttonSize = new Dimension(30, 30);
+            Dimension customButtonSize = new Dimension(70, 30);
+            
             editButton = createActionButton("✏", new Color(255, 193, 7), buttonSize);
             deleteButton = createActionButton("🗑", new Color(220, 53, 69), buttonSize);
             
+            // Edit button action
             editButton.addActionListener(e -> {
                 if (actionListener != null) {
                     actionListener.onEdit(currentRow, getRowData(currentRow));
@@ -935,6 +1149,7 @@ public class CustomTable extends JPanel implements Serializable {
                 fireEditingStopped();
             });
             
+            // Delete button action
             deleteButton.addActionListener(e -> {
                 if (actionListener != null) {
                     actionListener.onDelete(currentRow, getRowData(currentRow));
@@ -951,14 +1166,73 @@ public class CustomTable extends JPanel implements Serializable {
                 fireEditingStopped();
             });
             
-            panel.add(editButton);
-            panel.add(deleteButton);
+            // Create and setup custom button
+            updateCustomButton(customButtonSize);
+            updateButtonVisibility();
+        }
+        
+        private void updateCustomButton(Dimension size) {
+            if (customButton != null) {
+                // Remove existing action listeners
+                for (ActionListener al : customButton.getActionListeners()) {
+                    customButton.removeActionListener(al);
+                }
+                panel.remove(customButton);
+            }
+            
+            customButton = createCustomActionButton(
+                customActionButtonText != null ? customActionButtonText : "Custom",
+                customActionButtonBackgroundColor != null ? customActionButtonBackgroundColor : new Color(0, 123, 255),
+                customActionButtonTextColor != null ? customActionButtonTextColor : Color.WHITE,
+                size
+            );
+            
+            // Custom button action
+            customButton.addActionListener(e -> {
+                if (customActionButtonListener != null) {
+                    customActionButtonListener.onCustomAction(currentRow, getRowData(currentRow));
+                } else {
+                    JOptionPane.showMessageDialog(panel, 
+                        customActionButtonText + " button clicked for row " + (currentRow + 1));
+                }
+                fireEditingStopped();
+            });
+        }
+        
+        private void updateButtonVisibility() {
+            panel.removeAll();
+            
+            // Only add buttons if their respective show flags are true
+            if (showCustomActionButton) {
+                panel.add(customButton);
+            }
+            
+            if (showActionButtons) {
+                panel.add(editButton);
+                panel.add(deleteButton);
+            }
+            
+            // If no buttons are shown, add invisible placeholder to maintain layout
+            if (!showCustomActionButton && !showActionButtons) {
+                JLabel placeholder = new JLabel("");
+                placeholder.setPreferredSize(new Dimension(1, 30));
+                panel.add(placeholder);
+            }
+            
+            panel.revalidate();
+            panel.repaint();
         }
         
         @Override
         public Component getTableCellEditorComponent(JTable table, Object value,
                 boolean isSelected, int row, int column) {
             currentRow = row;
+            
+            // Update custom button properties in case they changed
+            Dimension customButtonSize = new Dimension(70, 30);
+            updateCustomButton(customButtonSize);
+            updateButtonVisibility();
+            
             return panel;
         }
         
@@ -1061,9 +1335,9 @@ class CustomTableExample extends JFrame {
     }
     
     private void initComponents() {
-        setTitle("CustomTable - NetBeans Compatible");
+        setTitle("CustomTable - NetBeans Compatible with Custom Action Button");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(900, 400);
+        setSize(1100, 500);
         setLocationRelativeTo(null);
         
         JPanel mainPanel = new JPanel(new BorderLayout());
@@ -1073,7 +1347,7 @@ class CustomTableExample extends JFrame {
         // Create CustomTable instance
         CustomTable customTable = new CustomTable();
         
-        // Method 1: Set properties directly (original way)
+        // Set data
         customTable.setColumns(new String[]{"User ID", "Username", "Full Name", "Role", "Aksi"});
         customTable.setData(new Object[][]{
             {"USR001", "admin", "Administrator", "Admin", ""},
@@ -1081,36 +1355,14 @@ class CustomTableExample extends JFrame {
             {"USR003", "jane_smith", "Jane Smith", "Manager", ""}
         });
         
-        // Method 2: Using DefaultTableModel (new way)
-        DefaultTableModel tableModel = new DefaultTableModel();
-        tableModel.setColumnIdentifiers(new String[]{"Product ID", "Product Name", "Price", "Stock", "Aksi"});
-        tableModel.addRow(new Object[]{"PRD001", "Laptop", "$999", "15", ""});
-        tableModel.addRow(new Object[]{"PRD002", "Mouse", "$25", "50", ""});
-        tableModel.addRow(new Object[]{"PRD003", "Keyboard", "$75", "30", ""});
+        // Enable custom action button only (without edit/delete)
+        customTable.setShowActionButtons(false); // Hide edit/delete buttons
+        customTable.setShowCustomActionButton(true);
+        customTable.setCustomActionButtonText("Detail");
+        customTable.setCustomActionButtonBackgroundColor(new Color(0, 123, 255)); // Blue
+        customTable.setCustomActionButtonTextColor(Color.WHITE);
         
-        // Create second table with DefaultTableModel
-        CustomTable customTable2 = new CustomTable();
-        customTable2.setModel(tableModel);  // This is the new feature!
-        customTable2.setShowActionButtons(true);
-        customTable2.setTableRowHeight(45);
-        
-        // Method 3: Using static helper method
-        DefaultTableModel helperModel = CustomTable.createTableModel(
-            new String[]{"Order ID", "Customer", "Total", "Status", "Aksi"},
-            new Object[][]{
-                {"ORD001", "John Doe", "$150", "Pending", ""},
-                {"ORD002", "Jane Smith", "$280", "Completed", ""}
-            }
-        );
-        
-        CustomTable customTable3 = new CustomTable();
-        customTable3.setModel(helperModel);
-        customTable3.setShowActionButtons(true);
-        
-        // Create tabbed pane to show different examples
-        JTabbedPane tabbedPane = new JTabbedPane();
-        
-        // Tab 1: Direct properties
+        // Set listeners
         customTable.setActionButtonListener(new CustomTable.ActionButtonListener() {
             @Override
             public void onEdit(int row, Object[] rowData) {
@@ -1129,61 +1381,79 @@ class CustomTableExample extends JFrame {
             }
         });
         
-        // Tab 2: DefaultTableModel
-        customTable2.setActionButtonListener(new CustomTable.ActionButtonListener() {
+        customTable.setCustomActionButtonListener(new CustomTable.CustomActionButtonListener() {
             @Override
-            public void onEdit(int row, Object[] rowData) {
-                JOptionPane.showMessageDialog(null, "Edit Product: " + rowData[1]);
-            }
-            
-            @Override
-            public void onDelete(int row, Object[] rowData) {
-                customTable2.getModel().removeRow(row); // Using model directly
-            }
-        });
-        
-        // Tab 3: Helper method
-        customTable3.setActionButtonListener(new CustomTable.ActionButtonListener() {
-            @Override
-            public void onEdit(int row, Object[] rowData) {
-                JOptionPane.showMessageDialog(null, "Edit Order: " + rowData[0]);
-            }
-            
-            @Override
-            public void onDelete(int row, Object[] rowData) {
-                customTable3.getModel().removeRow(row);
+            public void onCustomAction(int row, Object[] rowData) {
+                JOptionPane.showMessageDialog(null, 
+                    "Detail untuk User:\n" +
+                    "ID: " + rowData[0] + "\n" +
+                    "Username: " + rowData[1] + "\n" +
+                    "Full Name: " + rowData[2] + "\n" +
+                    "Role: " + rowData[3],
+                    "User Detail",
+                    JOptionPane.INFORMATION_MESSAGE);
             }
         });
         
-        // Add tabs
-        tabbedPane.addTab("Direct Properties", customTable);
-        tabbedPane.addTab("DefaultTableModel", customTable2);
-        tabbedPane.addTab("Helper Method", customTable3);
+        // Add control buttons for testing
+        JPanel controlPanel = new JPanel(new FlowLayout());
+        controlPanel.setBackground(Color.WHITE);
         
-        // Add button panel for testing model operations
-        JPanel buttonPanel = new JPanel(new FlowLayout());
-        buttonPanel.setBackground(Color.WHITE);
+        JButton toggleCustomBtn = new JButton("Toggle Custom Button");
+        toggleCustomBtn.addActionListener(e -> {
+            boolean current = customTable.isShowCustomActionButton();
+            customTable.setShowCustomActionButton(!current);
+        });
         
-        JButton addRowBtn = new JButton("Add Row to Tab 2");
+        JButton toggleActionBtn = new JButton("Toggle Edit/Delete Buttons");
+        toggleActionBtn.addActionListener(e -> {
+            boolean current = customTable.isShowActionButtons();
+            customTable.setShowActionButtons(!current);
+        });
+        
+        JButton showBothBtn = new JButton("Show Both");
+        showBothBtn.addActionListener(e -> {
+            customTable.setShowActionButtons(true);
+            customTable.setShowCustomActionButton(true);
+        });
+        
+        JButton hideAllBtn = new JButton("Hide All");
+        hideAllBtn.addActionListener(e -> {
+            customTable.setShowActionButtons(false);
+            customTable.setShowCustomActionButton(false);
+        });
+        
+        JButton changeTextBtn = new JButton("Change Custom Text");
+        changeTextBtn.addActionListener(e -> {
+            String newText = JOptionPane.showInputDialog("Enter new text:", customTable.getCustomActionButtonText());
+            if (newText != null && !newText.trim().isEmpty()) {
+                customTable.setCustomActionButtonText(newText);
+            }
+        });
+        
+        JButton changeColorBtn = new JButton("Change Custom Color");
+        changeColorBtn.addActionListener(e -> {
+            Color newColor = JColorChooser.showDialog(this, "Choose Color", customTable.getCustomActionButtonBackgroundColor());
+            if (newColor != null) {
+                customTable.setCustomActionButtonBackgroundColor(newColor);
+            }
+        });
+        
+        JButton addRowBtn = new JButton("Add Row");
         addRowBtn.addActionListener(e -> {
-            DefaultTableModel model = customTable2.getModel();
-            model.addRow(new Object[]{"PRD00" + (model.getRowCount() + 1), 
-                                    "New Product", "$0", "0", ""});
+            customTable.addRow(new Object[]{"USR00" + (customTable.getRowCount() + 1), "newuser", "New User", "User", ""});
         });
         
-        JButton changeModelBtn = new JButton("Change Model Tab 2");
-        changeModelBtn.addActionListener(e -> {
-            DefaultTableModel newModel = new DefaultTableModel();
-            newModel.setColumnIdentifiers(new String[]{"ID", "Name", "Category", "Aksi"});
-            newModel.addRow(new Object[]{"1", "Test Product", "Electronics", ""});
-            customTable2.setModel(newModel);
-        });
+        controlPanel.add(toggleCustomBtn);
+        controlPanel.add(toggleActionBtn);
+        controlPanel.add(showBothBtn);
+        controlPanel.add(hideAllBtn);
+        controlPanel.add(changeTextBtn);
+        controlPanel.add(changeColorBtn);
+        controlPanel.add(addRowBtn);
         
-        buttonPanel.add(addRowBtn);
-        buttonPanel.add(changeModelBtn);
-        
-        mainPanel.add(tabbedPane, BorderLayout.CENTER);
-        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
+        mainPanel.add(customTable, BorderLayout.CENTER);
+        mainPanel.add(controlPanel, BorderLayout.SOUTH);
         add(mainPanel);
     }
     

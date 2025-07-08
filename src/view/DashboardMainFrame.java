@@ -356,6 +356,9 @@ public class DashboardMainFrame extends javax.swing.JFrame {
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 lblAkunCOAMouseExited(evt);
             }
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                lblAkunCOAMousePressed(evt);
+            }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -388,6 +391,11 @@ public class DashboardMainFrame extends javax.swing.JFrame {
         lblPelangganKlien.setText("👥 Pelanggan/Klien");
         lblPelangganKlien.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 20, 5, 10));
         lblPelangganKlien.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        lblPelangganKlien.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                lblPelangganKlienMousePressed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 6;
@@ -402,6 +410,11 @@ public class DashboardMainFrame extends javax.swing.JFrame {
         lblProyek.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 20, 5, 10));
         lblProyek.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         lblProyek.setOpaque(true);
+        lblProyek.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                lblProyekMousePressed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 7;
@@ -642,6 +655,8 @@ public class DashboardMainFrame extends javax.swing.JFrame {
 
     private void lblKategoriTransaksiMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblKategoriTransaksiMousePressed
         // TODO add your handling code here:
+        MasterTransactionCategoryPage transactionCategoryFrame = new MasterTransactionCategoryPage();
+        showContentFromPanel(transactionCategoryFrame.getMainPanel());
     }//GEN-LAST:event_lblKategoriTransaksiMousePressed
 
     private void lblDashboardMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblDashboardMousePressed
@@ -661,6 +676,24 @@ public class DashboardMainFrame extends javax.swing.JFrame {
         MasterAccountPage accountFrame = new MasterAccountPage();
         showContentFromPanel(accountFrame.getMainPanel());
     }//GEN-LAST:event_lblAkunCOAMouseClicked
+
+    private void lblAkunCOAMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblAkunCOAMousePressed
+        // TODO add your handling code here:
+        MasterAccountPage accountFrame = new MasterAccountPage();
+        showContentFromPanel(accountFrame.getMainPanel());
+    }//GEN-LAST:event_lblAkunCOAMousePressed
+
+    private void lblPelangganKlienMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblPelangganKlienMousePressed
+        // TODO add your handling code here:
+        MasterAccountPage accountFrame = new MasterAccountPage();
+        showContentFromPanel(accountFrame.getMainPanel());
+    }//GEN-LAST:event_lblPelangganKlienMousePressed
+
+    private void lblProyekMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblProyekMousePressed
+        // TODO add your handling code here:
+        MasterProjectPage projectFrame = new MasterProjectPage();
+        showContentFromPanel(projectFrame.getMainPanel());
+    }//GEN-LAST:event_lblProyekMousePressed
 
     /**
      * @param args the command line arguments

@@ -194,13 +194,13 @@ public class LoginForm extends javax.swing.JFrame {
 
         } finally {
             // 7. Tutup semua resource untuk menghindari memory leak
-            try {
-                if (rs != null) rs.close();
-                if (pstmt != null) pstmt.close();
-                if (conn != null) conn.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+//            try {
+//                if (rs != null) rs.close();
+//                if (pstmt != null) pstmt.close();
+//                if (conn != null) conn.close();
+//            } catch (SQLException e) {
+//                e.printStackTrace();
+//            }
         }
     }//GEN-LAST:event_buttonLoginActionPerformed
 
