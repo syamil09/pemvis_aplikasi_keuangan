@@ -207,7 +207,7 @@
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Segoe UI" size="18" style="1"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Tambah Data Client"/>
+                <Property name="text" type="java.lang.String" value="Tambah Data Klien"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel2">
@@ -424,7 +424,7 @@
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Segoe UI" size="18" style="1"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Data Client"/>
+                <Property name="text" type="java.lang.String" value="Data Klien"/>
               </Properties>
             </Component>
           </SubComponents>

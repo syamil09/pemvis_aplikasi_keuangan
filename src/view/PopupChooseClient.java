@@ -5,13 +5,21 @@
 package view;
 
 import components.CustomTable;
+import controller.AccountController;
+import controller.ClientController;
 import controller.ProjectController;
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.List;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.table.DefaultTableModel;
+import model.Account;
+import model.Client;
 import model.Project;
 
 /**
@@ -20,18 +28,81 @@ import model.Project;
  */
 public class PopupChooseClient extends javax.swing.JFrame {
 
-    ProjectController projectCtr;
+    ClientController clientCtr;
     DefaultTableModel tableModel;
     /**
-     * Creates new form MasterUserForm
+     * Creates new form PopupChooseAccount
      */
     public PopupChooseClient() {
-        projectCtr = new ProjectController();
+        clientCtr = new ClientController();
         tableModel = new DefaultTableModel();
         
         initComponents();
         
         loadDataTable();
+    }
+    
+    // Simple callback interface
+    public interface OnAccountSelectedCallback {
+        void onAccountSelected(Client client);
+    }
+    
+    // Callback instance
+    private OnAccountSelectedCallback callback;
+    
+    /**
+     * Constructor untuk reusable popup
+     * @param callback function yang akan dipanggil saat account dipilih
+     */
+    public PopupChooseClient(OnAccountSelectedCallback callback) {
+        this.callback = callback;
+        
+        clientCtr = new ClientController();
+        tableModel = new DefaultTableModel();
+        
+        initComponents();
+        setupFrame();
+        loadDataTable();
+    }
+    
+        /**
+     * Static method untuk kemudahan penggunaan - cara paling simple
+     * @param callback function yang akan dipanggil saat account dipilih
+     * @return instance PopupChooseAccount
+     */
+    public static PopupChooseClient show(OnAccountSelectedCallback callback) {
+        PopupChooseClient popup = new PopupChooseClient(callback);
+        popup.setVisible(true);
+        return popup;
+    }
+    
+    /**
+     * Static method dengan parent frame untuk positioning
+     * @param parent parent frame untuk posisi
+     * @param callback function yang akan dipanggil saat account dipilih
+     * @return instance PopupChooseAccount
+     */
+    public static PopupChooseClient show(JFrame parent, OnAccountSelectedCallback callback) {
+        PopupChooseClient popup = new PopupChooseClient(callback);
+        popup.setLocationRelativeTo(parent);
+        popup.setVisible(true);
+        return popup;
+    }
+    
+    private void setupFrame() {
+        setTitle("Pilih Klien");
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setSize(850, 400);
+        setLocationRelativeTo(null);
+        setResizable(true);
+        
+        // Optional: Handle window closing
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                // Frame akan otomatis dispose
+            }
+        });
     }
     
     public JPanel getMainPanel() {
@@ -42,70 +113,80 @@ public class PopupChooseClient extends javax.swing.JFrame {
         tableModel = new DefaultTableModel();
         try {
             String cariData = txtCari.getText();
-            List<Project> listproject = projectCtr.getData(cariData);
-            Object[] colums = {"Project_id", "Name", "Budget", "Status", "Aksi"};
+            List<Client> listClient = clientCtr.getData(cariData);
+            Object[] colums = {"Client ID", "Name", "Contact Person", "Email", "Aksi"};
             tableModel.setColumnIdentifiers(colums);
             
             
-            for (Project project : listproject) {
+            for (Client client : listClient) {
                 tableModel.addRow(new Object[]{
-                    project.getProject_id(), 
-                    project.getName(),
-                    project.getBudget().toString(),
-                    project.getStatus(),
+                    client.getClientId(), 
+                    client.getName(),
+                    client.getContactPerson(),
+                    client.getEmail(),
                     "", // tambahkan 1 value kosong untuk kolom button action (edit dan delete)
                 });
             }
             
             customtable1.setModel(tableModel);
-            customtable1.setShowActionButtons(true);
-
-            customtable1.setActionButtonListener(new CustomTable.ActionButtonListener() {
-                @Override
-                public void onEdit(int row, Object[] rowData) {
-                    String Project_id = rowData[0].toString();
-                    showDataToForm(Project_id);
-                }
-
-                @Override
-                public void onDelete(int row, Object[] rowData) {
-                    int result = JOptionPane.showConfirmDialog(null, 
-                        "Delete Project " + rowData[2] + "?", 
-                        "Confirm", 
-                        JOptionPane.YES_NO_OPTION);
-                    if (result == JOptionPane.YES_OPTION) {
-                        customtable1.removeRow(row);
-                    }
-                }
-            });
-        
+            
+            setupTableButtons();
         } catch (Exception e) {
             System.out.println(e);
+            e.printStackTrace();
             JOptionPane.showMessageDialog(null, "data project gagal dipanggil "+e);
         
         } 
     }
     
-    private void showDataToForm(String Project_id) {
-        try {
-            Project project = projectCtr.getProjectById(Project_id);
-            
+    private void setupTableButtons() {
+        // Hide edit and delete buttons, show only custom action button
+        customtable1.setShowActionButtons(false);
+        customtable1.setShowCustomActionButton(true);
+        customtable1.setCustomActionButtonText("Pilih");
+        customtable1.setCustomActionButtonBackgroundColor(new Color(40, 167, 69)); // Green
+        customtable1.setCustomActionButtonTextColor(Color.WHITE);
+        
+        // Set custom action button listener
+        customtable1.setCustomActionButtonListener(new CustomTable.CustomActionButtonListener() {
+            @Override
+            public void onCustomAction(int row, Object[] rowData) {
+                selectAccount(row, rowData);
+            }
+        });
+    }
     
+    private void selectAccount(int row, Object[] rowData) {
+        try {
+            String clientId = rowData[0].toString();
+            Client client = clientCtr.getClientById(clientId);
+            
+            if (client != null) {
+                // Call the callback function
+                if (callback != null) {
+                    callback.onAccountSelected(client);
+                }
+                
+                // Close this popup
+                dispose();
+                
+            } else {
+                JOptionPane.showMessageDialog(this, 
+                    "Account tidak ditemukan!", 
+                    "Error", 
+                    JOptionPane.ERROR_MESSAGE);
+            }
+            
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "data user gagal dipanggil "+e);
+            System.out.println("Error selecting account: " + e.getMessage());
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, 
+                "Error saat memilih account: " + e.getMessage(), 
+                "Error", 
+                JOptionPane.ERROR_MESSAGE);
         }
     }
     
-    private void save() {
-        Project project = new Project();
-
-
-        loadDataTable();
-       
-    }
-    
-    private void resetForm() {
-    }
     
 
     /**
@@ -125,6 +206,8 @@ public class PopupChooseClient extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setAlwaysOnTop(true);
+        setBackground(new java.awt.Color(255, 255, 255));
 
         mainPanel.setOpaque(false);
 
@@ -161,7 +244,7 @@ public class PopupChooseClient extends javax.swing.JFrame {
         });
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel6.setText("Pilih Client");
+        jLabel6.setText("Pilih Akun");
 
         javax.swing.GroupLayout roundedPanel2Layout = new javax.swing.GroupLayout(roundedPanel2);
         roundedPanel2.setLayout(roundedPanel2Layout);
@@ -221,9 +304,7 @@ public class PopupChooseClient extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(mainPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(mainPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
@@ -274,6 +355,54 @@ public class PopupChooseClient extends javax.swing.JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(PopupChooseClient.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>

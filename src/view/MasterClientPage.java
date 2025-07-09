@@ -186,7 +186,7 @@ public class MasterClientPage extends javax.swing.JFrame {
         roundedPanel1.setCustomHasBorder(false);
 
         lblTitleForm.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        lblTitleForm.setText("Tambah Data Client");
+        lblTitleForm.setText("Tambah Data Klien");
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel2.setText("Name : ");
@@ -396,7 +396,7 @@ public class MasterClientPage extends javax.swing.JFrame {
         });
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel6.setText("Data Client");
+        jLabel6.setText("Data Klien");
 
         javax.swing.GroupLayout roundedPanel2Layout = new javax.swing.GroupLayout(roundedPanel2);
         roundedPanel2.setLayout(roundedPanel2Layout);

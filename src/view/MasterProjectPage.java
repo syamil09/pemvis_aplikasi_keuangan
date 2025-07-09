@@ -107,6 +107,7 @@ public class MasterProjectPage extends javax.swing.JFrame {
             btnSimpan.setText("Update");
             txtProjectId.setText(project.getProject_id());
             txtClientId.setText(project.getClient_id());
+            txtClientName.setText(project.getClient_name());
             txtName.setText(project.getName());
             txtStartDate.setDateFromSQLString(project.getStart_date());
             txtEndDate.setDateFromSQLString(project.getEnd_date());
@@ -149,6 +150,7 @@ public class MasterProjectPage extends javax.swing.JFrame {
         txtProjectId.setText("");
         txtProjectId.setEnabled(true);
         txtClientId.setText("");
+        txtClientName.setText("");
         txtName.setText("");
         txtStartDate.setDate(new Date());
         txtStartDate.setDateFromString("");
@@ -208,7 +210,7 @@ public class MasterProjectPage extends javax.swing.JFrame {
         roundedPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         lblTitleForm.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        lblTitleForm.setText("Form Tambah Data Projects");
+        lblTitleForm.setText("Form Tambah Data Proyek");
         roundedPanel1.add(lblTitleForm, new org.netbeans.lib.awtextra.AbsoluteConstraints(23, 20, -1, -1));
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -345,7 +347,7 @@ public class MasterProjectPage extends javax.swing.JFrame {
         });
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel6.setText("Data Projects");
+        jLabel6.setText("Data Proyek");
 
         javax.swing.GroupLayout roundedPanel2Layout = new javax.swing.GroupLayout(roundedPanel2);
         roundedPanel2.setLayout(roundedPanel2Layout);
@@ -459,6 +461,10 @@ public class MasterProjectPage extends javax.swing.JFrame {
 
     private void btnSimpan1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSimpan1ActionPerformed
         // TODO add your handling code here:
+        PopupChooseClient.show(this, client -> {
+            txtClientId.setText(client.getClientId());
+            txtClientName.setText(client.getName());
+        });
     }//GEN-LAST:event_btnSimpan1ActionPerformed
 
     private void txtClientNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtClientNameActionPerformed

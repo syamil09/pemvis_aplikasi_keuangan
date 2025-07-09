@@ -57,12 +57,15 @@ public class ProjectController {
             String sql;
             
             if (searchItem != null && !searchItem.trim().isEmpty()) {
-                sql = "SELECT * FROM projects WHERE " +
-                      "project_id LIKE ? OR " +
-                      "name LIKE ? OR " +
-                      "start_date LIKE ? OR " +
-                      "end_date LIKE ? " +
-                      "ORDER BY project_id";
+                sql = "SELECT p.*, c.name AS client_name FROM projects p " +
+               "LEFT JOIN clients c ON p.client_id = c.client_id " +
+               "WHERE " +
+               "p.project_id LIKE ? OR " +
+               "p.name LIKE ? OR " +
+               "p.start_date LIKE ? OR " +
+               "p.end_date LIKE ? OR " +
+               "c.name LIKE ? " +
+               "ORDER BY p.project_id";
                 ps = conn.prepareStatement(sql);
                 
                 String searchPattern = "%" + searchItem.trim() + "%";
@@ -73,7 +76,9 @@ public class ProjectController {
                 
                 System.out.println("Searching for: " + searchItem);
             } else {
-                sql = "SELECT * FROM projects ORDER BY project_id";
+                sql = "SELECT p.*, c.name AS client_name FROM projects p " +
+                "LEFT JOIN clients c ON p.client_id = c.client_id " +
+                "ORDER BY p.project_id";
                 ps = conn.prepareStatement(sql);
                 System.out.println("Getting all project");
             }
@@ -84,6 +89,7 @@ public class ProjectController {
                 Project project = new Project();
                 project.setProject_id(rs.getString("project_id"));
                 project.setClient_id(rs.getString("client_id"));
+                project.setClient_name(rs.getString("client_name"));
                 project.setName(rs.getString("name"));
                 project.setStart_date(rs.getString("start_date"));
                 project.setEnd_date(rs.getString("end_date"));
@@ -108,7 +114,9 @@ public class ProjectController {
         System.out.println("---- Getting projects by ID: " + project_id + " -----");
         
         try {
-            String sql = "SELECT * FROM projects WHERE project_id = ?";
+            String sql = "SELECT p.*, c.name AS client_name FROM projects p " +
+             "LEFT JOIN clients c ON p.client_id = c.client_id " +
+             "WHERE p.project_id = ?";
             ps = conn.prepareStatement(sql);
             ps.setString(1, project_id);
             
@@ -118,6 +126,7 @@ public class ProjectController {
                 Project project = new Project();
                 project.setProject_id(rs.getString("project_id"));
                 project.setClient_id(rs.getString("client_id"));
+                project.setClient_name(rs.getString("client_name"));
                 project.setName(rs.getString("name"));
                 project.setStart_date(rs.getString("start_date"));
                 project.setEnd_date(rs.getString("end_date"));

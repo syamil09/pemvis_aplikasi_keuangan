@@ -11,11 +11,20 @@ package model;
 public class Project {
     private String project_id;
     private String client_id;
+    private String client_name;
     private String name;
     private String start_date;
     private String end_date;
     private Double budget;
     private String status;
+    
+    public String getClient_name() {
+        return client_name;
+    }
+
+    public void setClient_name(String client_name) {
+        this.client_name = client_name;
+    }
 
     public String getProject_id() {
         return project_id;

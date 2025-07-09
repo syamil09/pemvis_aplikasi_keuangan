@@ -685,8 +685,8 @@ public class DashboardMainFrame extends javax.swing.JFrame {
 
     private void lblPelangganKlienMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblPelangganKlienMousePressed
         // TODO add your handling code here:
-        MasterAccountPage accountFrame = new MasterAccountPage();
-        showContentFromPanel(accountFrame.getMainPanel());
+        MasterClientPage clientFrame = new MasterClientPage();
+        showContentFromPanel(clientFrame.getMainPanel());
     }//GEN-LAST:event_lblPelangganKlienMousePressed
 
     private void lblProyekMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblProyekMousePressed

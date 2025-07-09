@@ -88,7 +88,7 @@ public class ClientController {
                 client.setPaymentTerms(rs.getString("payment_terms"));
                 client.setCreditLimit(rs.getDouble("credit_limit"));
                 listData.add(client);
-                System.out.println("    ClientId: " + rs.getString("ClientId"));
+                System.out.println("    ClientId: " + rs.getString("client_id"));
             }
             
             System.out.println("Found " + listData.size() + " Client");
