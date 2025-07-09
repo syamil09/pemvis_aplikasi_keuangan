@@ -1,0 +1,596 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
+ */
+package view;
+
+import components.CustomTable;
+import controller.ClientController;
+import controller.UserController;
+import java.awt.Container;
+import java.awt.event.KeyEvent;
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.table.DefaultTableModel;
+import model.Client;
+import model.User;
+
+/**
+ *
+ * @author Leonovo
+ */
+public class MasterClientPage extends javax.swing.JFrame {
+
+    ClientController clientCtr;
+    DefaultTableModel tableModel;
+    /**
+     * Creates new form MasterUserForm
+     */
+    public MasterClientPage() {
+        clientCtr = new ClientController();
+        tableModel = new DefaultTableModel();
+        
+        initComponents();
+        
+        loadDataTable();
+    }
+    
+    public JPanel getMainPanel() {
+        return mainPanel;
+    }
+    
+    private void loadDataTable() {
+        tableModel = new DefaultTableModel();
+        try {
+            String cariData = txtCari.getText();
+            List<Client> listClient = clientCtr.getData(cariData);
+            Object[] colums = {"Client ID", "Name", "Contact Person", "Email", "Aksi"};
+            tableModel.setColumnIdentifiers(colums);
+            
+            for (Client client : listClient) {
+                tableModel.addRow(new Object[]{
+                    client.getClientId(), 
+                    client.getName(), 
+                    client.getContactPerson(), 
+                    client.getEmail(), 
+                    "", // tambahkan 1 value kosong untuk kolom button action (edit dan delete)
+                });
+            }
+            
+            customTable1.setModel(tableModel);
+            customTable1.setShowActionButtons(true);
+
+            customTable1.setActionButtonListener(new CustomTable.ActionButtonListener() {
+                @Override
+                public void onEdit(int row, Object[] rowData) {
+                    String userId = rowData[0].toString();
+                    showDataToForm(userId);
+                }
+
+                @Override
+                public void onDelete(int row, Object[] rowData) {
+                    int result = JOptionPane.showConfirmDialog(null, 
+                        "Delete User " + rowData[2] + "?", 
+                        "Confirm", 
+                        JOptionPane.YES_NO_OPTION);
+                    if (result == JOptionPane.YES_OPTION) {
+                        customTable1.removeRow(row);
+                    }
+                }
+            });
+        
+        } catch (Exception e) {
+            System.out.println(e);
+            JOptionPane.showMessageDialog(null, "data user gagal dipanggil "+e);
+        
+        } 
+    }
+    
+    private void showDataToForm(String clientId) {
+        try {
+            Client client = clientCtr.getClientById(clientId);
+            
+            lblTitleForm.setText("Form Edit Data Client");
+            
+            btnSimpan.setText("Update");
+            txtClientId.setText(client.getClientId());
+            txtName.setText(client.getName());
+            txtCredit_Limit.setDoubleValue(client.getCreditLimit());
+            txtContact_Person.setText(client.getContactPerson());
+            txtEmail.setText(client.getEmail());
+            txtPayment_Terms.setText(client.getPaymentTerms());
+            
+            txtClientId.setEnabled(false);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "data user gagal dipanggil "+e);
+        }
+    }
+    
+    private void save() {
+//        User user = new User();
+//        user.setUserId(txtClientId.getText());
+//        user.setUsername(txtName.getText());
+//        user.setContact_Person(txtContact_Person.getText());
+//        user.setPhone(txtPhone.getText());
+//        user.setEmail(txtEmail.getText());
+//        user.setPayment_Terms(txtPayment_Terms.getText());
+//        user.setCredit_Limit(txtCredit_Limit.getText());
+//        
+//        boolean isCreateUser = btnSimpan.getText().equals("Tambah");
+//        
+//        if (isCreateUser) {
+//            String create = userCtr.createUser(user);
+//            JOptionPane.showMessageDialog(null, create);
+//        } else {
+//            String update = userCtr.updateUser(user);
+//            JOptionPane.showMessageDialog(null, update);
+//        }
+
+
+        loadDataTable();
+       
+    }
+    
+    private void resetForm() {
+        txtClientId.setText("");
+        txtClientId.setEnabled(true);
+        txtName.setText("");
+        txtContact_Person.setText("");
+        txtCredit_Limit.setText("");
+        txtCari.setText("");
+        btnSimpan.setText("Tambah");
+        lblTitleForm.setText("Form Tambah Data Pengguna");
+    }
+    
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        mainPanel = new javax.swing.JPanel();
+        roundedPanel1 = new components.RoundedPanel();
+        lblTitleForm = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        txtName = new components.RoundedTextField();
+        txtContact_Person = new components.RoundedTextField();
+        roundedButton2 = new components.RoundedButton();
+        btnSimpan = new components.RoundedButton();
+        jLabel7 = new javax.swing.JLabel();
+        txtClientId = new components.RoundedTextField();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        txtPhone1 = new components.RoundedTextField();
+        txtEmail = new components.RoundedTextField();
+        txtPayment_Terms = new components.RoundedTextField();
+        txtCredit_Limit = new components.RoundedCurrencyField();
+        roundedPanel2 = new components.RoundedPanel();
+        customTable1 = new components.CustomTable();
+        txtCari = new components.RoundedTextField();
+        btnCari = new components.RoundedButton();
+        jLabel6 = new javax.swing.JLabel();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        mainPanel.setOpaque(false);
+
+        roundedPanel1.setCornerRadius(20);
+        roundedPanel1.setCustomHasBorder(false);
+
+        lblTitleForm.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        lblTitleForm.setText("Tambah Data Client");
+
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel2.setText("Name : ");
+
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel3.setText("Contact_Person : ");
+
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel4.setText("Phone : ");
+
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel5.setText("Email : ");
+
+        txtName.setCornerRadius(12);
+        txtName.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtNameActionPerformed(evt);
+            }
+        });
+
+        txtContact_Person.setCornerRadius(12);
+        txtContact_Person.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtContact_PersonActionPerformed(evt);
+            }
+        });
+
+        roundedButton2.setText("⟳ reset form");
+        roundedButton2.setAutoscrolls(true);
+        roundedButton2.setCustomColorScheme(components.RoundedButton.ColorScheme.SECONDARY);
+        roundedButton2.setCustomCornerRadius(20);
+        roundedButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                roundedButton2ActionPerformed(evt);
+            }
+        });
+
+        btnSimpan.setText("Tambah");
+        btnSimpan.setCustomCornerRadius(12);
+        btnSimpan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSimpanActionPerformed(evt);
+            }
+        });
+
+        jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel7.setText("Client Id :");
+
+        txtClientId.setCornerRadius(12);
+        txtClientId.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtClientIdActionPerformed(evt);
+            }
+        });
+
+        jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel8.setText("Payment_Terms : ");
+
+        jLabel9.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel9.setText("Credit_Limit : ");
+
+        txtPhone1.setCornerRadius(12);
+        txtPhone1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtPhone1ActionPerformed(evt);
+            }
+        });
+
+        txtEmail.setCornerRadius(12);
+        txtEmail.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtEmailActionPerformed(evt);
+            }
+        });
+
+        txtPayment_Terms.setCornerRadius(12);
+        txtPayment_Terms.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtPayment_TermsActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout roundedPanel1Layout = new javax.swing.GroupLayout(roundedPanel1);
+        roundedPanel1.setLayout(roundedPanel1Layout);
+        roundedPanel1Layout.setHorizontalGroup(
+            roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(roundedPanel1Layout.createSequentialGroup()
+                .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(roundedPanel1Layout.createSequentialGroup()
+                        .addGap(20, 20, 20)
+                        .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(roundedPanel1Layout.createSequentialGroup()
+                                .addGap(122, 122, 122)
+                                .addComponent(txtClientId, javax.swing.GroupLayout.PREFERRED_SIZE, 249, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(roundedPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel2)
+                                .addGap(75, 75, 75)
+                                .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, 249, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(roundedPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel3)
+                                .addGap(13, 13, 13)
+                                .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(btnSimpan, javax.swing.GroupLayout.DEFAULT_SIZE, 249, Short.MAX_VALUE)
+                                    .addComponent(txtContact_Person, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addGap(57, 57, 57)
+                        .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(roundedPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel4)
+                                .addGap(91, 91, 91)
+                                .addComponent(txtPhone1, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(roundedPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel5)
+                                .addGap(99, 99, 99)
+                                .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addGroup(roundedPanel1Layout.createSequentialGroup()
+                                    .addComponent(jLabel9)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(txtCredit_Limit, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(roundedPanel1Layout.createSequentialGroup()
+                                    .addComponent(jLabel8)
+                                    .addGap(34, 34, 34)
+                                    .addComponent(txtPayment_Terms, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                    .addGroup(roundedPanel1Layout.createSequentialGroup()
+                        .addGap(23, 23, 23)
+                        .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblTitleForm)
+                            .addComponent(jLabel7))
+                        .addGap(605, 605, 605)
+                        .addComponent(roundedButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(20, 20, 20))
+        );
+        roundedPanel1Layout.setVerticalGroup(
+            roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(roundedPanel1Layout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblTitleForm)
+                    .addComponent(roundedButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(txtClientId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel4)
+                        .addComponent(jLabel7))
+                    .addComponent(txtPhone1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(14, 14, 14)
+                .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel2))
+                    .addGroup(roundedPanel1Layout.createSequentialGroup()
+                        .addGap(2, 2, 2)
+                        .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel5))))
+                .addGap(7, 7, 7)
+                .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(roundedPanel1Layout.createSequentialGroup()
+                        .addGap(10, 10, 10)
+                        .addComponent(jLabel3))
+                    .addComponent(txtContact_Person, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(roundedPanel1Layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel8))
+                    .addGroup(roundedPanel1Layout.createSequentialGroup()
+                        .addGap(10, 10, 10)
+                        .addComponent(txtPayment_Terms, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(26, 26, 26)
+                .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtCredit_Limit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel9)
+                    .addComponent(btnSimpan, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(24, 24, 24))
+        );
+
+        roundedPanel2.setCornerRadius(20);
+        roundedPanel2.setHasBorder(false);
+
+        customTable1.setBackground(new java.awt.Color(236, 240, 241));
+        customTable1.setHeaderBackgroundColor(new java.awt.Color(236, 240, 241));
+        customTable1.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                customTable1PropertyChange(evt);
+            }
+        });
+
+        txtCari.setCornerRadius(12);
+        txtCari.setPlaceholder("Cari data ...");
+        txtCari.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtCariActionPerformed(evt);
+            }
+        });
+        txtCari.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtCariKeyPressed(evt);
+            }
+        });
+
+        btnCari.setText("🔍 Cari");
+        btnCari.setCustomCornerRadius(12);
+        btnCari.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCariActionPerformed(evt);
+            }
+        });
+
+        jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel6.setText("Data Client");
+
+        javax.swing.GroupLayout roundedPanel2Layout = new javax.swing.GroupLayout(roundedPanel2);
+        roundedPanel2.setLayout(roundedPanel2Layout);
+        roundedPanel2Layout.setHorizontalGroup(
+            roundedPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(roundedPanel2Layout.createSequentialGroup()
+                .addGap(25, 25, 25)
+                .addGroup(roundedPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(customTable1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(roundedPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel6)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(txtCari, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnCari, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(34, 34, 34))
+        );
+        roundedPanel2Layout.setVerticalGroup(
+            roundedPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, roundedPanel2Layout.createSequentialGroup()
+                .addContainerGap(25, Short.MAX_VALUE)
+                .addGroup(roundedPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(roundedPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(roundedPanel2Layout.createSequentialGroup()
+                            .addGap(6, 6, 6)
+                            .addComponent(jLabel6))
+                        .addComponent(txtCari, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnCari, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(customTable1, javax.swing.GroupLayout.PREFERRED_SIZE, 219, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(37, 37, 37))
+        );
+
+        javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
+        mainPanel.setLayout(mainPanelLayout);
+        mainPanelLayout.setHorizontalGroup(
+            mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(mainPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(roundedPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(mainPanelLayout.createSequentialGroup()
+                .addGap(17, 17, 17)
+                .addComponent(roundedPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        mainPanelLayout.setVerticalGroup(
+            mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(mainPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(roundedPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(36, 36, 36)
+                .addComponent(roundedPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(42, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(mainPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(mainPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 456, Short.MAX_VALUE))
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void txtNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNameActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtNameActionPerformed
+
+    private void customTable1PropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_customTable1PropertyChange
+        // TODO add your handling code here:
+    }//GEN-LAST:event_customTable1PropertyChange
+
+    private void roundedButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_roundedButton2ActionPerformed
+        // TODO add your handling code here:
+        resetForm();
+    }//GEN-LAST:event_roundedButton2ActionPerformed
+
+    private void txtCariActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCariActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtCariActionPerformed
+
+    private void btnSimpanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSimpanActionPerformed
+        // TODO add your handling code here:
+        save();
+        resetForm();
+    }//GEN-LAST:event_btnSimpanActionPerformed
+
+    private void txtClientIdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtClientIdActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtClientIdActionPerformed
+
+    private void btnCariActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCariActionPerformed
+        // TODO add your handling code here:
+        loadDataTable();
+    }//GEN-LAST:event_btnCariActionPerformed
+
+    private void txtCariKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCariKeyPressed
+        // TODO add your handling code here:
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            loadDataTable();
+        }
+    }//GEN-LAST:event_txtCariKeyPressed
+
+    private void txtContact_PersonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtContact_PersonActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtContact_PersonActionPerformed
+
+    private void txtPhone1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPhone1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtPhone1ActionPerformed
+
+    private void txtEmailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtEmailActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtEmailActionPerformed
+
+    private void txtPayment_TermsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPayment_TermsActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtPayment_TermsActionPerformed
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(MasterClientPage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(MasterClientPage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(MasterClientPage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(MasterClientPage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new MasterClientPage().setVisible(true);
+            }
+        });
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private components.RoundedButton btnCari;
+    private components.RoundedButton btnSimpan;
+    private components.CustomTable customTable1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
+    private javax.swing.JLabel lblTitleForm;
+    private javax.swing.JPanel mainPanel;
+    private components.RoundedButton roundedButton2;
+    private components.RoundedPanel roundedPanel1;
+    private components.RoundedPanel roundedPanel2;
+    private components.RoundedTextField txtCari;
+    private components.RoundedTextField txtClientId;
+    private components.RoundedTextField txtContact_Person;
+    private components.RoundedCurrencyField txtCredit_Limit;
+    private components.RoundedTextField txtEmail;
+    private components.RoundedTextField txtName;
+    private components.RoundedTextField txtPayment_Terms;
+    private components.RoundedTextField txtPhone1;
+    // End of variables declaration//GEN-END:variables
+}
