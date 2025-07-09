@@ -41,6 +41,7 @@ public class TransactionCategoryController {
                 return "Data categori gagal ditambah";
             }
         } catch (SQLException e) {
+           e.printStackTrace();
             return "Terjadi error : "+e.getMessage();
         }
     }
@@ -67,12 +68,6 @@ public class TransactionCategoryController {
                     "LEFT JOIN accounts ca ON tc.credit_account_id = ca.account_id " +
                     "WHERE tc.category_id LIKE ? OR tc.name LIKE ? OR tc.debit_account_id LIKE ? OR tc.credit_account_id LIKE ? " +
                     "ORDER BY tc.category_id";
-//                sql = "SELECT * FROM transaction_categories WHERE " +
-//                      "category_id LIKE ? OR " +
-//                      "name LIKE ? OR " +
-//                      "debit_account_id LIKE ? OR " +
-//                      "credit_account_id LIKE ? " +
-//                      "ORDER BY category_id";
                 ps = conn.prepareStatement(sql);
                 
                 String searchPattern = "%" + searchItem.trim() + "%";
@@ -159,6 +154,7 @@ public class TransactionCategoryController {
             }
             
         } catch (SQLException e) {
+            e.printStackTrace();
             System.out.println("Error getting category by ID: " + e.getMessage());
         }
         
@@ -206,48 +202,14 @@ public class TransactionCategoryController {
                 System.out.println("No category found with ID: " + categoryId);
             }
         } catch (SQLException e) {
+            e.printStackTrace();
             System.out.println("Error deleting category: " + e.getMessage());
         }
         return false;
     }
     
     
-    
-    
-    
-    // UTILITY - Get category by type
-    public List<TransactionCategory> getUsersByType(String type) {
-        List<TransactionCategory> listData = new ArrayList<>();
-        System.out.println("---- Getting users by type: " + type + " -----");
-        
-        try {
-            String sql = "SELECT * FROM transaction_categories WHERE type = ? ORDER BY category_id";
-            ps = conn.prepareStatement(sql);
-            ps.setString(1, type);
-            
-            rs = ps.executeQuery();
-            
-            while (rs.next()) {
-                TransactionCategory category = new TransactionCategory();
-                category.setCategoryId(rs.getString("category_id"));
-                category.setNama(rs.getString("name"));
-                category.setDebitAccountId(rs.getString("debit_account_id"));
-                category.setCreditAccountId(rs.getString("credit_account_id"));
-                category.setDescription(rs.getString("description"));
-                listData.add(category);
-            }
-            
-            System.out.println("Found " + listData.size() + " category with type: " + type);
-            
-        } catch (SQLException e) {
-            System.out.println("Error getting category by role: " + e.getMessage());
-        }
-        
-        return listData;
-    }
-    
-    
-    
+   
    
     
     // TESTING - Test all CRUD operations

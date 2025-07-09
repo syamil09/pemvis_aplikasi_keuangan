@@ -204,6 +204,7 @@ public class PopupChooseAccount extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setAlwaysOnTop(true);
+        setBackground(new java.awt.Color(255, 255, 255));
 
         mainPanel.setOpaque(false);
 

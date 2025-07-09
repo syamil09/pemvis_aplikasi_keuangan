@@ -6,8 +6,10 @@ package view;
 
 import components.CustomTable;
 import controller.ProjectController;
+import helper.CurrencyHelper;
 import java.awt.Container;
 import java.awt.event.KeyEvent;
+import java.util.Date;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -43,23 +45,33 @@ public class MasterProjectPage extends javax.swing.JFrame {
         try {
             String cariData = txtCari.getText();
             List<Project> listproject = projectCtr.getData(cariData);
-            Object[] colums = {"Project_id", "Name", "Budget", "Status", "Aksi"};
+            Object[] colums = {"Project ID", "Name", "Budget", "Status", "Aksi"};
             tableModel.setColumnIdentifiers(colums);
+            
+            
             
             
             for (Project project : listproject) {
                 tableModel.addRow(new Object[]{
                     project.getProject_id(), 
                     project.getName(),
-                    project.getBudget().toString(),
+                    CurrencyHelper.formatForTable(project.getBudget(), true),
                     project.getStatus(),
                     "", // tambahkan 1 value kosong untuk kolom button action (edit dan delete)
                 });
             }
-            
             customtable1.setModel(tableModel);
+            
+            CustomTable.ColumnConfig[] configs = {
+                new CustomTable.ColumnConfig(120, CustomTable.ALIGN_CENTER),    //Project ID
+                new CustomTable.ColumnConfig(280, CustomTable.ALIGN_LEFT),     // Name  
+                new CustomTable.ColumnConfig(200, CustomTable.ALIGN_RIGHT),     // Budget
+                new CustomTable.ColumnConfig(120, CustomTable.ALIGN_CENTER),   // Status
+                new CustomTable.ColumnConfig(120, CustomTable.ALIGN_CENTER)    // Aksi
+            };
+            customtable1.setColumnConfigs(configs);
+            
             customtable1.setShowActionButtons(true);
-
             customtable1.setActionButtonListener(new CustomTable.ActionButtonListener() {
                 @Override
                 public void onEdit(int row, Object[] rowData) {
@@ -96,9 +108,9 @@ public class MasterProjectPage extends javax.swing.JFrame {
             txtProjectId.setText(project.getProject_id());
             txtClientId.setText(project.getClient_id());
             txtName.setText(project.getName());
-            txtStartDate.setText(project.getStart_date());
-            txtEndDate.setText(project.getEnd_date());
-            txtBudget.setText(project.getBudget().toString());
+            txtStartDate.setDateFromSQLString(project.getStart_date());
+            txtEndDate.setDateFromSQLString(project.getEnd_date());
+            numberBudget.setDoubleValue(project.getBudget());
             cbStatus.setSelectedItem(project.getStatus());
             
             txtProjectId.setEnabled(false);
@@ -112,9 +124,9 @@ public class MasterProjectPage extends javax.swing.JFrame {
         project.setProject_id(txtProjectId.getText());
         project.setClient_id(txtClientId.getText());
         project.setName(txtName.getText());
-        project.setStart_date(txtStartDate.getText());
-        project.setEnd_date(txtEndDate.getText());
-        project.setBudget(Double.valueOf(txtBudget.getText()));
+        project.setStart_date(txtStartDate.getDateSQLString());
+        project.setEnd_date(txtEndDate.getDateSQLString());
+        project.setBudget(numberBudget.getDoubleValue());
         project.setStatus(cbStatus.getSelectedItem().toString());
         
         
@@ -138,11 +150,13 @@ public class MasterProjectPage extends javax.swing.JFrame {
         txtProjectId.setEnabled(true);
         txtClientId.setText("");
         txtName.setText("");
-        txtStartDate.setText("");
+        txtStartDate.setDate(new Date());
+        txtStartDate.setDateFromString("");
         cbStatus.setSelectedIndex(0);
         txtCari.setText("");
-        txtEndDate.setText("");
-        txtBudget.setText("");
+        txtEndDate.setDate(new Date());
+        txtEndDate.setDateFromString("");
+        numberBudget.setText("");
         btnSimpan.setText("Tambah");
         lblTitleForm.setText("Form Tambah Data Project");
     }
@@ -166,18 +180,19 @@ public class MasterProjectPage extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         txtClientId = new components.RoundedTextField();
         txtName = new components.RoundedTextField();
-        txtStartDate = new components.RoundedTextField();
         cbStatus = new components.RoundedComboBox();
         roundedButton2 = new components.RoundedButton();
         btnSimpan = new components.RoundedButton();
         jLabel7 = new javax.swing.JLabel();
         txtProjectId = new components.RoundedTextField();
-        txtEndDate = new components.RoundedTextField();
         jLabel8 = new javax.swing.JLabel();
-        txtBudget = new components.RoundedTextField();
         jLabel9 = new javax.swing.JLabel();
         btnSimpan1 = new components.RoundedButton();
         txtClientName = new components.RoundedTextField();
+        txtStartDate = new components.CustomCalendar();
+        txtEndDate = new components.CustomCalendar();
+        numberBudget = new components.RoundedCurrencyField();
+        filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 32767));
         roundedPanel2 = new components.RoundedPanel();
         customtable1 = new components.CustomTable();
         txtCari = new components.RoundedTextField();
@@ -190,21 +205,27 @@ public class MasterProjectPage extends javax.swing.JFrame {
 
         roundedPanel1.setCornerRadius(20);
         roundedPanel1.setCustomHasBorder(false);
+        roundedPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         lblTitleForm.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         lblTitleForm.setText("Form Tambah Data Projects");
+        roundedPanel1.add(lblTitleForm, new org.netbeans.lib.awtextra.AbsoluteConstraints(23, 20, -1, -1));
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel2.setText("Client ID : ");
+        roundedPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(23, 171, -1, -1));
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel3.setText("Project Name : ");
+        roundedPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(23, 123, -1, -1));
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel4.setText("Start Date : ");
+        roundedPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(479, 76, -1, -1));
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel5.setText("End Date : ");
+        roundedPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(479, 118, -1, -1));
 
         txtClientId.setCornerRadius(12);
         txtClientId.addActionListener(new java.awt.event.ActionListener() {
@@ -212,19 +233,15 @@ public class MasterProjectPage extends javax.swing.JFrame {
                 txtClientIdActionPerformed(evt);
             }
         });
+        roundedPanel1.add(txtClientId, new org.netbeans.lib.awtextra.AbsoluteConstraints(128, 166, 227, -1));
 
         txtName.setCornerRadius(12);
-
-        txtStartDate.setCornerRadius(12);
-        txtStartDate.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtStartDateActionPerformed(evt);
-            }
-        });
+        roundedPanel1.add(txtName, new org.netbeans.lib.awtextra.AbsoluteConstraints(128, 118, 281, -1));
 
         cbStatus.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "completed", "ongoing", "planning" }));
         cbStatus.setCornerRadius(12);
         cbStatus.setDoubleBuffered(true);
+        roundedPanel1.add(cbStatus, new org.netbeans.lib.awtextra.AbsoluteConstraints(558, 212, 302, -1));
 
         roundedButton2.setText("⟳ reset form");
         roundedButton2.setAutoscrolls(true);
@@ -235,6 +252,7 @@ public class MasterProjectPage extends javax.swing.JFrame {
                 roundedButton2ActionPerformed(evt);
             }
         });
+        roundedPanel1.add(roundedButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(729, 20, -1, 33));
 
         btnSimpan.setText("Tambah");
         btnSimpan.setCustomCornerRadius(12);
@@ -243,9 +261,11 @@ public class MasterProjectPage extends javax.swing.JFrame {
                 btnSimpanActionPerformed(evt);
             }
         });
+        roundedPanel1.add(btnSimpan, new org.netbeans.lib.awtextra.AbsoluteConstraints(128, 267, 281, 39));
 
         jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel7.setText("Project ID :");
+        roundedPanel1.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(23, 76, -1, -1));
 
         txtProjectId.setCornerRadius(12);
         txtProjectId.addActionListener(new java.awt.event.ActionListener() {
@@ -253,35 +273,25 @@ public class MasterProjectPage extends javax.swing.JFrame {
                 txtProjectIdActionPerformed(evt);
             }
         });
-
-        txtEndDate.setCornerRadius(12);
-        txtEndDate.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtEndDateActionPerformed(evt);
-            }
-        });
+        roundedPanel1.add(txtProjectId, new org.netbeans.lib.awtextra.AbsoluteConstraints(128, 71, 281, -1));
 
         jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel8.setText("Budget : ");
-
-        txtBudget.setCornerRadius(12);
-        txtBudget.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtBudgetActionPerformed(evt);
-            }
-        });
+        roundedPanel1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(479, 165, -1, -1));
 
         jLabel9.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel9.setText("Status : ");
+        roundedPanel1.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(479, 219, -1, -1));
 
-        btnSimpan1.setText("Cari Client");
-        btnSimpan1.setCustomColorScheme(components.RoundedButton.ColorScheme.SECONDARY);
+        btnSimpan1.setText("🔍");
+        btnSimpan1.setCustomColorScheme(components.RoundedButton.ColorScheme.PRIMARY);
         btnSimpan1.setCustomCornerRadius(12);
         btnSimpan1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnSimpan1ActionPerformed(evt);
             }
         });
+        roundedPanel1.add(btnSimpan1, new org.netbeans.lib.awtextra.AbsoluteConstraints(361, 165, 48, 33));
 
         txtClientName.setEditable(false);
         txtClientName.setCornerRadius(12);
@@ -290,106 +300,17 @@ public class MasterProjectPage extends javax.swing.JFrame {
                 txtClientNameActionPerformed(evt);
             }
         });
+        roundedPanel1.add(txtClientName, new org.netbeans.lib.awtextra.AbsoluteConstraints(128, 212, 281, -1));
 
-        javax.swing.GroupLayout roundedPanel1Layout = new javax.swing.GroupLayout(roundedPanel1);
-        roundedPanel1.setLayout(roundedPanel1Layout);
-        roundedPanel1Layout.setHorizontalGroup(
-            roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(roundedPanel1Layout.createSequentialGroup()
-                .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(roundedPanel1Layout.createSequentialGroup()
-                        .addGap(23, 23, 23)
-                        .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblTitleForm)
-                            .addGroup(roundedPanel1Layout.createSequentialGroup()
-                                .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel7)
-                                    .addComponent(jLabel3)
-                                    .addComponent(jLabel2))
-                                .addGap(12, 12, 12)
-                                .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addGroup(roundedPanel1Layout.createSequentialGroup()
-                                        .addComponent(txtClientId, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(btnSimpan1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addComponent(txtName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(txtProjectId, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, roundedPanel1Layout.createSequentialGroup()
-                        .addGap(128, 128, 128)
-                        .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtClientName, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 271, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnSimpan, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 271, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(68, 68, 68)
-                .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(roundedPanel1Layout.createSequentialGroup()
-                        .addGap(18, 220, Short.MAX_VALUE)
-                        .addComponent(roundedButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(11, 11, 11))
-                    .addGroup(roundedPanel1Layout.createSequentialGroup()
-                        .addGap(2, 2, 2)
-                        .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel4)
-                            .addComponent(jLabel5)
-                            .addComponent(jLabel8)
-                            .addComponent(jLabel9))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtStartDate, javax.swing.GroupLayout.DEFAULT_SIZE, 270, Short.MAX_VALUE)
-                            .addComponent(txtEndDate, javax.swing.GroupLayout.DEFAULT_SIZE, 270, Short.MAX_VALUE)
-                            .addComponent(txtBudget, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 270, Short.MAX_VALUE)
-                            .addComponent(cbStatus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                .addGap(18, 18, 18))
-        );
-        roundedPanel1Layout.setVerticalGroup(
-            roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(roundedPanel1Layout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(roundedButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblTitleForm))
-                .addGap(18, 18, 18)
-                .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtStartDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel4)
-                    .addComponent(jLabel7)
-                    .addComponent(txtProjectId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(roundedPanel1Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel5)
-                            .addComponent(txtEndDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(roundedPanel1Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel3))))
-                .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(roundedPanel1Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel8)
-                            .addComponent(txtBudget, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(roundedPanel1Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel2)
-                            .addComponent(txtClientId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnSimpan1, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(roundedPanel1Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(txtClientName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnSimpan, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(16, Short.MAX_VALUE))
-                    .addGroup(roundedPanel1Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(cbStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel9))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-        );
+        txtStartDate.setDateFormat("dd MMMM yyyy");
+        txtStartDate.setPlaceholder("Input tanggal mulai");
+        roundedPanel1.add(txtStartDate, new org.netbeans.lib.awtextra.AbsoluteConstraints(558, 71, 302, -1));
+
+        txtEndDate.setDateFormat("dd MMMM yyyy");
+        txtEndDate.setPlaceholder("Input tanggal selesai");
+        roundedPanel1.add(txtEndDate, new org.netbeans.lib.awtextra.AbsoluteConstraints(558, 118, 302, -1));
+        roundedPanel1.add(numberBudget, new org.netbeans.lib.awtextra.AbsoluteConstraints(558, 165, 302, 35));
+        roundedPanel1.add(filler2, new org.netbeans.lib.awtextra.AbsoluteConstraints(413, 71, 60, 255));
 
         roundedPanel2.setCornerRadius(20);
         roundedPanel2.setHasBorder(false);
@@ -433,7 +354,7 @@ public class MasterProjectPage extends javax.swing.JFrame {
             .addGroup(roundedPanel2Layout.createSequentialGroup()
                 .addGap(25, 25, 25)
                 .addGroup(roundedPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(customtable1, javax.swing.GroupLayout.DEFAULT_SIZE, 777, Short.MAX_VALUE)
+                    .addComponent(customtable1, javax.swing.GroupLayout.DEFAULT_SIZE, 819, Short.MAX_VALUE)
                     .addGroup(roundedPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel6)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -491,7 +412,7 @@ public class MasterProjectPage extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(mainPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 559, Short.MAX_VALUE))
+                .addGap(0, 540, Short.MAX_VALUE))
         );
 
         pack();
@@ -514,10 +435,6 @@ public class MasterProjectPage extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtCariActionPerformed
 
-    private void txtStartDateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtStartDateActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtStartDateActionPerformed
-
     private void btnSimpanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSimpanActionPerformed
         // TODO add your handling code here:
         save();
@@ -539,14 +456,6 @@ public class MasterProjectPage extends javax.swing.JFrame {
             loadDataTable();
         }
     }//GEN-LAST:event_txtCariKeyPressed
-
-    private void txtEndDateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtEndDateActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtEndDateActionPerformed
-
-    private void txtBudgetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtBudgetActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtBudgetActionPerformed
 
     private void btnSimpan1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSimpan1ActionPerformed
         // TODO add your handling code here:
@@ -604,6 +513,7 @@ public class MasterProjectPage extends javax.swing.JFrame {
     private components.RoundedButton btnSimpan1;
     private components.RoundedComboBox cbStatus;
     private components.CustomTable customtable1;
+    private javax.swing.Box.Filler filler2;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -614,16 +524,16 @@ public class MasterProjectPage extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel9;
     private javax.swing.JLabel lblTitleForm;
     private javax.swing.JPanel mainPanel;
+    private components.RoundedCurrencyField numberBudget;
     private components.RoundedButton roundedButton2;
     private components.RoundedPanel roundedPanel1;
     private components.RoundedPanel roundedPanel2;
-    private components.RoundedTextField txtBudget;
     private components.RoundedTextField txtCari;
     private components.RoundedTextField txtClientId;
     private components.RoundedTextField txtClientName;
-    private components.RoundedTextField txtEndDate;
+    private components.CustomCalendar txtEndDate;
     private components.RoundedTextField txtName;
     private components.RoundedTextField txtProjectId;
-    private components.RoundedTextField txtStartDate;
+    private components.CustomCalendar txtStartDate;
     // End of variables declaration//GEN-END:variables
 }

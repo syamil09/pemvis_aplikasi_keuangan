@@ -30,7 +30,6 @@ public class MasterTransactionCategoryPage extends javax.swing.JFrame {
         tableModel = new DefaultTableModel();
         
         initComponents();
-        
         loadDataTable();
     }
     
@@ -46,6 +45,8 @@ public class MasterTransactionCategoryPage extends javax.swing.JFrame {
             Object[] colums = {"Category ID", "Nama", "Debit", "Credit", "Description","Aksi"};
             tableModel.setColumnIdentifiers(colums);
             
+            
+            
             for (TransactionCategory category : listCategory) {
                 tableModel.addRow(new Object[]{
                     category.getCategoryId(), 
@@ -58,6 +59,18 @@ public class MasterTransactionCategoryPage extends javax.swing.JFrame {
             }
             
             customTable1.setModel(tableModel);
+            
+            // Atur lebar masing-masing kolom
+            CustomTable.ColumnConfig[] configs = {
+                new CustomTable.ColumnConfig(120, CustomTable.ALIGN_LEFT),    // Category ID
+                new CustomTable.ColumnConfig(200, CustomTable.ALIGN_LEFT),     // Nama  
+                new CustomTable.ColumnConfig(80, 80, 80, CustomTable.ALIGN_CENTER),     // Debit
+                new CustomTable.ColumnConfig(80, 80, 80, CustomTable.ALIGN_CENTER),   // Credit
+                new CustomTable.ColumnConfig(220, CustomTable.ALIGN_CENTER),    // Description
+                new CustomTable.ColumnConfig(80, 80, 80, CustomTable.ALIGN_CENTER)    // Aksi
+            };
+            customTable1.setColumnConfigs(configs);
+
             customTable1.setShowActionButtons(true);
 
             customTable1.setActionButtonListener(new CustomTable.ActionButtonListener() {
@@ -70,17 +83,19 @@ public class MasterTransactionCategoryPage extends javax.swing.JFrame {
                 @Override
                 public void onDelete(int row, Object[] rowData) {
                     int result = JOptionPane.showConfirmDialog(null, 
-                        "Delete Category " + rowData[2] + "?", 
+                        "Delete Category " + rowData[1] + "?", 
                         "Confirm", 
                         JOptionPane.YES_NO_OPTION);
                     if (result == JOptionPane.YES_OPTION) {
+                        String categoryId = rowData[0].toString();
+                        categoryCtr.deleteCategory(categoryId);
                         customTable1.removeRow(row);
                     }
                 }
             });
         
         } catch (Exception e) {
-            System.out.println(e);
+            e.printStackTrace();
             JOptionPane.showMessageDialog(null, "data category gagal dipanggil "+e);
         
         } 
@@ -104,6 +119,7 @@ public class MasterTransactionCategoryPage extends javax.swing.JFrame {
             
             txtCategoriID.setEnabled(false);
         } catch (Exception e) {
+            e.printStackTrace();
             JOptionPane.showMessageDialog(null, "data category gagal dipanggil "+e);
         }
     }
@@ -165,18 +181,17 @@ public class MasterTransactionCategoryPage extends javax.swing.JFrame {
         btnSimpan = new components.RoundedButton();
         jLabel7 = new javax.swing.JLabel();
         txtCategoriID = new components.RoundedTextField();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        txtDescription = new javax.swing.JTextArea();
         roundedPanel3 = new components.RoundedPanel();
         jLabel10 = new javax.swing.JLabel();
         txtCreditAccountID = new components.RoundedTextField();
-        btnCariCreditAccountId = new components.RoundedButton();
         txtCreditAccountName = new components.RoundedTextField();
+        btnCariDebitAccount1 = new components.RoundedButton();
         roundedPanel4 = new components.RoundedPanel();
-        jLabel3 = new javax.swing.JLabel();
         txtDebitAccountID = new components.RoundedTextField();
         btnCariDebitAccount = new components.RoundedButton();
         txtDebitAccountName = new components.RoundedTextField();
+        jLabel3 = new javax.swing.JLabel();
+        txtDescription = new components.RoundedTextArea();
         roundedPanel2 = new components.RoundedPanel();
         customTable1 = new components.CustomTable();
         txtCari = new components.RoundedTextField();
@@ -194,10 +209,10 @@ public class MasterTransactionCategoryPage extends javax.swing.JFrame {
         lblTitleForm.setText("Form Tambah Data Kategori");
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel2.setText("Name");
+        jLabel2.setText("Name : ");
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel5.setText("Description");
+        jLabel5.setText("Description : ");
 
         txtName.setCornerRadius(12);
         txtName.addActionListener(new java.awt.event.ActionListener() {
@@ -225,7 +240,7 @@ public class MasterTransactionCategoryPage extends javax.swing.JFrame {
         });
 
         jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel7.setText("Categori ID");
+        jLabel7.setText("Category ID :");
 
         txtCategoriID.setCornerRadius(12);
         txtCategoriID.addActionListener(new java.awt.event.ActionListener() {
@@ -234,14 +249,10 @@ public class MasterTransactionCategoryPage extends javax.swing.JFrame {
             }
         });
 
-        txtDescription.setColumns(20);
-        txtDescription.setRows(5);
-        jScrollPane1.setViewportView(txtDescription);
-
         roundedPanel3.setCustomHasBorder(false);
 
         jLabel10.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel10.setText("Credit Account ID");
+        jLabel10.setText("Credit Account ID : ");
 
         txtCreditAccountID.setCornerRadius(12);
         txtCreditAccountID.addActionListener(new java.awt.event.ActionListener() {
@@ -250,56 +261,57 @@ public class MasterTransactionCategoryPage extends javax.swing.JFrame {
             }
         });
 
-        btnCariCreditAccountId.setText("Cari Account");
-        btnCariCreditAccountId.setCustomColorScheme(components.RoundedButton.ColorScheme.PRIMARY);
-        btnCariCreditAccountId.setCustomCornerRadius(12);
-        btnCariCreditAccountId.addActionListener(new java.awt.event.ActionListener() {
+        txtCreditAccountName.setEditable(false);
+        txtCreditAccountName.setCornerRadius(12);
+        txtCreditAccountName.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCariCreditAccountIdActionPerformed(evt);
+                txtCreditAccountNameActionPerformed(evt);
             }
         });
 
-        txtCreditAccountName.setEditable(false);
-        txtCreditAccountName.setCornerRadius(12);
+        btnCariDebitAccount1.setText("🔍");
+        btnCariDebitAccount1.setCustomColorScheme(components.RoundedButton.ColorScheme.PRIMARY);
+        btnCariDebitAccount1.setCustomCornerRadius(12);
+        btnCariDebitAccount1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCariDebitAccount1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout roundedPanel3Layout = new javax.swing.GroupLayout(roundedPanel3);
         roundedPanel3.setLayout(roundedPanel3Layout);
         roundedPanel3Layout.setHorizontalGroup(
             roundedPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(roundedPanel3Layout.createSequentialGroup()
-                .addContainerGap()
+                .addContainerGap(27, Short.MAX_VALUE)
                 .addComponent(jLabel10)
-                .addGap(19, 19, 19)
-                .addGroup(roundedPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtCreditAccountName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(27, 27, 27)
+                .addGroup(roundedPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(roundedPanel3Layout.createSequentialGroup()
-                        .addComponent(txtCreditAccountID, javax.swing.GroupLayout.DEFAULT_SIZE, 139, Short.MAX_VALUE)
+                        .addComponent(txtCreditAccountID, javax.swing.GroupLayout.PREFERRED_SIZE, 213, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnCariCreditAccountId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(btnCariDebitAccount1, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtCreditAccountName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         roundedPanel3Layout.setVerticalGroup(
             roundedPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(roundedPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(roundedPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(roundedPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(txtCreditAccountID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(btnCariCreditAccountId, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(roundedPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtCreditAccountID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnCariDebitAccount1, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel10))
-                .addGap(15, 15, 15)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtCreditAccountName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(9, Short.MAX_VALUE))
         );
 
         roundedPanel4.setCustomHasBorder(false);
 
-        jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel3.setText("Debit Account ID");
-
         txtDebitAccountID.setCornerRadius(12);
 
-        btnCariDebitAccount.setText("Cari Account");
+        btnCariDebitAccount.setText("🔍");
         btnCariDebitAccount.setCustomColorScheme(components.RoundedButton.ColorScheme.PRIMARY);
         btnCariDebitAccount.setCustomCornerRadius(12);
         btnCariDebitAccount.addActionListener(new java.awt.event.ActionListener() {
@@ -316,20 +328,24 @@ public class MasterTransactionCategoryPage extends javax.swing.JFrame {
             }
         });
 
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel3.setText("Debit Account ID :");
+
         javax.swing.GroupLayout roundedPanel4Layout = new javax.swing.GroupLayout(roundedPanel4);
         roundedPanel4.setLayout(roundedPanel4Layout);
         roundedPanel4Layout.setHorizontalGroup(
             roundedPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(roundedPanel4Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, roundedPanel4Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(roundedPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addComponent(jLabel3)
+                .addGap(26, 26, 26)
+                .addGroup(roundedPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(roundedPanel4Layout.createSequentialGroup()
-                        .addComponent(jLabel3)
-                        .addGap(18, 18, 18)
-                        .addComponent(txtDebitAccountID, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtDebitAccountID, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnCariDebitAccount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(txtDebitAccountName, javax.swing.GroupLayout.PREFERRED_SIZE, 273, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(btnCariDebitAccount, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtDebitAccountName, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 273, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
         );
         roundedPanel4Layout.setVerticalGroup(
             roundedPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -339,10 +355,12 @@ public class MasterTransactionCategoryPage extends javax.swing.JFrame {
                     .addComponent(txtDebitAccountID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnCariDebitAccount, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel3))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtDebitAccountName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(12, Short.MAX_VALUE))
         );
+
+        txtDescription.setBorderThickness(1);
 
         javax.swing.GroupLayout roundedPanel1Layout = new javax.swing.GroupLayout(roundedPanel1);
         roundedPanel1.setLayout(roundedPanel1Layout);
@@ -350,28 +368,28 @@ public class MasterTransactionCategoryPage extends javax.swing.JFrame {
             roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(roundedPanel1Layout.createSequentialGroup()
                 .addGap(23, 23, 23)
-                .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(btnSimpan, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(roundedPanel1Layout.createSequentialGroup()
-                            .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jLabel7)
-                                .addComponent(jLabel2))
-                            .addGap(18, 18, 18)
-                            .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(txtName, javax.swing.GroupLayout.DEFAULT_SIZE, 281, Short.MAX_VALUE)
-                                .addComponent(txtCategoriID, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                        .addGroup(roundedPanel1Layout.createSequentialGroup()
-                            .addComponent(jLabel5)
-                            .addGap(25, 25, 25)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addComponent(lblTitleForm)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 39, Short.MAX_VALUE)
-                .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(roundedPanel1Layout.createSequentialGroup()
+                        .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel7)
+                            .addComponent(jLabel2))
+                        .addGap(18, 18, 18)
+                        .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(txtName, javax.swing.GroupLayout.DEFAULT_SIZE, 281, Short.MAX_VALUE)
+                            .addComponent(txtCategoriID, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(lblTitleForm)
+                    .addGroup(roundedPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel5)
+                        .addGap(18, 18, 18)
+                        .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnSimpan, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(txtDescription, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 17, Short.MAX_VALUE)
+                .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(roundedButton2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(roundedPanel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(roundedPanel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(53, 53, 53))
+                    .addComponent(roundedPanel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(roundedPanel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(17, 17, 17))
         );
         roundedPanel1Layout.setVerticalGroup(
             roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -401,10 +419,10 @@ public class MasterTransactionCategoryPage extends javax.swing.JFrame {
                         .addGap(24, 24, 24)
                         .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel5)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(18, 18, 18)
+                            .addComponent(txtDescription, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
                 .addComponent(btnSimpan, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(22, Short.MAX_VALUE))
+                .addGap(23, 23, 23))
         );
 
         roundedPanel2.setCornerRadius(20);
@@ -461,7 +479,7 @@ public class MasterTransactionCategoryPage extends javax.swing.JFrame {
         roundedPanel2Layout.setVerticalGroup(
             roundedPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, roundedPanel2Layout.createSequentialGroup()
-                .addContainerGap(22, Short.MAX_VALUE)
+                .addContainerGap(18, Short.MAX_VALUE)
                 .addGroup(roundedPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, roundedPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel6)
@@ -477,10 +495,8 @@ public class MasterTransactionCategoryPage extends javax.swing.JFrame {
         mainPanel.setLayout(mainPanelLayout);
         mainPanelLayout.setHorizontalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(mainPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(roundedPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addComponent(roundedPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(roundedPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -489,7 +505,7 @@ public class MasterTransactionCategoryPage extends javax.swing.JFrame {
                 .addComponent(roundedPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(roundedPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(42, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -497,14 +513,14 @@ public class MasterTransactionCategoryPage extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(mainPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(mainPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(mainPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 609, Short.MAX_VALUE))
+                .addGap(0, 7, Short.MAX_VALUE))
         );
 
         pack();
@@ -542,14 +558,6 @@ public class MasterTransactionCategoryPage extends javax.swing.JFrame {
         });
     }//GEN-LAST:event_btnCariDebitAccountActionPerformed
 
-    private void btnCariCreditAccountIdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCariCreditAccountIdActionPerformed
-        // TODO add your handling code here:
-        PopupChooseAccount.show(this, account -> {
-            txtCreditAccountName.setText(account.getName());
-            txtCreditAccountID.setText(account.getAccountId());
-        });
-    }//GEN-LAST:event_btnCariCreditAccountIdActionPerformed
-
     private void txtCreditAccountIDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCreditAccountIDActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtCreditAccountIDActionPerformed
@@ -572,6 +580,18 @@ public class MasterTransactionCategoryPage extends javax.swing.JFrame {
     private void txtNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNameActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtNameActionPerformed
+
+    private void txtCreditAccountNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCreditAccountNameActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtCreditAccountNameActionPerformed
+
+    private void btnCariDebitAccount1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCariDebitAccount1ActionPerformed
+        // TODO add your handling code here:
+        PopupChooseAccount.show(this, account -> {
+            txtCreditAccountName.setText(account.getName());
+            txtCreditAccountID.setText(account.getAccountId());
+        });
+    }//GEN-LAST:event_btnCariDebitAccount1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -617,8 +637,8 @@ public class MasterTransactionCategoryPage extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private components.RoundedButton btnCari;
-    private components.RoundedButton btnCariCreditAccountId;
     private components.RoundedButton btnCariDebitAccount;
+    private components.RoundedButton btnCariDebitAccount1;
     private components.RoundedButton btnSimpan;
     private components.CustomTable customTable1;
     private javax.swing.JLabel jLabel10;
@@ -627,7 +647,6 @@ public class MasterTransactionCategoryPage extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblTitleForm;
     private javax.swing.JPanel mainPanel;
     private components.RoundedButton roundedButton2;
@@ -641,7 +660,7 @@ public class MasterTransactionCategoryPage extends javax.swing.JFrame {
     private components.RoundedTextField txtCreditAccountName;
     private components.RoundedTextField txtDebitAccountID;
     private components.RoundedTextField txtDebitAccountName;
-    private javax.swing.JTextArea txtDescription;
+    private components.RoundedTextArea txtDescription;
     private components.RoundedTextField txtName;
     // End of variables declaration//GEN-END:variables
 }
