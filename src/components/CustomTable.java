@@ -35,6 +35,17 @@ public class CustomTable extends JPanel implements Serializable {
     private Color customActionButtonTextColor = Color.WHITE;
     private CustomActionButtonListener customActionButtonListener;
     
+    // NEW: Column configuration properties
+    private int[] columnWidths = null;
+    private int[] columnAlignments = null;
+    private int[] columnMinWidths = null;
+    private int[] columnMaxWidths = null;
+    
+    // Constants for alignment
+    public static final int ALIGN_LEFT = SwingConstants.LEFT;
+    public static final int ALIGN_CENTER = SwingConstants.CENTER;
+    public static final int ALIGN_RIGHT = SwingConstants.RIGHT;
+    
     // Components
     private JTable table;
     private DefaultTableModel model;
@@ -389,21 +400,41 @@ public class CustomTable extends JPanel implements Serializable {
                 
                 if (columnName == null) continue;
                 
-                // Set preferred widths based on column name
-                String lowerColumnName = columnName.toLowerCase();
-                if (lowerColumnName.contains("id")) {
-                    column.setPreferredWidth(80);
-                } else if (lowerColumnName.contains("username") || 
-                          lowerColumnName.contains("role")) {
-                    column.setPreferredWidth(120);
-                } else if (lowerColumnName.contains("name") || 
-                          lowerColumnName.contains("email")) {
-                    column.setPreferredWidth(200);
-                } else if (lowerColumnName.contains("aksi") || 
-                          lowerColumnName.contains("action")) {
-                    column.setPreferredWidth(150); // Increased for custom button
+                // Apply custom widths if set
+                if (columnWidths != null && i < columnWidths.length && columnWidths[i] > 0) {
+                    column.setPreferredWidth(columnWidths[i]);
                 } else {
-                    column.setPreferredWidth(150);
+                    // Default width based on column name
+                    String lowerColumnName = columnName.toLowerCase();
+                    if (lowerColumnName.contains("id")) {
+                        column.setPreferredWidth(80);
+                    } else if (lowerColumnName.contains("username") || 
+                              lowerColumnName.contains("role")) {
+                        column.setPreferredWidth(120);
+                    } else if (lowerColumnName.contains("name") || 
+                              lowerColumnName.contains("email")) {
+                        column.setPreferredWidth(200);
+                    } else if (lowerColumnName.contains("aksi") || 
+                              lowerColumnName.contains("action")) {
+                        column.setPreferredWidth(150);
+                    } else {
+                        column.setPreferredWidth(150);
+                    }
+                }
+                
+                // Apply min/max widths if set
+                if (columnMinWidths != null && i < columnMinWidths.length && columnMinWidths[i] > 0) {
+                    column.setMinWidth(columnMinWidths[i]);
+                }
+                
+                if (columnMaxWidths != null && i < columnMaxWidths.length && columnMaxWidths[i] > 0) {
+                    column.setMaxWidth(columnMaxWidths[i]);
+                }
+                
+                // Apply custom renderer for alignment (skip action column)
+                if (!columnName.toLowerCase().contains("aksi") && 
+                    !columnName.toLowerCase().contains("action")) {
+                    column.setCellRenderer(new CustomCellRenderer(i));
                 }
             }
         } catch (Exception e) {
@@ -621,6 +652,283 @@ public class CustomTable extends JPanel implements Serializable {
      */
     public CustomActionButtonListener getCustomActionButtonListener() {
         return customActionButtonListener;
+    }
+    
+    // NEW: Column width and alignment methods
+    
+    /**
+     * Sets the preferred widths for all columns
+     * @param widths array of widths for each column (in pixels)
+     */
+    public void setColumnWidths(int[] widths) {
+        this.columnWidths = widths != null ? widths.clone() : null;
+        
+        if (propertySupport != null) {
+            propertySupport.firePropertyChange("columnWidths", null, this.columnWidths);
+        }
+        
+        if (table != null) {
+            autoResizeColumns();
+        }
+    }
+    
+    /**
+     * Gets the column widths array
+     * @return array of column widths
+     */
+    public int[] getColumnWidths() {
+        return columnWidths != null ? columnWidths.clone() : null;
+    }
+    
+    /**
+     * Sets the alignment for all columns
+     * @param alignments array of alignments using CustomTable.ALIGN_LEFT, ALIGN_CENTER, ALIGN_RIGHT
+     */
+    public void setColumnAlignments(int[] alignments) {
+        this.columnAlignments = alignments != null ? alignments.clone() : null;
+        
+        if (propertySupport != null) {
+            propertySupport.firePropertyChange("columnAlignments", null, this.columnAlignments);
+        }
+        
+        if (table != null) {
+            autoResizeColumns();
+        }
+    }
+    
+    /**
+     * Gets the column alignments array
+     * @return array of column alignments
+     */
+    public int[] getColumnAlignments() {
+        return columnAlignments != null ? columnAlignments.clone() : null;
+    }
+    
+    /**
+     * Sets the minimum widths for all columns
+     * @param minWidths array of minimum widths for each column (in pixels)
+     */
+    public void setColumnMinWidths(int[] minWidths) {
+        this.columnMinWidths = minWidths != null ? minWidths.clone() : null;
+        
+        if (propertySupport != null) {
+            propertySupport.firePropertyChange("columnMinWidths", null, this.columnMinWidths);
+        }
+        
+        if (table != null) {
+            autoResizeColumns();
+        }
+    }
+    
+    /**
+     * Gets the column minimum widths array
+     * @return array of column minimum widths
+     */
+    public int[] getColumnMinWidths() {
+        return columnMinWidths != null ? columnMinWidths.clone() : null;
+    }
+    
+    /**
+     * Sets the maximum widths for all columns
+     * @param maxWidths array of maximum widths for each column (in pixels)
+     */
+    public void setColumnMaxWidths(int[] maxWidths) {
+        this.columnMaxWidths = maxWidths != null ? maxWidths.clone() : null;
+        
+        if (propertySupport != null) {
+            propertySupport.firePropertyChange("columnMaxWidths", null, this.columnMaxWidths);
+        }
+        
+        if (table != null) {
+            autoResizeColumns();
+        }
+    }
+    
+    /**
+     * Gets the column maximum widths array
+     * @return array of column maximum widths
+     */
+    public int[] getColumnMaxWidths() {
+        return columnMaxWidths != null ? columnMaxWidths.clone() : null;
+    }
+    
+    /**
+     * Sets width for a specific column
+     * @param columnIndex index of the column
+     * @param width preferred width in pixels
+     */
+    public void setColumnWidth(int columnIndex, int width) {
+        if (columnWidths == null) {
+            columnWidths = new int[columnNames.length];
+            java.util.Arrays.fill(columnWidths, -1); // -1 means auto width
+        }
+        
+        if (columnIndex >= 0 && columnIndex < columnWidths.length) {
+            columnWidths[columnIndex] = width;
+            
+            if (table != null) {
+                autoResizeColumns();
+            }
+        }
+    }
+    
+    /**
+     * Sets alignment for a specific column
+     * @param columnIndex index of the column
+     * @param alignment alignment value (ALIGN_LEFT, ALIGN_CENTER, ALIGN_RIGHT)
+     */
+    public void setColumnAlignment(int columnIndex, int alignment) {
+        if (columnAlignments == null) {
+            columnAlignments = new int[columnNames.length];
+            java.util.Arrays.fill(columnAlignments, ALIGN_LEFT); // Default to left
+        }
+        
+        if (columnIndex >= 0 && columnIndex < columnAlignments.length) {
+            columnAlignments[columnIndex] = alignment;
+            
+            if (table != null) {
+                autoResizeColumns();
+            }
+        }
+    }
+    
+    /**
+     * Utility method to set both width and alignment for a column
+     * @param columnIndex index of the column
+     * @param width preferred width in pixels
+     * @param alignment alignment value
+     */
+    public void setColumnConfig(int columnIndex, int width, int alignment) {
+        setColumnWidth(columnIndex, width);
+        setColumnAlignment(columnIndex, alignment);
+    }
+    
+    /**
+     * Utility method to configure multiple columns at once
+     * @param configs array of ColumnConfig objects
+     */
+    public void setColumnConfigs(ColumnConfig[] configs) {
+        if (configs == null) return;
+        
+        // Initialize arrays if needed
+        if (columnWidths == null) {
+            columnWidths = new int[columnNames.length];
+            java.util.Arrays.fill(columnWidths, -1);
+        }
+        if (columnAlignments == null) {
+            columnAlignments = new int[columnNames.length];
+            java.util.Arrays.fill(columnAlignments, ALIGN_LEFT);
+        }
+        if (columnMinWidths == null) {
+            columnMinWidths = new int[columnNames.length];
+            java.util.Arrays.fill(columnMinWidths, -1);
+        }
+        if (columnMaxWidths == null) {
+            columnMaxWidths = new int[columnNames.length];
+            java.util.Arrays.fill(columnMaxWidths, -1);
+        }
+        
+        // Apply configurations
+        for (int i = 0; i < configs.length && i < columnNames.length; i++) {
+            ColumnConfig config = configs[i];
+            if (config != null) {
+                if (config.width > 0) columnWidths[i] = config.width;
+                if (config.minWidth > 0) columnMinWidths[i] = config.minWidth;
+                if (config.maxWidth > 0) columnMaxWidths[i] = config.maxWidth;
+                columnAlignments[i] = config.alignment;
+            }
+        }
+        
+        if (table != null) {
+            autoResizeColumns();
+        }
+    }
+    
+    /**
+     * Configuration class for column settings
+     */
+    public static class ColumnConfig {
+        public int width = -1;
+        public int minWidth = -1;
+        public int maxWidth = -1;
+        public int alignment = ALIGN_LEFT;
+        
+        public ColumnConfig() {}
+        
+        public ColumnConfig(int width, int alignment) {
+            this.width = width;
+            this.alignment = alignment;
+        }
+        
+        public ColumnConfig(int width, int minWidth, int maxWidth, int alignment) {
+            this.width = width;
+            this.minWidth = minWidth;
+            this.maxWidth = maxWidth;
+            this.alignment = alignment;
+        }
+        
+        // Builder pattern methods for fluent API
+        public ColumnConfig width(int width) {
+            this.width = width;
+            return this;
+        }
+        
+        public ColumnConfig minWidth(int minWidth) {
+            this.minWidth = minWidth;
+            return this;
+        }
+        
+        public ColumnConfig maxWidth(int maxWidth) {
+            this.maxWidth = maxWidth;
+            return this;
+        }
+        
+        public ColumnConfig alignment(int alignment) {
+            this.alignment = alignment;
+            return this;
+        }
+        
+        public ColumnConfig left() { return alignment(ALIGN_LEFT); }
+        public ColumnConfig center() { return alignment(ALIGN_CENTER); }
+        public ColumnConfig right() { return alignment(ALIGN_RIGHT); }
+    }
+    
+    // NEW: Custom renderer that supports alignment and maintains CustomTable styling
+    private class CustomCellRenderer extends DefaultTableCellRenderer {
+        private int columnIndex;
+        
+        public CustomCellRenderer(int columnIndex) {
+            this.columnIndex = columnIndex;
+        }
+        
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                boolean isSelected, boolean hasFocus, int row, int column) {
+            
+            super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            
+            // Set alignment for this column
+            if (columnAlignments != null && columnIndex < columnAlignments.length) {
+                setHorizontalAlignment(columnAlignments[columnIndex]);
+            } else {
+                setHorizontalAlignment(SwingConstants.LEFT); // Default
+            }
+            
+            // Maintain CustomTable styling
+            setForeground(Color.BLACK);
+            setBorder(BorderFactory.createEmptyBorder(0, 15, 0, 15));
+            setFont(tableFont != null ? tableFont : new Font("Segoe UI", Font.PLAIN, 14));
+            
+            if (!isSelected) {
+                if (row % 2 == 0) {
+                    setBackground(Color.WHITE);
+                } else {
+                    setBackground(alternateRowColor != null ? alternateRowColor : new Color(249, 249, 249));
+                }
+            }
+            
+            return this;
+        }
     }
     
     /**
@@ -1355,12 +1663,45 @@ class CustomTableExample extends JFrame {
             {"USR003", "jane_smith", "Jane Smith", "Manager", ""}
         });
         
-        // Enable custom action button only (without edit/delete)
+        // Enable both action buttons and custom action button with column configuration
         customTable.setShowActionButtons(false); // Hide edit/delete buttons
         customTable.setShowCustomActionButton(true);
         customTable.setCustomActionButtonText("Detail");
         customTable.setCustomActionButtonBackgroundColor(new Color(0, 123, 255)); // Blue
         customTable.setCustomActionButtonTextColor(Color.WHITE);
+        
+        // NEW: Configure column widths and alignments
+        customTable.setColumnWidths(new int[]{80, 150, 200, 100, 120}); // ID, Username, Full Name, Role, Aksi
+        customTable.setColumnAlignments(new int[]{
+            CustomTable.ALIGN_CENTER,  // User ID
+            CustomTable.ALIGN_LEFT,    // Username
+            CustomTable.ALIGN_LEFT,    // Full Name
+            CustomTable.ALIGN_CENTER   // Role
+            // Aksi column will be skipped automatically
+        });
+        
+        // Alternative: Using ColumnConfig for more control
+        /*
+        CustomTable.ColumnConfig[] configs = {
+            new CustomTable.ColumnConfig(80, CustomTable.ALIGN_CENTER),    // User ID
+            new CustomTable.ColumnConfig(150, CustomTable.ALIGN_LEFT),     // Username  
+            new CustomTable.ColumnConfig(200, CustomTable.ALIGN_LEFT),     // Full Name
+            new CustomTable.ColumnConfig(100, CustomTable.ALIGN_CENTER),   // Role
+            new CustomTable.ColumnConfig(120, CustomTable.ALIGN_CENTER)    // Aksi
+        };
+        customTable.setColumnConfigs(configs);
+        */
+        
+        // Alternative: Using fluent API
+        /*
+        CustomTable.ColumnConfig[] fluentConfigs = {
+            new CustomTable.ColumnConfig().width(80).center(),     // User ID
+            new CustomTable.ColumnConfig().width(150).left(),      // Username
+            new CustomTable.ColumnConfig().width(200).left(),      // Full Name
+            new CustomTable.ColumnConfig().width(100).center()     // Role
+        };
+        customTable.setColumnConfigs(fluentConfigs);
+        */
         
         // Set listeners
         customTable.setActionButtonListener(new CustomTable.ActionButtonListener() {
