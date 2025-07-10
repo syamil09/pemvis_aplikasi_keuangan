@@ -24,8 +24,8 @@
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
-              <Component id="mainPanel" min="-2" pref="960" max="-2" attributes="0"/>
-              <EmptySpace min="0" pref="116" max="32767" attributes="0"/>
+              <Component id="mainPanel" min="-2" pref="925" max="-2" attributes="0"/>
+              <EmptySpace min="0" pref="135" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -33,7 +33,7 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <Component id="mainPanel" min="-2" max="-2" attributes="0"/>
-              <EmptySpace min="0" pref="358" max="32767" attributes="0"/>
+              <EmptySpace min="0" pref="326" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -47,18 +47,16 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Group type="102" attributes="0">
-                  <EmptySpace max="32767" attributes="0"/>
-                  <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" alignment="1" attributes="0">
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="1" attributes="0">
+                      <Component id="roundedPanel1" alignment="0" pref="0" max="32767" attributes="0"/>
                       <Group type="102" alignment="1" attributes="0">
-                          <Component id="roundedPanel1" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace min="-2" pref="110" max="-2" attributes="0"/>
-                      </Group>
-                      <Group type="102" alignment="1" attributes="0">
+                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                           <Component id="roundedPanel2" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace min="-2" pref="123" max="-2" attributes="0"/>
                       </Group>
                   </Group>
+                  <EmptySpace min="-2" pref="163" max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -84,14 +82,12 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="23" pref="23" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
                           <Group type="102" attributes="0">
                               <Component id="lblTitleForm" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace min="-2" pref="35" max="-2" attributes="0"/>
-                              <Component id="btnSimpan" min="-2" pref="193" max="-2" attributes="0"/>
-                              <EmptySpace min="-2" pref="257" max="-2" attributes="0"/>
+                              <EmptySpace max="32767" attributes="0"/>
                               <Component id="roundedButton2" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" attributes="0">
@@ -99,157 +95,130 @@
                                   <Component id="jLabel7" min="-2" max="-2" attributes="0"/>
                                   <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
                                   <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
+                                  <Component id="jLabel9" min="-2" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace min="8" pref="8" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                  <Component id="txtClientName" alignment="0" max="32767" attributes="0"/>
-                                  <Component id="txtInvoiceId" alignment="0" max="32767" attributes="0"/>
-                                  <Component id="txtInvoiceNumber" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="txtCategoryTranName" max="32767" attributes="0"/>
                                   <Group type="102" alignment="1" attributes="0">
-                                      <Component id="txtClientId" min="-2" pref="139" max="-2" attributes="0"/>
+                                      <Component id="txtCategoryTranId" max="32767" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="btnSearchClient" min="-2" pref="48" max="-2" attributes="0"/>
+                                      <Component id="btnSearchCategorytran" min="-2" pref="48" max="-2" attributes="0"/>
                                   </Group>
+                                  <Component id="txtExpenseId" max="32767" attributes="0"/>
+                                  <Component id="txtExpenseDate" max="32767" attributes="0"/>
+                                  <Component id="txtDesc" max="32767" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="filler2" min="-2" pref="30" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="0" attributes="0">
-                                  <Group type="102" alignment="1" attributes="0">
-                                      <Component id="jLabel11" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace min="-2" pref="25" max="-2" attributes="0"/>
-                                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                          <Group type="102" alignment="1" attributes="0">
-                                              <Component id="txtProjectId" pref="145" max="32767" attributes="0"/>
-                                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                              <Component id="btnSearchProject" min="-2" pref="48" max="-2" attributes="0"/>
-                                          </Group>
-                                          <Component id="txtProjectName" max="32767" attributes="0"/>
-                                      </Group>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="filler3" min="-2" pref="28" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="numberBudget" min="-2" pref="217" max="-2" attributes="0"/>
-                                          <Component id="jLabel8" min="-2" max="-2" attributes="0"/>
-                                      </Group>
+                              <Component id="filler2" min="-2" pref="24" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="1" attributes="0">
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                                      <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
                                   </Group>
                                   <Group type="102" alignment="0" attributes="0">
+                                      <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="jLabel4" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          <Component id="jLabel11" alignment="0" min="-2" max="-2" attributes="0"/>
                                           <Component id="jLabel5" alignment="0" min="-2" max="-2" attributes="0"/>
                                       </Group>
-                                      <EmptySpace min="6" pref="6" max="-2" attributes="0"/>
+                                      <EmptySpace min="31" pref="31" max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="txtEndDate" min="-2" pref="205" max="-2" attributes="0"/>
-                                          <Component id="txtStartDate" alignment="1" min="-2" pref="205" max="-2" attributes="0"/>
+                                          <Group type="102" attributes="0">
+                                              <Component id="txtProjectId" min="-2" pref="314" max="-2" attributes="0"/>
+                                              <EmptySpace max="-2" attributes="0"/>
+                                              <Component id="btnSearchProject" min="-2" pref="48" max="-2" attributes="0"/>
+                                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                          </Group>
+                                          <Component id="numberAmount" alignment="0" max="32767" attributes="0"/>
+                                          <Component id="txtReceiptNumber" alignment="0" max="32767" attributes="0"/>
+                                          <Component id="btnSimpan" max="32767" attributes="0"/>
                                       </Group>
-                                      <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
-                                      <Component id="jLabel10" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                                      <Component id="cbStatus" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" attributes="0">
+                                      <EmptySpace min="-2" pref="120" max="-2" attributes="0"/>
+                                      <Component id="txtProjectName" min="-2" pref="368" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
-                          </Group>
-                          <Group type="102" alignment="1" attributes="0">
-                              <Component id="customTable1" min="-2" pref="402" max="-2" attributes="0"/>
-                              <EmptySpace min="-2" pref="17" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="54" max="-2" attributes="0"/>
                           </Group>
                       </Group>
-                      <EmptySpace pref="16" max="32767" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="filler3" min="-2" pref="28" max="-2" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" attributes="0">
-                      <EmptySpace min="15" pref="15" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="lblTitleForm" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="btnSimpan" alignment="3" min="-2" pref="39" max="-2" attributes="0"/>
-                          </Group>
-                          <Component id="roundedButton2" min="-2" pref="33" max="-2" attributes="0"/>
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace min="-2" pref="13" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="lblTitleForm" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="roundedButton2" alignment="3" min="-2" pref="33" max="-2" attributes="0"/>
                       </Group>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" attributes="0">
-                              <EmptySpace min="-2" pref="23" max="-2" attributes="0"/>
-                              <Component id="jLabel7" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace min="27" pref="27" max="-2" attributes="0"/>
-                              <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace min="28" pref="28" max="-2" attributes="0"/>
-                              <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                          <Group type="102" attributes="0">
-                              <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
-                              <Component id="txtInvoiceId" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace min="14" pref="14" max="-2" attributes="0"/>
-                              <Component id="txtInvoiceNumber" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace min="-2" pref="14" max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="txtClientId" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="btnSearchClient" alignment="3" min="-2" pref="33" max="-2" attributes="0"/>
+                          <Group type="102" alignment="0" attributes="0">
+                              <EmptySpace min="-2" pref="26" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                      <Component id="filler3" pref="206" max="32767" attributes="0"/>
+                                      <Component id="filler2" alignment="0" max="32767" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Group type="103" groupAlignment="3" attributes="0">
+                                          <Component id="jLabel4" alignment="3" min="-2" pref="39" max="-2" attributes="0"/>
+                                          <Component id="txtReceiptNumber" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="3" attributes="0">
+                                          <Component id="jLabel5" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          <Component id="numberAmount" alignment="3" min="-2" pref="35" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="3" attributes="0">
+                                          <Component id="txtProjectId" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          <Component id="jLabel11" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          <Component id="btnSearchProject" alignment="3" min="-2" pref="33" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
+                                      <Component id="txtProjectName" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                                      <Component id="btnSimpan" min="-2" pref="39" max="-2" attributes="0"/>
+                                  </Group>
                               </Group>
-                              <EmptySpace min="13" pref="13" max="-2" attributes="0"/>
-                              <Component id="txtClientName" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
-                              <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                  <Component id="filler3" max="32767" attributes="0"/>
-                                  <Group type="102" attributes="0">
-                                      <Group type="103" groupAlignment="0" attributes="0">
-                                          <Group type="102" attributes="0">
-                                              <Group type="103" groupAlignment="0" attributes="0">
-                                                  <Component id="jLabel4" alignment="0" min="-2" max="-2" attributes="0"/>
-                                                  <Component id="txtStartDate" alignment="0" min="-2" max="-2" attributes="0"/>
-                                              </Group>
-                                              <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
-                                              <Group type="103" groupAlignment="0" attributes="0">
-                                                  <Group type="102" attributes="0">
-                                                      <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
-                                                      <EmptySpace min="-2" pref="15" max="-2" attributes="0"/>
-                                                  </Group>
-                                                  <Component id="txtEndDate" alignment="1" min="-2" max="-2" attributes="0"/>
-                                              </Group>
-                                          </Group>
-                                          <Group type="103" groupAlignment="3" attributes="0">
-                                              <Component id="cbStatus" alignment="3" min="-2" max="-2" attributes="0"/>
-                                              <Component id="jLabel10" alignment="3" min="-2" max="-2" attributes="0"/>
-                                          </Group>
-                                      </Group>
-                                      <Group type="103" groupAlignment="0" attributes="0">
-                                          <Group type="102" attributes="0">
-                                              <Group type="103" groupAlignment="0" attributes="0">
-                                                  <Group type="102" alignment="0" attributes="0">
-                                                      <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
-                                                      <Group type="103" groupAlignment="3" attributes="0">
-                                                          <Component id="txtProjectId" alignment="3" min="-2" max="-2" attributes="0"/>
-                                                          <Component id="btnSearchProject" alignment="3" min="-2" pref="33" max="-2" attributes="0"/>
-                                                      </Group>
-                                                  </Group>
-                                                  <Group type="102" alignment="0" attributes="0">
-                                                      <EmptySpace min="-2" pref="17" max="-2" attributes="0"/>
-                                                      <Component id="jLabel11" min="-2" max="-2" attributes="0"/>
-                                                  </Group>
-                                              </Group>
-                                              <EmptySpace type="separate" max="-2" attributes="0"/>
-                                              <Component id="txtProjectName" min="-2" max="-2" attributes="0"/>
-                                          </Group>
-                                          <Group type="102" alignment="0" attributes="0">
-                                              <EmptySpace min="-2" pref="28" max="-2" attributes="0"/>
-                                              <Component id="jLabel8" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                              <Component id="numberBudget" min="-2" pref="35" max="-2" attributes="0"/>
-                                          </Group>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <EmptySpace min="-2" pref="31" max="-2" attributes="0"/>
+                                      <Component id="jLabel7" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace min="27" pref="27" max="-2" attributes="0"/>
+                                      <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace min="28" pref="28" max="-2" attributes="0"/>
+                                      <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <EmptySpace min="-2" pref="28" max="-2" attributes="0"/>
+                                      <Component id="txtExpenseId" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                      <Component id="txtExpenseDate" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="3" attributes="0">
+                                          <Component id="txtCategoryTranId" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          <Component id="btnSearchCategorytran" alignment="3" min="-2" pref="33" max="-2" attributes="0"/>
                                       </Group>
                                   </Group>
-                                  <Component id="filler2" alignment="0" max="32767" attributes="0"/>
+                              </Group>
+                              <EmptySpace min="-2" pref="13" max="-2" attributes="0"/>
+                              <Component id="txtCategoryTranName" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="22" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="txtDesc" min="-2" pref="86" max="-2" attributes="0"/>
+                                  <Component id="jLabel9" min="-2" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                       </Group>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="customTable1" min="-2" max="-2" attributes="0"/>
                       <EmptySpace pref="19" max="32767" attributes="0"/>
                   </Group>
               </Group>
@@ -261,7 +230,7 @@
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Segoe UI" size="18" style="1"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Form Tambah Data Faktur"/>
+                <Property name="text" type="java.lang.String" value="Form Tambah Data Pengeluaran"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel2">
@@ -269,7 +238,7 @@
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Segoe UI" size="14" style="0"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Client ID : "/>
+                <Property name="text" type="java.lang.String" value="Kategori "/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel3">
@@ -277,7 +246,7 @@
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Segoe UI" size="14" style="0"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Invoice Number"/>
+                <Property name="text" type="java.lang.String" value="Tanggal"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel4">
@@ -285,7 +254,7 @@
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Segoe UI" size="14" style="0"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Dibuat :"/>
+                <Property name="text" type="java.lang.String" value="Nomor Bukti :"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel5">
@@ -293,34 +262,16 @@
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Segoe UI" size="14" style="0"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Jatuh Tempo : "/>
+                <Property name="text" type="java.lang.String" value="Jumlah : "/>
               </Properties>
             </Component>
-            <Component class="components.RoundedTextField" name="txtClientId">
+            <Component class="components.RoundedTextField" name="txtCategoryTranId">
               <Properties>
                 <Property name="cornerRadius" type="int" value="12"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtClientIdActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtCategoryTranIdActionPerformed"/>
               </Events>
-            </Component>
-            <Component class="components.RoundedTextField" name="txtInvoiceNumber">
-              <Properties>
-                <Property name="cornerRadius" type="int" value="12"/>
-              </Properties>
-            </Component>
-            <Component class="components.RoundedComboBox" name="cbStatus">
-              <Properties>
-                <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-                  <StringArray count="3">
-                    <StringItem index="0" value="completed"/>
-                    <StringItem index="1" value="ongoing"/>
-                    <StringItem index="2" value="planning"/>
-                  </StringArray>
-                </Property>
-                <Property name="cornerRadius" type="int" value="12"/>
-                <Property name="doubleBuffered" type="boolean" value="true"/>
-              </Properties>
             </Component>
             <Component class="components.RoundedButton" name="roundedButton2">
               <Properties>
@@ -337,7 +288,7 @@
             </Component>
             <Component class="components.RoundedButton" name="btnSimpan">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Buat Faktur"/>
+                <Property name="text" type="java.lang.String" value="Tambah"/>
                 <Property name="customCornerRadius" type="int" value="12"/>
               </Properties>
               <Events>
@@ -349,26 +300,18 @@
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Segoe UI" size="14" style="0"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Invoice ID :"/>
+                <Property name="text" type="java.lang.String" value="Expense ID :"/>
               </Properties>
             </Component>
-            <Component class="components.RoundedTextField" name="txtInvoiceId">
+            <Component class="components.RoundedTextField" name="txtExpenseId">
               <Properties>
                 <Property name="cornerRadius" type="int" value="12"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtInvoiceIdActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtExpenseIdActionPerformed"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JLabel" name="jLabel8">
-              <Properties>
-                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                  <Font name="Segoe UI" size="14" style="0"/>
-                </Property>
-                <Property name="text" type="java.lang.String" value="Subtotal : "/>
-              </Properties>
-            </Component>
-            <Component class="components.RoundedButton" name="btnSearchClient">
+            <Component class="components.RoundedButton" name="btnSearchCategorytran">
               <Properties>
                 <Property name="text" type="java.lang.String" value="\ud83d\udd0d" containsInvalidXMLChars="true"/>
                 <Property name="customColorScheme" type="components.RoundedButton$ColorScheme" editor="org.netbeans.modules.form.editors.EnumEditor">
@@ -377,31 +320,19 @@
                 <Property name="customCornerRadius" type="int" value="12"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnSearchClientActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnSearchCategorytranActionPerformed"/>
               </Events>
             </Component>
-            <Component class="components.RoundedTextField" name="txtClientName">
+            <Component class="components.RoundedTextField" name="txtCategoryTranName">
               <Properties>
                 <Property name="editable" type="boolean" value="false"/>
                 <Property name="cornerRadius" type="int" value="12"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtClientNameActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtCategoryTranNameActionPerformed"/>
               </Events>
             </Component>
-            <Component class="components.CustomCalendar" name="txtStartDate">
-              <Properties>
-                <Property name="dateFormat" type="java.lang.String" value="dd MMMM yyyy"/>
-                <Property name="placeholder" type="java.lang.String" value="tanggal dibuat"/>
-              </Properties>
-            </Component>
-            <Component class="components.CustomCalendar" name="txtEndDate">
-              <Properties>
-                <Property name="dateFormat" type="java.lang.String" value="dd MMMM yyyy"/>
-                <Property name="placeholder" type="java.lang.String" value="tgl jatuh tempo"/>
-              </Properties>
-            </Component>
-            <Component class="components.RoundedCurrencyField" name="numberBudget">
+            <Component class="components.RoundedCurrencyField" name="numberAmount">
             </Component>
             <Component class="javax.swing.Box$Filler" name="filler2">
               <Properties>
@@ -412,14 +343,6 @@
               <AuxValues>
                 <AuxValue name="classDetails" type="java.lang.String" value="Box.Filler.Glue"/>
               </AuxValues>
-            </Component>
-            <Component class="javax.swing.JLabel" name="jLabel10">
-              <Properties>
-                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                  <Font name="Segoe UI" size="14" style="0"/>
-                </Property>
-                <Property name="text" type="java.lang.String" value="Status : "/>
-              </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel11">
               <Properties>
@@ -468,7 +391,32 @@
                 <AuxValue name="classDetails" type="java.lang.String" value="Box.Filler.Glue"/>
               </AuxValues>
             </Component>
-            <Component class="components.CustomTable" name="customTable1">
+            <Component class="javax.swing.JLabel" name="jLabel9">
+              <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Segoe UI" size="14" style="0"/>
+                </Property>
+                <Property name="text" type="java.lang.String" value="Deskripsi"/>
+              </Properties>
+            </Component>
+            <Component class="components.RoundedTextArea" name="txtDesc">
+              <Properties>
+                <Property name="borderThickness" type="int" value="1"/>
+              </Properties>
+            </Component>
+            <Component class="components.RoundedTextField" name="txtReceiptNumber">
+              <Properties>
+                <Property name="cornerRadius" type="int" value="12"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtReceiptNumberActionPerformed"/>
+              </Events>
+            </Component>
+            <Component class="components.CustomCalendar" name="txtExpenseDate">
+              <Properties>
+                <Property name="dateFormat" type="java.lang.String" value="dd MMMM yyyy"/>
+                <Property name="placeholder" type="java.lang.String" value="tgl pengeluaran"/>
+              </Properties>
             </Component>
           </SubComponents>
         </Container>
@@ -484,16 +432,19 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="25" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="customtable1" pref="894" max="32767" attributes="0"/>
+                          <Group type="102" attributes="0">
+                              <Component id="customtable1" min="-2" pref="882" max="-2" attributes="0"/>
+                              <EmptySpace max="32767" attributes="0"/>
+                          </Group>
                           <Group type="102" attributes="0">
                               <Component id="jLabel6" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="32767" attributes="0"/>
                               <Component id="txtCari" min="-2" pref="157" max="-2" attributes="0"/>
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
                               <Component id="btnCari" min="-2" pref="77" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="34" max="-2" attributes="0"/>
                           </Group>
                       </Group>
-                      <EmptySpace min="-2" pref="34" max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -556,7 +507,7 @@
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Segoe UI" size="18" style="1"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Data Proyek"/>
+                <Property name="text" type="java.lang.String" value="Data Pengeluaran"/>
               </Properties>
             </Component>
           </SubComponents>

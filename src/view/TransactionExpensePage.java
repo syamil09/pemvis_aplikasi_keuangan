@@ -5,6 +5,7 @@
 package view;
 
 import components.CustomTable;
+import controller.ExpenseController;
 import controller.ProjectController;
 import helper.CurrencyHelper;
 import java.awt.Container;
@@ -14,21 +15,22 @@ import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.table.DefaultTableModel;
+import model.Expense;
 import model.Project;
 
 /**
  *
  * @author Leonovo
  */
-public class TransactionInvoicePage extends javax.swing.JFrame {
+public class TransactionExpensePage extends javax.swing.JFrame {
 
-    ProjectController projectCtr;
+    ExpenseController expenseCtr;
     DefaultTableModel tableModel;
     /**
      * Creates new form MasterUserForm
      */
-    public TransactionInvoicePage() {
-        projectCtr = new ProjectController();
+    public TransactionExpensePage() {
+        expenseCtr = new ExpenseController();
         tableModel = new DefaultTableModel();
         
         initComponents();
@@ -43,18 +45,18 @@ public class TransactionInvoicePage extends javax.swing.JFrame {
         tableModel = new DefaultTableModel();
         try {
             String cariData = txtCari.getText();
-            List<Project> listproject = projectCtr.getData(cariData);
-            Object[] colums = {"Project ID", "Name", "Budget", "Status", "Aksi"};
+            List<Expense> listExpense = expenseCtr.getData(cariData);
+            Object[] colums = {"ID", "Description", "Jumlah", "Tanggal", "Aksi"};
             tableModel.setColumnIdentifiers(colums);
             
             
             
-            for (Project project : listproject) {
+            for (Expense project : listExpense) {
                 tableModel.addRow(new Object[]{
-                    project.getProject_id(), 
-                    project.getName(),
-                    CurrencyHelper.formatForTable(project.getBudget(), true),
-                    project.getStatus(),
+                    project.getExpenseId(), 
+                    project.getDescription(),
+                    CurrencyHelper.formatForTable(project.getAmount(), true),
+                    project.getExpenseDate(),
                     "", // tambahkan 1 value kosong untuk kolom button action (edit dan delete)
                 });
             }
@@ -80,7 +82,7 @@ public class TransactionInvoicePage extends javax.swing.JFrame {
                 @Override
                 public void onDelete(int row, Object[] rowData) {
                     int result = JOptionPane.showConfirmDialog(null, 
-                        "Delete Project " + rowData[2] + "?", 
+                        "Hapus Pengeluaran " + rowData[0] + "?", 
                         "Confirm", 
                         JOptionPane.YES_NO_OPTION);
                     if (result == JOptionPane.YES_OPTION) {
@@ -96,46 +98,46 @@ public class TransactionInvoicePage extends javax.swing.JFrame {
         } 
     }
     
-    private void showDataToForm(String Project_id) {
+    private void showDataToForm(String expenseId) {
         try {
-            Project project = projectCtr.getProjectById(Project_id);
+            Expense expense = expenseCtr.getExpenseById(expenseId);
             
             lblTitleForm.setText("Form Edit Data Project");
             
             btnSimpan.setText("Update");
-            txtInvoiceId.setText(project.getProject_id());
-            txtClientId.setText(project.getClient_id());
-            txtClientName.setText(project.getClient_name());
-            txtInvoiceNumber.setText(project.getName());
-            txtStartDate.setDateFromSQLString(project.getStart_date());
-            txtEndDate.setDateFromSQLString(project.getEnd_date());
-            numberBudget.setDoubleValue(project.getBudget());
-            cbStatus.setSelectedItem(project.getStatus());
+            txtExpenseId.setText(expense.getExpenseId());
+            txtCategoryTranId.setText(expense.getCategoryId());
+            txtCategoryTranName.setText(expense.getCategoryName());
+            txtExpenseDate.setDateFromSQLString(expense.getExpenseDate());
+            txtReceiptNumber.setText(expense.getReceiptNumber());
+            txtDesc.setText(expense.getDescription());
+            numberAmount.setDoubleValue(expense.getAmount());
             
-            txtInvoiceId.setEnabled(false);
+            txtExpenseId.setEnabled(false);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "data user gagal dipanggil "+e);
         }
     }
     
     private void save() {
-        Project project = new Project();
-        project.setProject_id(txtInvoiceId.getText());
-        project.setClient_id(txtClientId.getText());
-        project.setName(txtInvoiceNumber.getText());
-        project.setStart_date(txtStartDate.getDateSQLString());
-        project.setEnd_date(txtEndDate.getDateSQLString());
-        project.setBudget(numberBudget.getDoubleValue());
-        project.setStatus(cbStatus.getSelectedItem().toString());
+        Expense expense = new Expense();
+        expense.setExpenseId(txtExpenseId.getText());
+        expense.setCategoryId(txtCategoryTranId.getText());
+        expense.setDescription(txtDesc.getText());
+        expense.setProjectId(txtProjectId.getText());
+        expense.setAmount(numberAmount.getDoubleValue());
+        expense.setExpenseDate(txtExpenseDate.getDateSQLString());
+        expense.setReceiptNumber(txtReceiptNumber.getText());
+        expense.setCreatedBy("");
         
         
         boolean isCreateUser = btnSimpan.getText().equals("Tambah");
         
         if (isCreateUser) {
-            String create = projectCtr.createProject(project);
+            String create = expenseCtr.createExpense(expense);
             JOptionPane.showMessageDialog(null, create);
         } else {
-            String update = projectCtr.updateProject(project);
+            String update = expenseCtr.updateExpense(expense);
             JOptionPane.showMessageDialog(null, update);
         }
 
@@ -145,20 +147,16 @@ public class TransactionInvoicePage extends javax.swing.JFrame {
     }
     
     private void resetForm() {
-        txtInvoiceId.setText("");
-        txtInvoiceId.setEnabled(true);
-        txtClientId.setText("");
-        txtClientName.setText("");
-        txtInvoiceNumber.setText("");
-        txtStartDate.setDate(new Date());
-        txtStartDate.setDateFromString("");
-        cbStatus.setSelectedIndex(0);
+        txtExpenseId.setText("");
+        txtExpenseId.setEnabled(true);
+        txtCategoryTranId.setText("");
+        txtCategoryTranName.setText("");
+        txtExpenseDate.setToday();
         txtCari.setText("");
-        txtEndDate.setDate(new Date());
-        txtEndDate.setDateFromString("");
-        numberBudget.setText("");
+        txtExpenseDate.setDateFromString("");
+        numberAmount.setText("");
         btnSimpan.setText("Tambah");
-        lblTitleForm.setText("Form Tambah Data Project");
+        lblTitleForm.setText("Form Tambah Data Pengeluaran");
     }
     
 
@@ -178,27 +176,24 @@ public class TransactionInvoicePage extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        txtClientId = new components.RoundedTextField();
-        txtInvoiceNumber = new components.RoundedTextField();
-        cbStatus = new components.RoundedComboBox();
+        txtCategoryTranId = new components.RoundedTextField();
         roundedButton2 = new components.RoundedButton();
         btnSimpan = new components.RoundedButton();
         jLabel7 = new javax.swing.JLabel();
-        txtInvoiceId = new components.RoundedTextField();
-        jLabel8 = new javax.swing.JLabel();
-        btnSearchClient = new components.RoundedButton();
-        txtClientName = new components.RoundedTextField();
-        txtStartDate = new components.CustomCalendar();
-        txtEndDate = new components.CustomCalendar();
-        numberBudget = new components.RoundedCurrencyField();
+        txtExpenseId = new components.RoundedTextField();
+        btnSearchCategorytran = new components.RoundedButton();
+        txtCategoryTranName = new components.RoundedTextField();
+        numberAmount = new components.RoundedCurrencyField();
         filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 32767));
-        jLabel10 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
         txtProjectId = new components.RoundedTextField();
         txtProjectName = new components.RoundedTextField();
         btnSearchProject = new components.RoundedButton();
         filler3 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 32767));
-        customTable1 = new components.CustomTable();
+        jLabel9 = new javax.swing.JLabel();
+        txtDesc = new components.RoundedTextArea();
+        txtReceiptNumber = new components.RoundedTextField();
+        txtExpenseDate = new components.CustomCalendar();
         roundedPanel2 = new components.RoundedPanel();
         customtable1 = new components.CustomTable();
         txtCari = new components.RoundedTextField();
@@ -213,32 +208,26 @@ public class TransactionInvoicePage extends javax.swing.JFrame {
         roundedPanel1.setCustomHasBorder(false);
 
         lblTitleForm.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        lblTitleForm.setText("Form Tambah Data Faktur");
+        lblTitleForm.setText("Form Tambah Data Pengeluaran");
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel2.setText("Client ID : ");
+        jLabel2.setText("Kategori ");
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel3.setText("Invoice Number");
+        jLabel3.setText("Tanggal");
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel4.setText("Dibuat :");
+        jLabel4.setText("Nomor Bukti :");
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel5.setText("Jatuh Tempo : ");
+        jLabel5.setText("Jumlah : ");
 
-        txtClientId.setCornerRadius(12);
-        txtClientId.addActionListener(new java.awt.event.ActionListener() {
+        txtCategoryTranId.setCornerRadius(12);
+        txtCategoryTranId.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtClientIdActionPerformed(evt);
+                txtCategoryTranIdActionPerformed(evt);
             }
         });
-
-        txtInvoiceNumber.setCornerRadius(12);
-
-        cbStatus.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "completed", "ongoing", "planning" }));
-        cbStatus.setCornerRadius(12);
-        cbStatus.setDoubleBuffered(true);
 
         roundedButton2.setText("⟳ reset form");
         roundedButton2.setAutoscrolls(true);
@@ -250,7 +239,7 @@ public class TransactionInvoicePage extends javax.swing.JFrame {
             }
         });
 
-        btnSimpan.setText("Buat Faktur");
+        btnSimpan.setText("Tambah");
         btnSimpan.setCustomCornerRadius(12);
         btnSimpan.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -259,43 +248,31 @@ public class TransactionInvoicePage extends javax.swing.JFrame {
         });
 
         jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel7.setText("Invoice ID :");
+        jLabel7.setText("Expense ID :");
 
-        txtInvoiceId.setCornerRadius(12);
-        txtInvoiceId.addActionListener(new java.awt.event.ActionListener() {
+        txtExpenseId.setCornerRadius(12);
+        txtExpenseId.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtInvoiceIdActionPerformed(evt);
+                txtExpenseIdActionPerformed(evt);
             }
         });
 
-        jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel8.setText("Subtotal : ");
-
-        btnSearchClient.setText("🔍");
-        btnSearchClient.setCustomColorScheme(components.RoundedButton.ColorScheme.PRIMARY);
-        btnSearchClient.setCustomCornerRadius(12);
-        btnSearchClient.addActionListener(new java.awt.event.ActionListener() {
+        btnSearchCategorytran.setText("🔍");
+        btnSearchCategorytran.setCustomColorScheme(components.RoundedButton.ColorScheme.PRIMARY);
+        btnSearchCategorytran.setCustomCornerRadius(12);
+        btnSearchCategorytran.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnSearchClientActionPerformed(evt);
+                btnSearchCategorytranActionPerformed(evt);
             }
         });
 
-        txtClientName.setEditable(false);
-        txtClientName.setCornerRadius(12);
-        txtClientName.addActionListener(new java.awt.event.ActionListener() {
+        txtCategoryTranName.setEditable(false);
+        txtCategoryTranName.setCornerRadius(12);
+        txtCategoryTranName.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtClientNameActionPerformed(evt);
+                txtCategoryTranNameActionPerformed(evt);
             }
         });
-
-        txtStartDate.setDateFormat("dd MMMM yyyy");
-        txtStartDate.setPlaceholder("tanggal dibuat");
-
-        txtEndDate.setDateFormat("dd MMMM yyyy");
-        txtEndDate.setPlaceholder("tgl jatuh tempo");
-
-        jLabel10.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel10.setText("Status : ");
 
         jLabel11.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel11.setText("Proyek ID : ");
@@ -324,137 +301,132 @@ public class TransactionInvoicePage extends javax.swing.JFrame {
             }
         });
 
+        jLabel9.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel9.setText("Deskripsi");
+
+        txtDesc.setBorderThickness(1);
+
+        txtReceiptNumber.setCornerRadius(12);
+        txtReceiptNumber.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtReceiptNumberActionPerformed(evt);
+            }
+        });
+
+        txtExpenseDate.setDateFormat("dd MMMM yyyy");
+        txtExpenseDate.setPlaceholder("tgl pengeluaran");
+
         javax.swing.GroupLayout roundedPanel1Layout = new javax.swing.GroupLayout(roundedPanel1);
         roundedPanel1.setLayout(roundedPanel1Layout);
         roundedPanel1Layout.setHorizontalGroup(
             roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(roundedPanel1Layout.createSequentialGroup()
                 .addGap(23, 23, 23)
-                .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(roundedPanel1Layout.createSequentialGroup()
                         .addComponent(lblTitleForm)
-                        .addGap(35, 35, 35)
-                        .addComponent(btnSimpan, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(257, 257, 257)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(roundedButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(roundedPanel1Layout.createSequentialGroup()
                         .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel7)
                             .addComponent(jLabel3)
-                            .addComponent(jLabel2))
-                        .addGap(8, 8, 8)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel9))
+                        .addGap(18, 18, 18)
                         .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(txtClientName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(txtInvoiceId, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(txtInvoiceNumber, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(txtCategoryTranName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, roundedPanel1Layout.createSequentialGroup()
-                                .addComponent(txtClientId, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(txtCategoryTranId, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnSearchClient, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(btnSearchCategorytran, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtExpenseId, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(txtExpenseDate, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(txtDesc, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(filler2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, roundedPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel11)
-                                .addGap(25, 25, 25)
-                                .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, roundedPanel1Layout.createSequentialGroup()
-                                        .addComponent(txtProjectId, javax.swing.GroupLayout.DEFAULT_SIZE, 145, Short.MAX_VALUE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(btnSearchProject, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addComponent(txtProjectName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(filler3, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(numberBudget, javax.swing.GroupLayout.PREFERRED_SIZE, 217, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel8)))
-                            .addGroup(roundedPanel1Layout.createSequentialGroup()
-                                .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel4)
-                                    .addComponent(jLabel5))
-                                .addGap(6, 6, 6)
-                                .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(txtEndDate, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(txtStartDate, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(30, 30, 30)
-                                .addComponent(jLabel10)
+                        .addComponent(filler2, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, roundedPanel1Layout.createSequentialGroup()
                                 .addGap(18, 18, 18)
-                                .addComponent(cbStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, roundedPanel1Layout.createSequentialGroup()
-                        .addComponent(customTable1, javax.swing.GroupLayout.PREFERRED_SIZE, 402, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(17, 17, 17)))
-                .addContainerGap(16, Short.MAX_VALUE))
+                                .addComponent(jLabel4))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, roundedPanel1Layout.createSequentialGroup()
+                                .addGap(18, 18, 18)
+                                .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel11)
+                                    .addComponent(jLabel5))
+                                .addGap(31, 31, 31)
+                                .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(roundedPanel1Layout.createSequentialGroup()
+                                        .addComponent(txtProjectId, javax.swing.GroupLayout.PREFERRED_SIZE, 314, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(btnSearchProject, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(0, 0, Short.MAX_VALUE))
+                                    .addComponent(numberAmount, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(txtReceiptNumber, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(btnSimpan, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                            .addGroup(roundedPanel1Layout.createSequentialGroup()
+                                .addGap(120, 120, 120)
+                                .addComponent(txtProjectName, javax.swing.GroupLayout.PREFERRED_SIZE, 368, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(54, 54, 54)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(filler3, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         roundedPanel1Layout.setVerticalGroup(
             roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(roundedPanel1Layout.createSequentialGroup()
-                .addGap(15, 15, 15)
-                .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(lblTitleForm)
-                        .addComponent(btnSimpan, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(13, 13, 13)
+                .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblTitleForm)
                     .addComponent(roundedButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(roundedPanel1Layout.createSequentialGroup()
-                        .addGap(23, 23, 23)
-                        .addComponent(jLabel7)
-                        .addGap(27, 27, 27)
-                        .addComponent(jLabel3)
-                        .addGap(28, 28, 28)
-                        .addComponent(jLabel2))
-                    .addGroup(roundedPanel1Layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addComponent(txtInvoiceId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(14, 14, 14)
-                        .addComponent(txtInvoiceNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(14, 14, 14)
-                        .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(txtClientId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnSearchClient, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(13, 13, 13)
-                        .addComponent(txtClientName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(roundedPanel1Layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(filler3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(26, 26, 26)
+                        .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(filler3, javax.swing.GroupLayout.DEFAULT_SIZE, 206, Short.MAX_VALUE)
+                                .addComponent(filler2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                             .addGroup(roundedPanel1Layout.createSequentialGroup()
-                                .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(roundedPanel1Layout.createSequentialGroup()
-                                        .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabel4)
-                                            .addComponent(txtStartDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addGroup(roundedPanel1Layout.createSequentialGroup()
-                                                .addComponent(jLabel5)
-                                                .addGap(15, 15, 15))
-                                            .addComponent(txtEndDate, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                    .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(cbStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(jLabel10)))
-                                .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(roundedPanel1Layout.createSequentialGroup()
-                                        .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addGroup(roundedPanel1Layout.createSequentialGroup()
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                                .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                                    .addComponent(txtProjectId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                    .addComponent(btnSearchProject, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                            .addGroup(roundedPanel1Layout.createSequentialGroup()
-                                                .addGap(17, 17, 17)
-                                                .addComponent(jLabel11)))
-                                        .addGap(18, 18, 18)
-                                        .addComponent(txtProjectName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(roundedPanel1Layout.createSequentialGroup()
-                                        .addGap(28, 28, 28)
-                                        .addComponent(jLabel8)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(numberBudget, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                            .addComponent(filler2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                .addGap(18, 18, 18)
-                .addComponent(customTable1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtReceiptNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel5)
+                                    .addComponent(numberAmount, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(txtProjectId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel11)
+                                    .addComponent(btnSearchProject, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(20, 20, 20)
+                                .addComponent(txtProjectName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnSimpan, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGroup(roundedPanel1Layout.createSequentialGroup()
+                        .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(roundedPanel1Layout.createSequentialGroup()
+                                .addGap(31, 31, 31)
+                                .addComponent(jLabel7)
+                                .addGap(27, 27, 27)
+                                .addComponent(jLabel3)
+                                .addGap(28, 28, 28)
+                                .addComponent(jLabel2))
+                            .addGroup(roundedPanel1Layout.createSequentialGroup()
+                                .addGap(28, 28, 28)
+                                .addComponent(txtExpenseId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(txtExpenseDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(txtCategoryTranId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(btnSearchCategorytran, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGap(13, 13, 13)
+                        .addComponent(txtCategoryTranName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(22, 22, 22)
+                        .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtDesc, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel9))))
                 .addContainerGap(19, Short.MAX_VALUE))
         );
 
@@ -491,7 +463,7 @@ public class TransactionInvoicePage extends javax.swing.JFrame {
         });
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel6.setText("Data Proyek");
+        jLabel6.setText("Data Pengeluaran");
 
         javax.swing.GroupLayout roundedPanel2Layout = new javax.swing.GroupLayout(roundedPanel2);
         roundedPanel2.setLayout(roundedPanel2Layout);
@@ -500,14 +472,16 @@ public class TransactionInvoicePage extends javax.swing.JFrame {
             .addGroup(roundedPanel2Layout.createSequentialGroup()
                 .addGap(25, 25, 25)
                 .addGroup(roundedPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(customtable1, javax.swing.GroupLayout.DEFAULT_SIZE, 894, Short.MAX_VALUE)
+                    .addGroup(roundedPanel2Layout.createSequentialGroup()
+                        .addComponent(customtable1, javax.swing.GroupLayout.PREFERRED_SIZE, 882, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(roundedPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel6)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(txtCari, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnCari, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(34, 34, 34))
+                        .addComponent(btnCari, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(34, 34, 34))))
         );
         roundedPanel2Layout.setVerticalGroup(
             roundedPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -529,15 +503,14 @@ public class TransactionInvoicePage extends javax.swing.JFrame {
         mainPanel.setLayout(mainPanelLayout);
         mainPanelLayout.setHorizontalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(mainPanelLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
-                        .addComponent(roundedPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(110, 110, 110))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
-                        .addComponent(roundedPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(123, 123, 123))))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(roundedPanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addGroup(mainPanelLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(roundedPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(163, 163, 163))
         );
         mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -554,14 +527,14 @@ public class TransactionInvoicePage extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(mainPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 960, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 116, Short.MAX_VALUE))
+                .addComponent(mainPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 925, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 135, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(mainPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 358, Short.MAX_VALUE))
+                .addGap(0, 326, Short.MAX_VALUE))
         );
 
         pack();
@@ -587,21 +560,21 @@ public class TransactionInvoicePage extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_txtCariKeyPressed
 
-    private void txtClientNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtClientNameActionPerformed
+    private void txtCategoryTranNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCategoryTranNameActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtClientNameActionPerformed
+    }//GEN-LAST:event_txtCategoryTranNameActionPerformed
 
-    private void btnSearchClientActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchClientActionPerformed
+    private void btnSearchCategorytranActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchCategorytranActionPerformed
         // TODO add your handling code here:
-        PopupChooseClient.show(this, client -> {
-            txtClientId.setText(client.getClientId());
-            txtClientName.setText(client.getName());
+        PopupChooseTransCategory.show(this, category -> {
+            txtCategoryTranId.setText(category.getCategoryId());
+            txtCategoryTranName.setText(category.getNama());
         });
-    }//GEN-LAST:event_btnSearchClientActionPerformed
+    }//GEN-LAST:event_btnSearchCategorytranActionPerformed
 
-    private void txtInvoiceIdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtInvoiceIdActionPerformed
+    private void txtExpenseIdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtExpenseIdActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtInvoiceIdActionPerformed
+    }//GEN-LAST:event_txtExpenseIdActionPerformed
 
     private void btnSimpanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSimpanActionPerformed
         // TODO add your handling code here:
@@ -614,9 +587,9 @@ public class TransactionInvoicePage extends javax.swing.JFrame {
         resetForm();
     }//GEN-LAST:event_roundedButton2ActionPerformed
 
-    private void txtClientIdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtClientIdActionPerformed
+    private void txtCategoryTranIdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCategoryTranIdActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtClientIdActionPerformed
+    }//GEN-LAST:event_txtCategoryTranIdActionPerformed
 
     private void txtProjectIdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtProjectIdActionPerformed
         // TODO add your handling code here:
@@ -635,6 +608,10 @@ public class TransactionInvoicePage extends javax.swing.JFrame {
         
     }//GEN-LAST:event_btnSearchProjectActionPerformed
 
+    private void txtReceiptNumberActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtReceiptNumberActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtReceiptNumberActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -652,14 +629,30 @@ public class TransactionInvoicePage extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(TransactionInvoicePage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(TransactionExpensePage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(TransactionInvoicePage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(TransactionExpensePage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(TransactionInvoicePage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(TransactionExpensePage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(TransactionInvoicePage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(TransactionExpensePage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>
@@ -680,22 +673,19 @@ public class TransactionInvoicePage extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new TransactionInvoicePage().setVisible(true);
+                new TransactionExpensePage().setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private components.RoundedButton btnCari;
-    private components.RoundedButton btnSearchClient;
+    private components.RoundedButton btnSearchCategorytran;
     private components.RoundedButton btnSearchProject;
     private components.RoundedButton btnSimpan;
-    private components.RoundedComboBox cbStatus;
-    private components.CustomTable customTable1;
     private components.CustomTable customtable1;
     private javax.swing.Box.Filler filler2;
     private javax.swing.Box.Filler filler3;
-    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -703,21 +693,21 @@ public class TransactionInvoicePage extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JLabel lblTitleForm;
     private javax.swing.JPanel mainPanel;
-    private components.RoundedCurrencyField numberBudget;
+    private components.RoundedCurrencyField numberAmount;
     private components.RoundedButton roundedButton2;
     private components.RoundedPanel roundedPanel1;
     private components.RoundedPanel roundedPanel2;
     private components.RoundedTextField txtCari;
-    private components.RoundedTextField txtClientId;
-    private components.RoundedTextField txtClientName;
-    private components.CustomCalendar txtEndDate;
-    private components.RoundedTextField txtInvoiceId;
-    private components.RoundedTextField txtInvoiceNumber;
+    private components.RoundedTextField txtCategoryTranId;
+    private components.RoundedTextField txtCategoryTranName;
+    private components.RoundedTextArea txtDesc;
+    private components.CustomCalendar txtExpenseDate;
+    private components.RoundedTextField txtExpenseId;
     private components.RoundedTextField txtProjectId;
     private components.RoundedTextField txtProjectName;
-    private components.CustomCalendar txtStartDate;
+    private components.RoundedTextField txtReceiptNumber;
     // End of variables declaration//GEN-END:variables
 }

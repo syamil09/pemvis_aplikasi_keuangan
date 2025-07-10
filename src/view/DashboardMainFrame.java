@@ -462,6 +462,11 @@ public class DashboardMainFrame extends javax.swing.JFrame {
         lblFakturPenjualan.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 20, 5, 10));
         lblFakturPenjualan.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         lblFakturPenjualan.setOpaque(true);
+        lblFakturPenjualan.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                lblFakturPenjualanMousePressed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 9;
@@ -476,6 +481,11 @@ public class DashboardMainFrame extends javax.swing.JFrame {
         lblPengeluaran.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 20, 5, 10));
         lblPengeluaran.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         lblPengeluaran.setOpaque(true);
+        lblPengeluaran.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                lblPengeluaranMousePressed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 10;
@@ -729,6 +739,18 @@ public class DashboardMainFrame extends javax.swing.JFrame {
         LoginForm loginForm = new LoginForm();
         loginForm.setVisible(true);
     }//GEN-LAST:event_roundedButton3ActionPerformed
+
+    private void lblFakturPenjualanMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblFakturPenjualanMousePressed
+        // TODO add your handling code here:
+        TransactionInvoicePage projectFrame = new TransactionInvoicePage();
+        showContentFromPanel(projectFrame.getMainPanel());
+    }//GEN-LAST:event_lblFakturPenjualanMousePressed
+
+    private void lblPengeluaranMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblPengeluaranMousePressed
+        // TODO add your handling code here:
+        TransactionExpensePage projectFrame = new TransactionExpensePage();
+        showContentFromPanel(projectFrame.getMainPanel());
+    }//GEN-LAST:event_lblPengeluaranMousePressed
 
     /**
      * @param args the command line arguments
