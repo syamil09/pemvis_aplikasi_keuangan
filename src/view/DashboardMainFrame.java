@@ -35,6 +35,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.WindowConstants;
 import constant.PageMenu;
+import helper.SessionHelper;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
@@ -53,6 +54,7 @@ public class DashboardMainFrame extends javax.swing.JFrame {
     
     PageMenu selectedMenu = null;
     HashMap<PageMenu, JLabel> pageMenuMap = new HashMap<>();
+    SessionHelper session = SessionHelper.getInstance();
 
     /**
      * Creates new form DashboardForm
@@ -69,7 +71,21 @@ public class DashboardMainFrame extends javax.swing.JFrame {
         initActionPageMenu();
         
         makeMainContentScrollable();
+        validateMenuBasedOnRole();
         
+    }
+    
+    private void validateMenuBasedOnRole() {
+        if (session.getCurrentUser() != null) {
+            lblWelcome.setText("Selamat datang, "+session.getFullName());
+            if (session.isAdmin()) {
+                showMenu(PageMenu.PENGGUNA);
+            } else {
+                hideMenu(PageMenu.PENGGUNA);
+            }
+        } else {
+            lblWelcome.setText("Anda belum login");
+        }
     }
     
     private void makeMainContentScrollable() {
@@ -104,7 +120,13 @@ public class DashboardMainFrame extends javax.swing.JFrame {
         }
     }
 
-
+    private void hideMenu(PageMenu menu) {
+        getMenuLabel(menu).setVisible(false);
+    }
+    
+    private void showMenu(PageMenu menu) {
+        getMenuLabel(menu).setVisible(true);
+    }
     
     private JLabel getMenuLabel(PageMenu menu) {
         return pageMenuMap.get(menu);
@@ -554,6 +576,11 @@ public class DashboardMainFrame extends javax.swing.JFrame {
         roundedButton3.setMaximumSize(new java.awt.Dimension(100, 50));
         roundedButton3.setMinimumSize(new java.awt.Dimension(100, 50));
         roundedButton3.setPreferredSize(new java.awt.Dimension(180, 60));
+        roundedButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                roundedButton3ActionPerformed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 17;
@@ -571,7 +598,7 @@ public class DashboardMainFrame extends javax.swing.JFrame {
         lblWelcome.setText("Selamat datang, Hanif Maulana!");
         panelTopBar.add(lblWelcome, java.awt.BorderLayout.CENTER);
 
-        lblUserProfile.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        lblUserProfile.setFont(new java.awt.Font("Segoe UI Emoji", 1, 24)); // NOI18N
         lblUserProfile.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         lblUserProfile.setText("👤 ");
         lblUserProfile.setToolTipText("Profil Pengguna");
@@ -694,6 +721,14 @@ public class DashboardMainFrame extends javax.swing.JFrame {
         MasterProjectPage projectFrame = new MasterProjectPage();
         showContentFromPanel(projectFrame.getMainPanel());
     }//GEN-LAST:event_lblProyekMousePressed
+
+    private void roundedButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_roundedButton3ActionPerformed
+        // TODO add your handling code here:
+        session.logout();
+        this.dispose();
+        LoginForm loginForm = new LoginForm();
+        loginForm.setVisible(true);
+    }//GEN-LAST:event_roundedButton3ActionPerformed
 
     /**
      * @param args the command line arguments

@@ -6,20 +6,22 @@ package view;
 import java.sql.*;
 import javax.swing.JOptionPane;
 import connection.DBConnection;
+import controller.UserController;
+import helper.SessionHelper;
+import model.LoginResult;
 
 /**
  *
  * @author Leonovo
  */
 public class LoginForm extends javax.swing.JFrame {
-    private Connection conn = new DBConnection().getConnection();
-    private PreparedStatement pstmt = null;
-    private ResultSet rs = null;
+    UserController userCtr;
 
     /**
      * Creates new form LoginForm
      */
     public LoginForm() {
+        userCtr = new UserController();
         initComponents();
     }
 
@@ -41,6 +43,7 @@ public class LoginForm extends javax.swing.JFrame {
         buttonLogin = new components.RoundedButton();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -69,6 +72,7 @@ public class LoginForm extends javax.swing.JFrame {
         jLabel2.setText("Password");
 
         buttonLogin.setText("Login");
+        buttonLogin.setCustomCornerRadius(14);
         buttonLogin.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonLoginActionPerformed(evt);
@@ -77,12 +81,16 @@ public class LoginForm extends javax.swing.JFrame {
 
         jLabel3.setBackground(new java.awt.Color(34, 139, 34));
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(34, 139, 34));
+        jLabel3.setForeground(new java.awt.Color(51, 51, 51));
         jLabel3.setText("Bentang Finance");
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(102, 102, 102));
         jLabel4.setText("Login");
+
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        jLabel5.setForeground(new java.awt.Color(153, 153, 153));
+        jLabel5.setText("Masuk ke akun anda untuk melanjutkan");
 
         javax.swing.GroupLayout roundedPanel1Layout = new javax.swing.GroupLayout(roundedPanel1);
         roundedPanel1.setLayout(roundedPanel1Layout);
@@ -99,18 +107,23 @@ public class LoginForm extends javax.swing.JFrame {
                                 .addComponent(textUsername, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING)
                                 .addComponent(textPass, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING))))
+                                .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING))
+                            .addGroup(roundedPanel1Layout.createSequentialGroup()
+                                .addGap(6, 6, 6)
+                                .addComponent(jLabel5))))
                     .addGroup(roundedPanel1Layout.createSequentialGroup()
                         .addGap(197, 197, 197)
                         .addComponent(jLabel4)))
-                .addContainerGap(79, Short.MAX_VALUE))
+                .addContainerGap(96, Short.MAX_VALUE))
         );
         roundedPanel1Layout.setVerticalGroup(
             roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(roundedPanel1Layout.createSequentialGroup()
-                .addGap(53, 53, 53)
+                .addGap(31, 31, 31)
                 .addComponent(jLabel3)
-                .addGap(29, 29, 29)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel5)
+                .addGap(23, 23, 23)
                 .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel1)
@@ -132,14 +145,14 @@ public class LoginForm extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(91, 91, 91)
                 .addComponent(roundedPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(103, Short.MAX_VALUE))
+                .addContainerGap(100, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(56, 56, 56)
-                .addComponent(roundedPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 425, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(93, Short.MAX_VALUE))
+                .addComponent(roundedPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 453, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(65, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -174,34 +187,38 @@ public class LoginForm extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Username dan Password Tidak Boleh Kosong");
             return;
         }
-        try {
-            String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
-            pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, userName);
-            pstmt.setString(2, password);
-            rs = pstmt.executeQuery();
-            if (rs.next()) {
-                JOptionPane.showMessageDialog(this, "Login Berhasil", "Sukses", JOptionPane.INFORMATION_MESSAGE);
-                DashboardMainFrame dashboardMainFrame = new DashboardMainFrame();
-                dashboardMainFrame.setVisible(true);
-                this.dispose();
-            } else {
-                JOptionPane.showMessageDialog(this, "Username atau Password Salah", "Gagal", JOptionPane.ERROR_MESSAGE);
-            }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Terjadi error pada database: " + e.getMessage(), "Error Database", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-
-        } finally {
-            // 7. Tutup semua resource untuk menghindari memory leak
-//            try {
-//                if (rs != null) rs.close();
-//                if (pstmt != null) pstmt.close();
-//                if (conn != null) conn.close();
-//            } catch (SQLException e) {
-//                e.printStackTrace();
-//            }
+        LoginResult login = userCtr.loginUser(userName, password);
+        if (login.success) {
+            SessionHelper session = SessionHelper.getInstance();
+            session.login(login.user);
+            
+            JOptionPane.showMessageDialog(this, login.message, "Sukses", JOptionPane.INFORMATION_MESSAGE);
+            DashboardMainFrame dashboardMainFrame = new DashboardMainFrame();
+            dashboardMainFrame.setVisible(true);
+            this.dispose();
+        } else {
+        
         }
+//        try {
+//            String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
+//            pstmt = conn.prepareStatement(sql);
+//            pstmt.setString(1, userName);
+//            pstmt.setString(2, password);
+//            rs = pstmt.executeQuery();
+//            if (rs.next()) {
+//                JOptionPane.showMessageDialog(this, "Login Berhasil", "Sukses", JOptionPane.INFORMATION_MESSAGE);
+//                DashboardMainFrame dashboardMainFrame = new DashboardMainFrame();
+//                dashboardMainFrame.setVisible(true);
+//                this.dispose();
+//            } else {
+//                JOptionPane.showMessageDialog(this, "Username atau Password Salah", "Gagal", JOptionPane.ERROR_MESSAGE);
+//            }
+//            
+//        } catch (SQLException e) {
+//            JOptionPane.showMessageDialog(this, "Terjadi error pada database: " + e.getMessage(), "Error Database", JOptionPane.ERROR_MESSAGE);
+//            e.printStackTrace();
+//
+//        }
     }//GEN-LAST:event_buttonLoginActionPerformed
 
     /**
@@ -245,6 +262,7 @@ public class LoginForm extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel2;
     private components.RoundedPanel roundedPanel1;
     private components.RoundedTextField textPass;

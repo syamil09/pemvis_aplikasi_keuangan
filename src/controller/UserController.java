@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import model.LoginResult;
 import model.User;
 
 /**
@@ -291,7 +292,7 @@ public class UserController {
     }
     
     // AUTHENTICATION - Validate user login
-    public User authenticateUser(String username, String password) {
+    public LoginResult loginUser(String username, String password) {
         System.out.println("---- Authenticating user: " + username + " -----");
         
         try {
@@ -311,16 +312,15 @@ public class UserController {
                 user.setRole(rs.getString("role"));
                 
                 System.out.println("Authentication successful for: " + username);
-                return user;
+                return new LoginResult(true, "Login berhasil", user);
             } else {
-                System.out.println("Authentication failed for: " + username);
+                return new LoginResult(false, "Username atau password salah", null);
             }
             
         } catch (SQLException e) {
             System.out.println("Error during authentication: " + e.getMessage());
+            return new LoginResult(false, "Database error: " + e.getMessage(), null);
         }
-        
-        return null;
     }
     
     // TESTING - Test all CRUD operations
@@ -367,9 +367,9 @@ public class UserController {
         
         // Test AUTHENTICATION
         System.out.println("\n=== TESTING AUTHENTICATION ===");
-        User authUser = controller.authenticateUser("testuser", "password123");
-        if (authUser != null) {
-            System.out.println("Login successful for: " + authUser.getFullname());
+        LoginResult authUser = controller.loginUser("testuser", "password123");
+        if (authUser.success) {
+            System.out.println("Login successful for: " + authUser.user.getFullname());
         }
         
         // Test DELETE
