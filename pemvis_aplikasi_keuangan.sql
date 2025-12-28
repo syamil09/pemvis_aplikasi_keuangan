@@ -140,6 +140,42 @@ INSERT INTO `clients` (`client_id`, `name`, `contact_person`, `phone`, `email`, 
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `employees`
+--
+
+CREATE TABLE `employees` (
+  `employee_id` varchar(20) NOT NULL,
+  `nik` varchar(50) NOT NULL,
+  `fullname` varchar(100) NOT NULL,
+  `position` varchar(100) DEFAULT NULL,
+  `contact` varchar(100) DEFAULT NULL COMMENT 'Phone/Email',
+  `status` enum('active','inactive') DEFAULT 'active',
+  -- Salary configuration (Option A)
+  `basic_salary` decimal(15,2) DEFAULT 0.00,
+  `allowance` decimal(15,2) DEFAULT 0.00,
+  `tax_pph21` decimal(15,2) DEFAULT 0.00,
+  `bpjs` decimal(15,2) DEFAULT 0.00,
+  `other_deductions` decimal(15,2) DEFAULT 0.00,
+  `bank_name` varchar(100) DEFAULT NULL,
+  `bank_account_number` varchar(50) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `employees`
+--
+
+INSERT INTO `employees` (`employee_id`, `nik`, `fullname`, `position`, `contact`, `status`, `basic_salary`, `allowance`, `tax_pph21`, `bpjs`, `other_deductions`, `bank_name`, `bank_account_number`, `created_at`) VALUES
+('EMP001', '3201011990010001', 'Ahmad Hidayat', 'Senior Backend Developer', '081234567890', 'active', 8000000.00, 1500000.00, 150000.00, 50000.00, 0.00, 'Bank BCA', '1234567890', '2024-01-15 03:00:00'),
+('EMP002', '3201011990020002', 'Siti Nurhaliza', 'Frontend Developer', '081234567891', 'active', 6500000.00, 1200000.00, 120000.00, 50000.00, 0.00, 'Bank Mandiri', '9876543210', '2024-01-15 03:15:00'),
+('EMP003', '3201011991030003', 'Budi Santoso', 'UI/UX Designer', '081234567892', 'active', 7000000.00, 1000000.00, 130000.00, 50000.00, 0.00, 'Bank BRI', '1122334455', '2024-02-01 02:30:00'),
+('EMP004', '3201011992040004', 'Dewi Lestari', 'Project Manager', 'dewi@email.com', 'active', 9000000.00, 1800000.00, 180000.00, 70000.00, 0.00, 'Bank BCA', '5544332211', '2024-02-15 04:00:00'),
+('EMP005', '3201011993050005', 'Eko Prasetyo', 'QA Engineer', '081234567894', 'active', 6000000.00, 1000000.00, 110000.00, 50000.00, 0.00, 'Bank Mandiri', '6677889900', '2024-03-01 01:45:00'),
+('EMP006', '3201011994060006', 'Rina Wijaya', 'DevOps Engineer', '081234567895', 'inactive', 7500000.00, 1200000.00, 140000.00, 60000.00, 0.00, 'Bank BNI', '3344556677', '2024-03-15 05:20:00');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `expenses`
 --
 
@@ -322,6 +358,52 @@ INSERT INTO `other_receipts` (`receipt_id`, `category_id`, `description`, `amoun
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `payrolls`
+--
+
+CREATE TABLE `payrolls` (
+  `payroll_id` varchar(20) NOT NULL,
+  `period_month` int(11) NOT NULL,
+  `period_year` int(11) NOT NULL,
+  `payment_date` date DEFAULT NULL,
+  `status` enum('draft','paid') DEFAULT 'draft',
+  `employee_id` varchar(20) NOT NULL,
+  `employee_name` varchar(100) DEFAULT NULL,
+  -- Salary snapshot (copied from employees at payroll time)
+  `basic_salary` decimal(15,2) DEFAULT 0.00,
+  `allowance` decimal(15,2) DEFAULT 0.00,
+  `tax_pph21` decimal(15,2) DEFAULT 0.00,
+  `bpjs` decimal(15,2) DEFAULT 0.00,
+  `other_deductions` decimal(15,2) DEFAULT 0.00,
+  `total_gaji` decimal(15,2) DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `payrolls`
+--
+
+INSERT INTO `payrolls` (`payroll_id`, `period_month`, `period_year`, `payment_date`, `status`, `employee_id`, `employee_name`, `basic_salary`, `allowance`, `tax_pph21`, `bpjs`, `other_deductions`, `total_gaji`, `notes`, `created_at`) VALUES
+('PAY001', 1, 2025, '2025-01-31', 'paid', 'EMP001', 'Ahmad Hidayat', 8000000.00, 1500000.00, 150000.00, 50000.00, 0.00, 9300000.00, 'Gaji Januari 2025', '2025-01-31 02:00:00'),
+('PAY002', 1, 2025, '2025-01-31', 'paid', 'EMP002', 'Siti Nurhaliza', 6500000.00, 1200000.00, 120000.00, 50000.00, 0.00, 7530000.00, 'Gaji Januari 2025', '2025-01-31 02:01:00'),
+('PAY003', 1, 2025, '2025-01-31', 'paid', 'EMP003', 'Budi Santoso', 7000000.00, 1000000.00, 130000.00, 50000.00, 0.00, 7820000.00, 'Gaji Januari 2025', '2025-01-31 02:02:00'),
+('PAY004', 1, 2025, '2025-01-31', 'paid', 'EMP004', 'Dewi Lestari', 9000000.00, 2000000.00, 180000.00, 70000.00, 0.00, 10750000.00, 'Gaji Januari 2025 + Bonus Project', '2025-01-31 02:03:00'),
+('PAY005', 1, 2025, '2025-01-31', 'paid', 'EMP005', 'Eko Prasetyo', 6000000.00, 1000000.00, 110000.00, 50000.00, 0.00, 6840000.00, 'Gaji Januari 2025', '2025-01-31 02:04:00'),
+('PAY006', 2, 2025, '2025-02-28', 'paid', 'EMP001', 'Ahmad Hidayat', 8000000.00, 1500000.00, 150000.00, 50000.00, 0.00, 9300000.00, 'Gaji Februari 2025', '2025-02-28 02:00:00'),
+('PAY007', 2, 2025, '2025-02-28', 'paid', 'EMP002', 'Siti Nurhaliza', 6500000.00, 1200000.00, 120000.00, 50000.00, 0.00, 7530000.00, 'Gaji Februari 2025', '2025-02-28 02:01:00'),
+('PAY008', 2, 2025, '2025-02-28', 'paid', 'EMP003', 'Budi Santoso', 7000000.00, 1000000.00, 130000.00, 50000.00, 0.00, 7820000.00, 'Gaji Februari 2025', '2025-02-28 02:02:00'),
+('PAY009', 2, 2025, '2025-02-28', 'paid', 'EMP004', 'Dewi Lestari', 9000000.00, 1800000.00, 180000.00, 70000.00, 0.00, 10550000.00, 'Gaji Februari 2025', '2025-02-28 02:03:00'),
+('PAY010', 2, 2025, '2025-02-28', 'paid', 'EMP005', 'Eko Prasetyo', 6000000.00, 1000000.00, 110000.00, 50000.00, 0.00, 6840000.00, 'Gaji Februari 2025', '2025-02-28 02:04:00'),
+('PAY011', 12, 2025, NULL, 'draft', 'EMP001', 'Ahmad Hidayat', 8000000.00, 1500000.00, 150000.00, 50000.00, 0.00, 9300000.00, 'Gaji Desember 2025 - Draft', '2025-12-25 03:00:00'),
+('PAY012', 12, 2025, NULL, 'draft', 'EMP002', 'Siti Nurhaliza', 6500000.00, 1200000.00, 120000.00, 50000.00, 0.00, 7530000.00, 'Gaji Desember 2025 - Draft', '2025-12-25 03:01:00'),
+('PAY013', 12, 2025, NULL, 'draft', 'EMP003', 'Budi Santoso', 7000000.00, 1000000.00, 130000.00, 50000.00, 0.00, 7820000.00, 'Gaji Desember 2025 - Draft', '2025-12-25 03:02:00'),
+('PAY014', 12, 2025, NULL, 'draft', 'EMP004', 'Dewi Lestari', 9000000.00, 1800000.00, 180000.00, 70000.00, 0.00, 10550000.00, 'Gaji Desember 2025 - Draft', '2025-12-25 03:03:00'),
+('PAY015', 12, 2025, NULL, 'draft', 'EMP005', 'Eko Prasetyo', 6000000.00, 1000000.00, 110000.00, 50000.00, 0.00, 6840000.00, 'Gaji Desember 2025 - Draft', '2025-12-25 03:04:00');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `projects`
 --
 
@@ -469,6 +551,13 @@ ALTER TABLE `expenses`
   ADD PRIMARY KEY (`expense_id`);
 
 --
+-- Indexes for table `employees`
+--
+ALTER TABLE `employees`
+  ADD PRIMARY KEY (`employee_id`),
+  ADD UNIQUE KEY `nik` (`nik`);
+
+--
 -- Indexes for table `invoices`
 --
 ALTER TABLE `invoices`
@@ -497,6 +586,14 @@ ALTER TABLE `journal_entries`
 --
 ALTER TABLE `other_receipts`
   ADD PRIMARY KEY (`receipt_id`);
+
+--
+-- Indexes for table `payrolls`
+--
+ALTER TABLE `payrolls`
+  ADD PRIMARY KEY (`payroll_id`),
+  ADD KEY `employee_id` (`employee_id`),
+  ADD KEY `idx_period` (`period_month`,`period_year`);
 
 --
 -- Indexes for table `projects`
@@ -530,6 +627,12 @@ ALTER TABLE `journal_entries`
   ADD CONSTRAINT `journal_entries_ibfk_1` FOREIGN KEY (`debit_account_id`) REFERENCES `accounts` (`account_id`),
   ADD CONSTRAINT `journal_entries_ibfk_2` FOREIGN KEY (`credit_account_id`) REFERENCES `accounts` (`account_id`),
   ADD CONSTRAINT `journal_entries_ibfk_3` FOREIGN KEY (`category_id`) REFERENCES `transaction_categories` (`category_id`);
+
+--
+-- Constraints for table `payrolls`
+--
+ALTER TABLE `payrolls`
+  ADD CONSTRAINT `payrolls_ibfk_1` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`employee_id`);
 
 --
 -- Constraints for table `projects`

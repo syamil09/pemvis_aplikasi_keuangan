@@ -85,11 +85,18 @@ public class RoundedComboBox<T> extends JComboBox<T> {
         g2d.setColor(backgroundColor);
         g2d.fillRoundRect(0, 0, getWidth(), getHeight(), cornerRadius, cornerRadius);
 
-        // Border dengan focus effect - hanya gambar border kiri, atas, bawah
-        // Border kanan akan digambar oleh arrow button
+        g2d.dispose();
+        
+        // IMPORTANT: Call super FIRST to let LAF paint, then draw border on top
+        super.paintComponent(g);
+        
+        // NOW draw border on top so it won't be covered
+        Graphics2D g2dBorder = (Graphics2D) g.create();
+        g2dBorder.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        
         Color currentBorderColor = hasFocus ? focusBorderColor : borderColor;
-        g2d.setColor(currentBorderColor);
-        g2d.setStroke(new BasicStroke(borderThickness));
+        g2dBorder.setColor(currentBorderColor);
+        g2dBorder.setStroke(new BasicStroke(borderThickness));
         
         // Gambar border utama (full rounded rectangle)
         RoundRectangle2D border = new RoundRectangle2D.Float(
@@ -100,10 +107,8 @@ public class RoundedComboBox<T> extends JComboBox<T> {
             cornerRadius, 
             cornerRadius
         );
-        g2d.draw(border);
-
-        g2d.dispose();
-        super.paintComponent(g);
+        g2dBorder.draw(border);
+        g2dBorder.dispose();
     }
 
     @Override

@@ -197,14 +197,12 @@
                     <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                       <Color blue="de" green="de" red="35" type="rgb"/>
                     </Property>
-                    <Property name="text" type="java.lang.String" value="Rp23.000.000"/>
+                    <Property name="text" type="java.lang.String" value="Rp53.420.000"/>
                   </Properties>
                 </Component>
                 <Component class="components.CustomImageIcon" name="customImageIcon2">
                   <Properties>
-                    <Property name="imageIconHeight" type="int" value="50"/>
                     <Property name="imageIconPath" type="java.lang.String" value="images/icon_income.png"/>
-                    <Property name="imageIconWidth" type="int" value="50"/>
                     <Property name="inheritsPopupMenu" type="boolean" value="false"/>
                   </Properties>
                 </Component>
@@ -301,14 +299,12 @@
                     <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                       <Color blue="b0" green="27" red="9c" type="rgb"/>
                     </Property>
-                    <Property name="text" type="java.lang.String" value="Rp23.000.000"/>
+                    <Property name="text" type="java.lang.String" value="Rp13.340.000"/>
                   </Properties>
                 </Component>
                 <Component class="components.CustomImageIcon" name="customImageIcon4">
                   <Properties>
-                    <Property name="imageIconHeight" type="int" value="50"/>
                     <Property name="imageIconPath" type="java.lang.String" value="images/icon_expense.png"/>
-                    <Property name="imageIconWidth" type="int" value="50"/>
                     <Property name="inheritsPopupMenu" type="boolean" value="false"/>
                   </Properties>
                 </Component>
@@ -392,9 +388,7 @@
                 </Component>
                 <Component class="components.CustomImageIcon" name="customImageIcon1">
                   <Properties>
-                    <Property name="imageIconHeight" type="int" value="50"/>
                     <Property name="imageIconPath" type="java.lang.String" value="images/icon_project.png"/>
-                    <Property name="imageIconWidth" type="int" value="50"/>
                     <Property name="inheritsPopupMenu" type="boolean" value="false"/>
                   </Properties>
                 </Component>
@@ -562,6 +556,7 @@
           <SubComponents>
             <Component class="components.CustomTable" name="customTable1">
               <Properties>
+                <Property name="columnNamesString" type="java.lang.String" value="Kategori,Tanggal,Jumlah"/>
                 <Property name="headerBackgroundColor" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="f1" green="f0" red="ec" type="rgb"/>
                 </Property>

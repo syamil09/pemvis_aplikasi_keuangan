@@ -5,40 +5,43 @@
 package view;
 
 import components.CustomTable;
-import controller.ClientController;
-import controller.InvoiceController;
-import controller.ProjectController;
+import controller.PayrollController;
+import controller.EmployeeController;
 import helper.CurrencyHelper;
-import java.awt.Container;
 import java.awt.event.KeyEvent;
-import java.sql.Timestamp;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.table.DefaultTableModel;
-import model.Client;
-import model.Invoice;
-import model.Project;
+import model.Payroll;
+import model.Employee;
 
 /**
  *
  * @author Leonovo
  */
-public class TransactionInvoicePage extends javax.swing.JFrame {
+public class TransactionPayrollPage extends javax.swing.JFrame {
 
-    InvoiceController invoiceController;
-    ClientController clientController;
-    ProjectController projectController;
+    PayrollController payrollController;
+    EmployeeController employeeController;
     DefaultTableModel tableModel;
+    
+    private int selectedPeriodMonth;
+    private int selectedPeriodYear;
+    
     /**
-     * Creates new form MasterUserForm
+     * Creates new form TransactionPayrollPage
      */
-    public TransactionInvoicePage() {
-        invoiceController = new InvoiceController();
-        clientController = new ClientController();
-        projectController = new ProjectController();
+    public TransactionPayrollPage() {
+        payrollController = new PayrollController();
+        employeeController = new EmployeeController();
         tableModel = new DefaultTableModel();
+        
+        // Set current period as default
+        Calendar cal = Calendar.getInstance();
+        selectedPeriodMonth = cal.get(Calendar.MONTH) + 1; // Calendar month is 0-based
+        selectedPeriodYear = cal.get(Calendar.YEAR);
         
         initComponents();
         loadDataTable();
@@ -52,21 +55,25 @@ public class TransactionInvoicePage extends javax.swing.JFrame {
         tableModel = new DefaultTableModel();
         try {
             String cariData = txtCari.getText();
-            List<Invoice> listInvoice = invoiceController.getData(cariData);
-            Object[] columns = {"Invoice ID", "Invoice Number", "Client ID", "Project ID", "Invoice Date", "Due Date", "Total Amount", "Paid Amount", "Status", "Aksi"};
+            List<Payroll> listPayroll = payrollController.getData(cariData);
+            Object[] columns = {"Payroll ID", "Employee", "Period", "Basic Salary", "Allowance", "Deductions", "Total Gaji", "Status", "Aksi"};
             tableModel.setColumnIdentifiers(columns);
             
-            for (Invoice invoice : listInvoice) {
+            for (Payroll payroll : listPayroll) {
+                // Calculate total deductions
+                double deductions = (payroll.getTaxPph21() != null ? payroll.getTaxPph21() : 0) +
+                                  (payroll.getBpjs() != null ? payroll.getBpjs() : 0) +
+                                  (payroll.getOtherDeductions() != null ? payroll.getOtherDeductions() : 0);
+                
                 tableModel.addRow(new Object[]{
-                    invoice.getInvoiceId(),
-                    invoice.getInvoiceNumber(),
-                    invoice.getClientId(),
-                    invoice.getProjectId() != null ? invoice.getProjectId() : "-",
-                    invoice.getFormattedInvoiceDate(),
-                    invoice.getFormattedDueDate(),
-                    CurrencyHelper.formatForTable(invoice.getTotalAmount(), true),
-                    CurrencyHelper.formatForTable(invoice.getPaidAmount(), true),
-                    invoice.getStatusDisplay(),
+                    payroll.getPayrollId(),
+                    payroll.getEmployeeName(),
+                    payroll.getFormattedPeriod(),
+                    CurrencyHelper.formatForTable(payroll.getBasicSalary(), true),
+                    CurrencyHelper.formatForTable(payroll.getAllowance(), true),
+                    CurrencyHelper.formatForTable(deductions, true),
+                    CurrencyHelper.formatForTable(payroll.getTotalGaji(), true),
+                    payroll.getStatusDisplay(),
                     "" // kolom aksi
                 });
             }
@@ -75,15 +82,14 @@ public class TransactionInvoicePage extends javax.swing.JFrame {
             
             // Setup column configurations
             CustomTable.ColumnConfig[] configs = {
-                new CustomTable.ColumnConfig(100, CustomTable.ALIGN_CENTER),    // Invoice ID
-                new CustomTable.ColumnConfig(140, CustomTable.ALIGN_CENTER),    // Invoice Number
-                new CustomTable.ColumnConfig(80, CustomTable.ALIGN_CENTER),     // Client ID
-                new CustomTable.ColumnConfig(80, CustomTable.ALIGN_CENTER),     // Project ID
-                new CustomTable.ColumnConfig(100, CustomTable.ALIGN_CENTER),    // Invoice Date
-                new CustomTable.ColumnConfig(100, CustomTable.ALIGN_CENTER),    // Due Date
-                new CustomTable.ColumnConfig(120, CustomTable.ALIGN_RIGHT),     // Total Amount
-                new CustomTable.ColumnConfig(120, CustomTable.ALIGN_RIGHT),     // Paid Amount
-                new CustomTable.ColumnConfig(100, CustomTable.ALIGN_CENTER),    // Status
+                new CustomTable.ColumnConfig(100, CustomTable.ALIGN_CENTER),    // Payroll ID
+                new CustomTable.ColumnConfig(150, CustomTable.ALIGN_LEFT),      // Employee Name
+                new CustomTable.ColumnConfig(120, CustomTable.ALIGN_CENTER),    // Period
+                new CustomTable.ColumnConfig(120, CustomTable.ALIGN_RIGHT),     // Basic Salary
+                new CustomTable.ColumnConfig(120, CustomTable.ALIGN_RIGHT),     // Allowance
+                new CustomTable.ColumnConfig(120, CustomTable.ALIGN_RIGHT),     // Deductions
+                new CustomTable.ColumnConfig(130, CustomTable.ALIGN_RIGHT),     // Total Gaji
+                new CustomTable.ColumnConfig(80, CustomTable.ALIGN_CENTER),     // Status
                 new CustomTable.ColumnConfig(120, CustomTable.ALIGN_CENTER)     // Aksi
             };
             customtable1.setColumnConfigs(configs);
@@ -93,149 +99,114 @@ public class TransactionInvoicePage extends javax.swing.JFrame {
             customtable1.setActionButtonListener(new CustomTable.ActionButtonListener() {
                 @Override
                 public void onEdit(int row, Object[] rowData) {
-                    String invoiceId = rowData[0].toString();
-                    showDataToForm(invoiceId);
+                    String payrollId = rowData[0].toString();
+                    showDataToForm(payrollId);
                 }
 
                 @Override
                 public void onDelete(int row, Object[] rowData) {
                     int result = JOptionPane.showConfirmDialog(null, 
-                        "Delete Invoice " + rowData[1] + "?", 
-                        "Confirm Delete", 
+                        "Hapus Payroll untuk " + rowData[1] + "?", 
+                        "Konfirmasi Hapus", 
                         JOptionPane.YES_NO_OPTION);
                     if (result == JOptionPane.YES_OPTION) {
-                        String invoiceId = rowData[0].toString();
-                        boolean deleted = invoiceController.deleteInvoice(invoiceId);
-                        if (deleted) {
-                            JOptionPane.showMessageDialog(null, "Invoice berhasil dihapus");
-                            loadDataTable();
-                        } else {
-                            JOptionPane.showMessageDialog(null, "Gagal menghapus invoice");
-                        }
+                        String payrollId = rowData[0].toString();
+                        String message = payrollController.delete(payrollId);
+                        JOptionPane.showMessageDialog(null, message);
+                        loadDataTable();
                     }
                 }
             });
         
         } catch (Exception e) {
             System.out.println("Error loading data: " + e.getMessage());
-            JOptionPane.showMessageDialog(null, "Data invoice gagal dipanggil: " + e.getMessage());
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Data payroll gagal dipanggil: " + e.getMessage());
         } 
     }
     
     /**
-     * Show selected invoice data to form for editing
+     * Show selected payroll data to form for editing
      */
-    private void showDataToForm(String invoiceId) {
+    private void showDataToForm(String payrollId) {
         try {
-            Invoice invoice = invoiceController.getInvoiceById(invoiceId);
+            Payroll payroll = payrollController.getById(payrollId);
             
-            if (invoice != null) {
-                lblTitleForm.setText("Form Edit Data Invoice");
+            if (payroll != null) {
+                lblTitleForm.setText("Form Edit Data Payroll");
                 btnSimpan.setText("Update");
                 
                 // Fill form fields
-                txtInvoiceId.setText(invoice.getInvoiceId());
-                txtInvoiceNumber.setText(invoice.getInvoiceNumber());
-                txtClientId.setText(invoice.getClientId());
-                txtProjectId.setText(invoice.getProjectId());
+                txtInvoiceId.setText(payroll.getPayrollId());  // Reusing invoice ID field
+                txtInvoiceNumber.setText(String.format("%04d-%02d", payroll.getPeriodYear(), payroll.getPeriodMonth()));  // Display period
                 
-                // Load client name
-                if (invoice.getClientId() != null) {
-                    Client client = clientController.getClientById(invoice.getClientId());
-                    if (client != null) {
-                        txtClientName.setText(client.getName());
+                // Load employee name
+                if (payroll.getEmployeeId() != null) {
+                    Employee employee = employeeController.getById(payroll.getEmployeeId());
+                    if (employee != null) {
+                        txtClientName.setText(employee.getFullname());
+                        txtClientId.setText(employee.getEmployeeId());
                     }
                 }
                 
-                // Load project name
-                if (invoice.getProjectId() != null) {
-                    Project project = projectController.getProjectById(invoice.getProjectId());
-                    if (project != null) {
-                        txtProjectName.setText(project.getName());
-                    }
-                }
-                
-                // Set dates
-                txtStartDate.setDateFromSQLString(invoice.getInvoiceDate());
-                txtEndDate.setDateFromSQLString(invoice.getDueDate());
-                
-                // Set amounts
-                numberSubTotal.setDoubleValue(invoice.getSubtotal());
-//                numberTaxAmount.setDoubleValue(invoice.getTaxAmount());
-//                numberTotalAmount.setDoubleValue(invoice.getTotalAmount());
-//                numberPaidAmount.setDoubleValue(invoice.getPaidAmount());
+                // Set salary amounts
+                numberSubTotal.setDoubleValue(payroll.getTotalGaji() != null ? payroll.getTotalGaji() : 0.0);
                 
                 // Set status
-                cbStatus.setSelectedItem(invoice.getStatus());
+                cbStatus.setSelectedItem(payroll.getStatus());
                 
-                // Disable invoice ID field
+                // Disable payroll ID field
                 txtInvoiceId.setEnabled(false);
             }
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Error showing data to form: " + e.getMessage());
-            JOptionPane.showMessageDialog(null, "Data invoice gagal dipanggil: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "Data payroll gagal dipanggil: " + e.getMessage());
         }
     }
     
     /**
-     * Save invoice data (create or update)
+     * Save payroll data (create or update)
      */
     private void save() {
         try {
             // Validation
             if (txtInvoiceId.getText().trim().isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Invoice ID tidak boleh kosong");
-                return;
-            }
-            
-            if (txtInvoiceNumber.getText().trim().isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Invoice Number tidak boleh kosong");
+                JOptionPane.showMessageDialog(null, "Payroll ID tidak boleh kosong");
                 return;
             }
             
             if (txtClientId.getText().trim().isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Client ID tidak boleh kosong");
+                JOptionPane.showMessageDialog(null, "Employee ID tidak boleh kosong");
                 return;
             }
             
-            if (txtStartDate.getDateSQLString() == null || txtStartDate.getDateSQLString().isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Tanggal invoice tidak boleh kosong");
-                return;
+            // Create payroll object
+            Payroll payroll = new Payroll();
+            payroll.setPayrollId(txtInvoiceId.getText().trim());
+            payroll.setEmployeeId(txtClientId.getText().trim());
+            
+            // Parse period from txtInvoiceNumber (format: YYYY-MM)
+            String periodStr = txtInvoiceNumber.getText().trim();
+            if (!periodStr.isEmpty() && periodStr.contains("-")) {
+                String[] parts = periodStr.split("-");
+                payroll.setPeriodYear(Integer.parseInt(parts[0]));
+                payroll.setPeriodMonth(Integer.parseInt(parts[1]));
             }
             
-            if (txtEndDate.getDateSQLString() == null || txtEndDate.getDateSQLString().isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Tanggal jatuh tempo tidak boleh kosong");
-                return;
-            }
-            
-            // Create invoice object
-            Invoice invoice = new Invoice();
-            invoice.setInvoiceId(txtInvoiceId.getText().trim());
-            invoice.setInvoiceNumber(txtInvoiceNumber.getText().trim());
-            invoice.setClientId(txtClientId.getText().trim());
-            invoice.setProjectId(txtProjectId.getText().trim().isEmpty() ? null : txtProjectId.getText().trim());
-            invoice.setInvoiceDate(txtStartDate.getDateSQLString());
-            invoice.setDueDate(txtEndDate.getDateSQLString());
-            invoice.setSubtotal(numberSubTotal.getDoubleValue());
-//            invoice.setTaxAmount(numberTaxAmount.getDoubleValue());
-//            invoice.setTotalAmount(numberTotalAmount.getDoubleValue());
-//            invoice.setPaidAmount(numberPaidAmount.getDoubleValue());
-            invoice.setStatus(cbStatus.getSelectedItem().toString());
-            invoice.setCreatedBy("USR001"); // TODO: Get from session
-            invoice.setCreatedAt(new Timestamp(System.currentTimeMillis()));
-            
-            // Calculate totals automatically
-//            calculateTotals();
+            // Set salary data - will be copied from employee on create
+            payroll.setTotalGaji(numberSubTotal.getDoubleValue());
+            payroll.setStatus(cbStatus.getSelectedItem().toString());
+            // CreatedAt will be set by database
             
             // Check if create or update
             boolean isCreate = btnSimpan.getText().equals("Tambah");
             
             String result;
             if (isCreate) {
-                result = invoiceController.createInvoice(invoice);
+                result = payrollController.create(payroll);
             } else {
-                result = invoiceController.updateInvoice(invoice);
+                result = payrollController.update(payroll);
             }
             
             JOptionPane.showMessageDialog(null, result);
@@ -244,8 +215,9 @@ public class TransactionInvoicePage extends javax.swing.JFrame {
             loadDataTable();
             
         } catch (Exception e) {
-            System.out.println("Error saving invoice: " + e.getMessage());
-            JOptionPane.showMessageDialog(null, "Error menyimpan invoice: " + e.getMessage());
+            System.out.println("Error saving payroll: " + e.getMessage());
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error menyimpan payroll: " + e.getMessage());
         }
     }
     
@@ -255,15 +227,11 @@ public class TransactionInvoicePage extends javax.swing.JFrame {
         txtClientId.setText("");
         txtClientName.setText("");
         txtInvoiceNumber.setText("");
-        txtStartDate.setDate(new Date());
-        txtStartDate.setDateFromString("");
         cbStatus.setSelectedIndex(0);
         txtCari.setText("");
-        txtEndDate.setDate(new Date());
-        txtEndDate.setDateFromString("");
         numberSubTotal.setText("");
         btnSimpan.setText("Tambah");
-        lblTitleForm.setText("Form Tambah Data Project");
+        lblTitleForm.setText("Form Tambah Data Payroll");
     }
     
 
@@ -436,6 +404,10 @@ public class TransactionInvoicePage extends javax.swing.JFrame {
                 .addGap(23, 23, 23)
                 .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(roundedPanel1Layout.createSequentialGroup()
+                        .addComponent(lblTitleForm)
+                        .addGap(485, 485, 485)
+                        .addComponent(roundedButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(roundedPanel1Layout.createSequentialGroup()
                         .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel7)
                             .addComponent(jLabel3)
@@ -457,6 +429,18 @@ public class TransactionInvoicePage extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(roundedPanel1Layout.createSequentialGroup()
+                                        .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jLabel4)
+                                            .addComponent(jLabel5))
+                                        .addGap(6, 6, 6)
+                                        .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(txtEndDate, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(txtStartDate, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGap(30, 30, 30)
+                                        .addComponent(jLabel10)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(cbStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, roundedPanel1Layout.createSequentialGroup()
                                         .addComponent(jLabel11)
                                         .addGap(25, 25, 25)
                                         .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -469,40 +453,18 @@ public class TransactionInvoicePage extends javax.swing.JFrame {
                                         .addComponent(filler3, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(numberSubTotal, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addGroup(roundedPanel1Layout.createSequentialGroup()
-                                                .addComponent(jLabel8)
-                                                .addGap(0, 135, Short.MAX_VALUE))))
-                                    .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                        .addComponent(roundedButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGroup(roundedPanel1Layout.createSequentialGroup()
-                                            .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                .addComponent(jLabel4)
-                                                .addComponent(jLabel5))
-                                            .addGap(6, 6, 6)
-                                            .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                .addComponent(txtEndDate, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addComponent(txtStartDate, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                            .addGap(30, 30, 30)
-                                            .addComponent(jLabel10)
-                                            .addGap(18, 18, 18)
-                                            .addComponent(cbStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))))
-                        .addContainerGap(15, Short.MAX_VALUE))
-                    .addGroup(roundedPanel1Layout.createSequentialGroup()
-                        .addComponent(lblTitleForm)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                                            .addComponent(numberSubTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 217, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(jLabel8))))))))
+                .addContainerGap(16, Short.MAX_VALUE))
         );
         roundedPanel1Layout.setVerticalGroup(
             roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(roundedPanel1Layout.createSequentialGroup()
+                .addGap(15, 15, 15)
                 .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(roundedPanel1Layout.createSequentialGroup()
-                        .addGap(15, 15, 15)
-                        .addComponent(lblTitleForm)
-                        .addGap(14, 14, 14))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, roundedPanel1Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(roundedButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(lblTitleForm)
+                    .addComponent(roundedButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(6, 6, 6)
                 .addGroup(roundedPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(roundedPanel1Layout.createSequentialGroup()
                         .addGap(23, 23, 23)
@@ -554,10 +516,10 @@ public class TransactionInvoicePage extends javax.swing.JFrame {
                                                 .addComponent(jLabel11)))
                                         .addGap(18, 18, 18)
                                         .addComponent(txtProjectName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, roundedPanel1Layout.createSequentialGroup()
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addGroup(roundedPanel1Layout.createSequentialGroup()
+                                        .addGap(28, 28, 28)
                                         .addComponent(jLabel8)
-                                        .addGap(18, 18, 18)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                         .addComponent(numberSubTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))))
                             .addComponent(filler2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
@@ -757,14 +719,30 @@ public class TransactionInvoicePage extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(TransactionInvoicePage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(TransactionPayrollPage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(TransactionInvoicePage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(TransactionPayrollPage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(TransactionInvoicePage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(TransactionPayrollPage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(TransactionInvoicePage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(TransactionPayrollPage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>
@@ -785,7 +763,7 @@ public class TransactionInvoicePage extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new TransactionInvoicePage().setVisible(true);
+                new TransactionPayrollPage().setVisible(true);
             }
         });
     }

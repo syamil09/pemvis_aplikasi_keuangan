@@ -106,11 +106,9 @@ public class DashboardPage extends javax.swing.JFrame {
 
         jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel8.setForeground(new java.awt.Color(53, 222, 222));
-        jLabel8.setText("Rp23.000.000");
+        jLabel8.setText("Rp53.420.000");
 
-        customImageIcon2.setImageIconHeight(50);
         customImageIcon2.setImageIconPath("images/icon_income.png");
-        customImageIcon2.setImageIconWidth(50);
         customImageIcon2.setInheritsPopupMenu(false);
 
         jLabel10.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -169,11 +167,9 @@ public class DashboardPage extends javax.swing.JFrame {
 
         jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel9.setForeground(new java.awt.Color(156, 39, 176));
-        jLabel9.setText("Rp23.000.000");
+        jLabel9.setText("Rp13.340.000");
 
-        customImageIcon4.setImageIconHeight(50);
         customImageIcon4.setImageIconPath("images/icon_expense.png");
-        customImageIcon4.setImageIconWidth(50);
         customImageIcon4.setInheritsPopupMenu(false);
 
         jLabel11.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -230,9 +226,7 @@ public class DashboardPage extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel1.setText("Proyek Berjalan");
 
-        customImageIcon1.setImageIconHeight(50);
         customImageIcon1.setImageIconPath("images/icon_project.png");
-        customImageIcon1.setImageIconWidth(50);
         customImageIcon1.setInheritsPopupMenu(false);
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
@@ -337,6 +331,7 @@ public class DashboardPage extends javax.swing.JFrame {
         roundedPanel2.setCornerRadius(20);
         roundedPanel2.setHasBorder(false);
 
+        customTable1.setColumnNamesString("Kategori,Tanggal,Jumlah");
         customTable1.setHeaderBackgroundColor(new java.awt.Color(236, 240, 241));
         customTable1.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
             public void propertyChange(java.beans.PropertyChangeEvent evt) {

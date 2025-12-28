@@ -5,8 +5,7 @@
 package view;
 
 import components.CustomTable;
-import controller.ExpenseController;
-import controller.ProjectController;
+import controller.OtherReceiptController;
 import helper.CurrencyHelper;
 import java.awt.Container;
 import java.awt.event.KeyEvent;
@@ -15,8 +14,8 @@ import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.table.DefaultTableModel;
-import model.Expense;
-import model.Project;
+import model.OtherReceipt;
+import helper.SessionHelper;
 
 /**
  *
@@ -24,13 +23,13 @@ import model.Project;
  */
 public class TransactionOtherReceiptPage extends javax.swing.JFrame {
 
-    ExpenseController expenseCtr;
+    OtherReceiptController receiptCtr;
     DefaultTableModel tableModel;
     /**
-     * Creates new form MasterUserForm
+     * Creates new form TransactionOtherReceiptPage
      */
     public TransactionOtherReceiptPage() {
-        expenseCtr = new ExpenseController();
+        receiptCtr = new OtherReceiptController();
         tableModel = new DefaultTableModel();
         
         initComponents();
@@ -45,28 +44,28 @@ public class TransactionOtherReceiptPage extends javax.swing.JFrame {
         tableModel = new DefaultTableModel();
         try {
             String cariData = txtCari.getText();
-            List<Expense> listExpense = expenseCtr.getData(cariData);
-            Object[] colums = {"ID", "Description", "Jumlah", "Tanggal", "Aksi"};
+            List<OtherReceipt> listReceipts = receiptCtr.getData(cariData);
+            Object[] colums = {"ID", "Description", "Sumber", "Jumlah", "Tanggal", "Aksi"};
             tableModel.setColumnIdentifiers(colums);
             
-            
-            
-            for (Expense project : listExpense) {
+            for (OtherReceipt receipt : listReceipts) {
                 tableModel.addRow(new Object[]{
-                    project.getExpenseId(), 
-                    project.getDescription(),
-                    CurrencyHelper.formatForTable(project.getAmount(), true),
-                    project.getExpenseDate(),
+                    receipt.getReceiptId(), 
+                    receipt.getDescription(),
+                    receipt.getSource(),
+                    CurrencyHelper.formatForTable(receipt.getAmount(), true),
+                    receipt.getReceiptDate(),
                     "", // tambahkan 1 value kosong untuk kolom button action (edit dan delete)
                 });
             }
             customtable1.setModel(tableModel);
             
             CustomTable.ColumnConfig[] configs = {
-                new CustomTable.ColumnConfig(120, CustomTable.ALIGN_CENTER),    //Project ID
-                new CustomTable.ColumnConfig(280, CustomTable.ALIGN_LEFT),     // Name  
-                new CustomTable.ColumnConfig(200, CustomTable.ALIGN_RIGHT),     // Budget
-                new CustomTable.ColumnConfig(120, CustomTable.ALIGN_CENTER),   // Status
+                new CustomTable.ColumnConfig(100, CustomTable.ALIGN_CENTER),    // Receipt ID
+                new CustomTable.ColumnConfig(240, CustomTable.ALIGN_LEFT),     // Description  
+                new CustomTable.ColumnConfig(180, CustomTable.ALIGN_LEFT),     // Source
+                new CustomTable.ColumnConfig(150, CustomTable.ALIGN_RIGHT),    // Amount
+                new CustomTable.ColumnConfig(100, CustomTable.ALIGN_CENTER),   // Date
                 new CustomTable.ColumnConfig(120, CustomTable.ALIGN_CENTER)    // Aksi
             };
             customtable1.setColumnConfigs(configs);
@@ -75,71 +74,71 @@ public class TransactionOtherReceiptPage extends javax.swing.JFrame {
             customtable1.setActionButtonListener(new CustomTable.ActionButtonListener() {
                 @Override
                 public void onEdit(int row, Object[] rowData) {
-                    String Project_id = rowData[0].toString();
-                    showDataToForm(Project_id);
+                    String receiptId = rowData[0].toString();
+                    showDataToForm(receiptId);
                 }
 
                 @Override
                 public void onDelete(int row, Object[] rowData) {
                     int result = JOptionPane.showConfirmDialog(null, 
-                        "Hapus Pengeluaran " + rowData[0] + "?", 
+                        "Hapus Penerimaan Lainnya " + rowData[0] + "?", 
                         "Confirm", 
                         JOptionPane.YES_NO_OPTION);
                     if (result == JOptionPane.YES_OPTION) {
-                        customtable1.removeRow(row);
+                        String deleteResult = receiptCtr.deleteReceipt(rowData[0].toString());
+                        JOptionPane.showMessageDialog(null, deleteResult);
+                        loadDataTable();
                     }
                 }
             });
         
         } catch (Exception e) {
             System.out.println(e);
-            JOptionPane.showMessageDialog(null, "data project gagal dipanggil "+e);
+            JOptionPane.showMessageDialog(null, "Data penerimaan lainnya gagal dipanggil: "+e);
         
         } 
     }
     
-    private void showDataToForm(String expenseId) {
+    private void showDataToForm(String receiptId) {
         try {
-            Expense expense = expenseCtr.getExpenseById(expenseId);
+            OtherReceipt receipt = receiptCtr.getReceiptById(receiptId);
             
             lblTitleForm.setText("Form Edit Data Penerimaan Lainnya");
             
             btnSimpan.setText("Update");
-            txtReceiptId.setText(expense.getExpenseId());
-            txtCategoryTranId.setText(expense.getCategoryId());
-            txtCategoryTranName.setText(expense.getCategoryName());
-            txtExpenseDate.setDateFromSQLString(expense.getExpenseDate());
-            txtSource.setText(expense.getReceiptNumber());
-            txtDesc.setText(expense.getDescription());
-            numberAmount.setDoubleValue(expense.getAmount());
+            txtReceiptId.setText(receipt.getReceiptId());
+            txtCategoryTranId.setText(receipt.getCategoryId());
+            txtCategoryTranName.setText(receipt.getCategoryName());
+            txtExpenseDate.setDateFromSQLString(receipt.getReceiptDate());
+            txtSource.setText(receipt.getSource());
+            txtDesc.setText(receipt.getDescription());
+            numberAmount.setDoubleValue(receipt.getAmount());
             
             txtReceiptId.setEnabled(false);
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "data user gagal dipanggil "+e);
+            JOptionPane.showMessageDialog(null, "Data penerimaan lainnya gagal dipanggil: "+e);
         }
     }
     
     private void save() {
-        Expense expense = new Expense();
-        expense.setExpenseId(txtReceiptId.getText());
-        expense.setCategoryId(txtCategoryTranId.getText());
-        expense.setDescription(txtDesc.getText());
-        expense.setAmount(numberAmount.getDoubleValue());
-        expense.setExpenseDate(txtExpenseDate.getDateSQLString());
-        expense.setReceiptNumber(txtSource.getText());
-        expense.setCreatedBy("");
+        OtherReceipt receipt = new OtherReceipt();
+        receipt.setReceiptId(txtReceiptId.getText());
+        receipt.setCategoryId(txtCategoryTranId.getText());
+        receipt.setDescription(txtDesc.getText());
+        receipt.setAmount(numberAmount.getDoubleValue());
+        receipt.setReceiptDate(txtExpenseDate.getDateSQLString());
+        receipt.setSource(txtSource.getText());
+        receipt.setCreatedBy(SessionHelper.getInstance().getUserId());
         
+        boolean isCreate = btnSimpan.getText().equals("Tambah");
         
-        boolean isCreateUser = btnSimpan.getText().equals("Tambah");
-        
-        if (isCreateUser) {
-            String create = expenseCtr.createExpense(expense);
+        if (isCreate) {
+            String create = receiptCtr.createReceipt(receipt);
             JOptionPane.showMessageDialog(null, create);
         } else {
-            String update = expenseCtr.updateExpense(expense);
+            String update = receiptCtr.updateReceipt(receipt);
             JOptionPane.showMessageDialog(null, update);
         }
-
 
         loadDataTable();
        
@@ -155,7 +154,7 @@ public class TransactionOtherReceiptPage extends javax.swing.JFrame {
         txtExpenseDate.setDateFromString("");
         numberAmount.setText("");
         btnSimpan.setText("Tambah");
-        lblTitleForm.setText("Form Tambah Data Pengeluaran");
+        lblTitleForm.setText("Form Tambah Data Penerimaan Lainnya");
     }
     
 
