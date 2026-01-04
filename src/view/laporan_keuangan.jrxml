@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="48234102-8522-48d1-9bf2-9b985c851562">
+	<property name="ireport.zoom" value="1.4641000000000017"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<queryString language="SQL">
+		<![CDATA[SELECT 
+    a.account_id AS kode,
+    a.name AS nama_akun,
+    a.type AS kategori,
+    FORMAT(
+        CASE 
+            WHEN a.type = 'pendapatan' THEN 
+                COALESCE(SUM(CASE WHEN je.credit_account_id = a.account_id THEN je.amount END), 0)
+            WHEN a.type = 'beban' THEN 
+                COALESCE(SUM(CASE WHEN je.debit_account_id = a.account_id THEN je.amount END), 0)
+        END, 0
+    ) AS nominal
+FROM accounts a
+LEFT JOIN journal_entries je ON (
+    (a.type = 'pendapatan' AND je.credit_account_id = a.account_id AND je.entry_date BETWEEN '2025-01-01' AND '2025-12-31') OR
+    (a.type = 'beban' AND je.debit_account_id = a.account_id AND je.entry_date BETWEEN '2025-01-01' AND '2025-12-31')
+)
+WHERE a.type IN ('pendapatan', 'beban')
+GROUP BY a.account_id, a.name, a.type
+HAVING nominal > 0
+ORDER BY a.type, a.account_id;]]>
+	</queryString>
+	<field name="kode" class="java.lang.String"/>
+	<field name="nama_akun" class="java.lang.String"/>
+	<field name="kategori" class="java.lang.String"/>
+	<field name="nominal" class="java.lang.String"/>
+	<group name="kode">
+		<groupExpression><![CDATA[$F{kode}]]></groupExpression>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch">
+			<line>
+				<reportElement x="0" y="78" width="555" height="1" uuid="f318dce7-56d5-466b-ae50-a3cf9d2ab1a3"/>
+			</line>
+			<staticText>
+				<reportElement x="79" y="57" width="435" height="11" uuid="9ce36873-a53d-4d67-80cf-520f3663322c"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Email: support@bentang.id Call Center: 021-84599218 Website: https://www.bentang.id/]]></text>
+			</staticText>
+			<image>
+				<reportElement x="21" y="10" width="58" height="58" uuid="512f42a1-d05d-4195-a5fd-82f76a0cb986"/>
+				<imageExpression><![CDATA["F:\\Document\\tugas\\pemrograman visual\\project pemvis\\pemvis_aplikasi_keuangan\\src\\images\\logo-pt-bentang.jpg"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="166" y="3" width="245" height="24" forecolor="#00CCCC" uuid="f7d6fa57-b614-42c2-9ad4-e8c0912933f9"/>
+				<textElement textAlignment="Center">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PT Bentang Altur Teknologia]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="154" y="27" width="267" height="19" uuid="28e4f65f-7602-4d60-a935-399a1de7421c"/>
+				<textElement textAlignment="Center">
+					<font size="13"/>
+				</textElement>
+				<text><![CDATA[We Don't Sell Software, We Sell Solution]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="79" y="46" width="435" height="11" uuid="4ffd8595-c64b-4ff0-82c7-41d08ac85001"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Jln. Madu Indah No 95, Mabes Hankam, Cipayung, RT.2/RW.3, Bambu Apus, Cipayung, East Jakarta City, Jakarta 13890]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch">
+			<staticText>
+				<reportElement x="185" y="9" width="164" height="20" uuid="383c6977-076b-41d0-bd2d-89c0e93e6dac"/>
+				<textElement textAlignment="Center">
+					<font size="13" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[LAPORAN KEUANGAN]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="21" splitType="Stretch">
+			<rectangle>
+				<reportElement x="377" y="1" width="100" height="20" backcolor="#FFFFCC" uuid="0eedb888-c26c-40ec-8d22-07c85d5250a1"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="77" y="1" width="100" height="20" backcolor="#FFFFCC" uuid="7e0c41af-9183-4a33-9503-fd4e2e0c6189"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="177" y="1" width="100" height="20" backcolor="#FFFFCC" uuid="8be600fa-4293-4f79-9166-1d9facad0c89"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="277" y="1" width="100" height="20" backcolor="#FFFFCC" uuid="a3ad8f9a-d034-4acb-93f1-23dd30c9fdb6"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="85" y="3" width="84" height="16" uuid="8a8d3839-210d-47a9-b67e-1c65531e4c64"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Kode]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="193" y="3" width="69" height="17" uuid="6303ea5c-a654-4d61-932d-ce2f6406deaa"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Nama Akun]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="290" y="5" width="73" height="14" uuid="cfb2836d-63e9-42e2-ab34-2791a8bf5f1b"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Kategori]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="396" y="4" width="64" height="15" uuid="bffe54d8-4825-409f-9ad4-2580e5768858"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Nominal]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<rectangle>
+				<reportElement x="77" y="0" width="100" height="20" uuid="0c86a761-b4cb-436a-b74f-c32e7d544391"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="177" y="0" width="100" height="20" uuid="ca20921b-494f-48cc-a32c-23faf5cb8af6"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="277" y="0" width="100" height="20" uuid="965fb4ae-6a66-4e73-b3c4-6c5c727d981f"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="377" y="0" width="100" height="20" uuid="e1feb709-578a-42b6-94d6-b77f5973f783"/>
+			</rectangle>
+			<textField>
+				<reportElement x="77" y="0" width="100" height="20" uuid="eb573c47-af12-41e7-a673-bddf4ecbfed0"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{kode}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="177" y="0" width="100" height="20" uuid="07d8beeb-43fd-49b5-9485-800d2ccfbc64"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{nama_akun}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="277" y="0" width="100" height="20" uuid="15dea3b9-dca5-42de-aff8-5847e26e334c"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{kategori}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="377" y="0" width="100" height="20" uuid="3057c8a3-7ee5-4144-be18-694031575736"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<paragraph rightIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nominal}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>
