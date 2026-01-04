@@ -151,7 +151,7 @@ public class TransactionPayrollPage2 extends JFrame {
         formPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 300));
         
         // Title
-        lblTitleForm = new JLabel("Form Tambah Data Payroll");
+        lblTitleForm = new JLabel("Form Tambah Data Penggajian");
         lblTitleForm.setFont(new Font("Segoe UI", Font.BOLD, 18));
         
         // Labels
@@ -363,7 +363,7 @@ public class TransactionPayrollPage2 extends JFrame {
         tablePanel.setCustomHasBorder(false);
         tablePanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 350));
         
-        lblTableTitle = new JLabel("Data Payroll");
+        lblTableTitle = new JLabel("Data Penggajian");
         lblTableTitle.setFont(new Font("Segoe UI", Font.BOLD, 18));
         
         txtCari = new RoundedTextField();
@@ -505,7 +505,7 @@ public class TransactionPayrollPage2 extends JFrame {
             Payroll payroll = payrollController.getById(payrollId);
             
             if (payroll != null) {
-                lblTitleForm.setText("Form Edit Data Payroll");
+                lblTitleForm.setText("Form Edit Data Penggajian");
                 btnSimpan.setText("Update");
                 
                 txtPayrollId.setText(payroll.getPayrollId());
@@ -634,7 +634,7 @@ public class TransactionPayrollPage2 extends JFrame {
         cbStatus.setSelectedIndex(0);
         txtCari.setText("");
         btnSimpan.setText("Tambah");
-        lblTitleForm.setText("Form Tambah Data Payroll");
+        lblTitleForm.setText("Form Tambah Data Penggajian");
     }
     
     /**

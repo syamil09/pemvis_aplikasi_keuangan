@@ -10,7 +10,6 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.EventQueue;
 import java.awt.Font;
-import java.awt.MenuItem;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -20,6 +19,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -40,11 +41,14 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
+import model.SidebarMenu;
 
 /**
  *
@@ -55,13 +59,18 @@ public class DashboardMainFrame extends javax.swing.JFrame {
     PageMenu selectedMenu = null;
     HashMap<PageMenu, JLabel> pageMenuMap = new HashMap<>();
     SessionHelper session = SessionHelper.getInstance();
+    
+    // Menu items for dynamic sidebar
+    private List<SidebarMenu> menuItems;
 
     /**
      * Creates new form DashboardForm
      */
     public DashboardMainFrame() {
         initComponents();
+        initMenuItems();
         initPageMenuMap();
+        buildDynamicMenuSidebar();
         
         // tampilkan halaman dashboard pertama kal
         setSelectedMenu(PageMenu.DASHBOARD);
@@ -171,6 +180,208 @@ public class DashboardMainFrame extends javax.swing.JFrame {
         }
     }
     
+    /**
+     * Initialize all menu items for sidebar
+     */
+    private void initMenuItems() {
+        menuItems = new ArrayList<>();
+        
+        // Dashboard section
+        menuItems.add(new SidebarMenu("📈", "Dashboard", PageMenu.DASHBOARD, () -> {
+            DashboardPage page = new DashboardPage();
+            showContentFromPanel(page.getMainPanel());
+        }));
+        
+        // Form Master section
+        menuItems.add(new SidebarMenu("FORM MASTER")); // Header
+        menuItems.add(new SidebarMenu("👤", "Pengguna", PageMenu.PENGGUNA, () -> {
+            MasterUserPage page = new MasterUserPage();
+            showContentFromPanel(page.getMainPanel());
+        }));
+        menuItems.add(new SidebarMenu("🧾", "Akun (COA)", PageMenu.AKUN, () -> {
+            MasterAccountPage page = new MasterAccountPage();
+            showContentFromPanel(page.getMainPanel());
+        }));
+        menuItems.add(new SidebarMenu("🏷", "Kategori Transaksi", PageMenu.KATEGORI_TRANSAKSI, () -> {
+            MasterTransactionCategoryPage page = new MasterTransactionCategoryPage();
+            showContentFromPanel(page.getMainPanel());
+        }));
+        menuItems.add(new SidebarMenu("👥", "Pelanggan/Klien", PageMenu.PELANGGAN, () -> {
+            MasterClientPage page = new MasterClientPage();
+            showContentFromPanel(page.getMainPanel());
+        }));
+        menuItems.add(new SidebarMenu("🏗", "Proyek", PageMenu.PROYEK, () -> {
+            MasterProjectPage page = new MasterProjectPage();
+            showContentFromPanel(page.getMainPanel());
+        }));
+        menuItems.add(new SidebarMenu("👷", "Karyawan", PageMenu.KARYAWAN, () -> {
+            MasterEmployeePage page = new MasterEmployeePage();
+            showContentFromPanel(page.getMainPanel());
+        }));
+        
+        // Transaksi section
+        menuItems.add(new SidebarMenu("TRANSAKSI")); // Header
+        menuItems.add(new SidebarMenu("💵", "Faktur Penjualan", PageMenu.FAKTUR_PENJUALAN, () -> {
+            TransactionInvoicePage page = new TransactionInvoicePage();
+            showContentFromPanel(page.getMainPanel());
+        }));
+        menuItems.add(new SidebarMenu("💸", "Pengeluaran", PageMenu.PENGELUARAN, () -> {
+            TransactionExpensePage page = new TransactionExpensePage();
+            showContentFromPanel(page.getMainPanel());
+        }));
+        menuItems.add(new SidebarMenu("🪙", "Penerimaan Lainnya", PageMenu.PENERIMAAN, () -> {
+            TransactionOtherReceiptPage page = new TransactionOtherReceiptPage();
+            showContentFromPanel(page.getMainPanel());
+        }));
+        menuItems.add(new SidebarMenu("💰", "Penggajian", PageMenu.PENGGAJIAN, () -> {
+            TransactionPayrollPage2 page = new TransactionPayrollPage2();
+            showContentFromPanel(page.getMainPanel());
+        }));
+        
+        // Laporan section
+        menuItems.add(new SidebarMenu("LAPORAN")); // Header
+        menuItems.add(new SidebarMenu("📈", "Laba/Rugi", PageMenu.LABA_RUGI, () -> {
+//            ReportProfitLossPage page = new ReportProfitLossPage();
+//            showContentFromPanel(page.getMainPanel());
+        }));
+        menuItems.add(new SidebarMenu("📊", "Neraca", PageMenu.NERACA, () -> {
+//            ReportBalanceSheetPage page = new ReportBalanceSheetPage();
+//            showContentFromPanel(page.getMainPanel());
+        }));
+        menuItems.add(new SidebarMenu("📒", "Daftar Piutang", PageMenu.PIUTANG, () -> {
+//            ReportAccountsReceivablePage page = new ReportAccountsReceivablePage();
+//            showContentFromPanel(page.getMainPanel());
+        }));
+        menuItems.add(new SidebarMenu("📚", "Keseluruhan Jurnal", PageMenu.JURNAL, () -> {
+//            ReportJournalPage page = new ReportJournalPage();
+//            showContentFromPanel(page.getMainPanel());
+        }));
+    }
+    
+    /**
+     * Build sidebar menu dynamically from menu items list
+     */
+    private void buildDynamicMenuSidebar() {
+        // Clear sidebar completely and rebuild from scratch
+        panelSidebar.removeAll();
+        panelSidebar.setLayout(new BorderLayout());
+        
+        // === TOP: Logo/Header ===
+        JLabel header = new JLabel("Financial");
+        header.setFont(new Font("Segoe UI", Font.BOLD, 28));
+        header.setForeground(new Color(46, 204, 113));
+        header.setHorizontalAlignment(SwingConstants.LEFT);
+        header.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
+        header.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent evt) {
+                removeSelectedMenu();
+            }
+        });
+        panelSidebar.add(header, BorderLayout.NORTH);
+        
+        // === CENTER: Scrollable menu area ===
+        JPanel menuPanel = new JPanel();
+        menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.Y_AXIS));
+        menuPanel.setBackground(new Color(52, 73, 94));
+        
+        // Build menu from menu items list
+        for (SidebarMenu menuItem : menuItems) {
+            JLabel label = new JLabel();
+            label.setAlignmentX(Component.LEFT_ALIGNMENT);
+            label.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+            
+            if (menuItem.isHeader()) {
+                // Header styling
+                label.setFont(new Font("Segoe UI", Font.BOLD, 13));
+                label.setForeground(new Color(149, 165, 166));
+                label.setBorder(BorderFactory.createEmptyBorder(15, 20, 5, 10));
+                label.setBackground(new Color(52, 73, 94));
+                label.setOpaque(true);
+            } else {
+                // Regular menu item styling
+                label.setBackground(new Color(52, 73, 94));
+                label.setFont(new Font("Segoe UI Emoji", 0, 14));
+                label.setForeground(new Color(236, 240, 241));
+                label.setBorder(BorderFactory.createEmptyBorder(5, 20, 5, 10));
+                label.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                label.setOpaque(true);
+                
+                // Register in pageMenuMap
+                if (menuItem.getPageMenu() != null) {
+                    pageMenuMap.put(menuItem.getPageMenu(), label);
+                }
+                
+                // Add mouse listeners for interaction
+                label.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseEntered(MouseEvent e) {
+                        label.setBackground(new Color(46, 204, 113));
+                        label.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                    }
+
+                    @Override
+                    public void mouseExited(MouseEvent e) {
+                        if (menuItem.getPageMenu() != selectedMenu) {
+                            label.setBackground(new Color(52, 73, 94));
+                            label.setCursor(Cursor.getDefaultCursor());
+                        }
+                    }
+                    
+                    @Override
+                    public void mousePressed(MouseEvent e) {
+                        removeSelectedMenu();
+                        setSelectedMenu(menuItem.getPageMenu());
+                        
+                        // Execute menu action
+                        if (menuItem.getAction() != null) {
+                            menuItem.getAction().run();
+                        }
+                    }
+                });
+            }
+            
+            label.setText(menuItem.getFullText());
+            menuPanel.add(label);
+        }
+        
+        // Add flexible glue to push content to top
+        menuPanel.add(Box.createVerticalGlue());
+        
+        // Wrap in scroll pane for overflow handling
+        JScrollPane scrollPane = new JScrollPane(menuPanel);
+        scrollPane.setBorder(null);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        panelSidebar.add(scrollPane, BorderLayout.CENTER);
+        
+        // === BOTTOM: Logout button ===
+        JPanel bottomPanel = new JPanel(new BorderLayout());
+        bottomPanel.setBackground(new Color(52, 73, 94));
+        bottomPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        
+        components.RoundedButton logoutBtn = new components.RoundedButton();
+        logoutBtn.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        logoutBtn.setText("❮❮   Logout");
+        //logoutBtn.setCustomCornerRadius(20);
+        logoutBtn.setPreferredSize(new Dimension(180, 60));
+        logoutBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                session.logout();
+                dispose();
+                LoginForm loginForm = new LoginForm();
+                loginForm.setVisible(true);
+            }
+        });
+        bottomPanel.add(logoutBtn, BorderLayout.CENTER);
+        
+        panelSidebar.add(bottomPanel, BorderLayout.SOUTH);
+        
+        // Revalidate and repaint
+        panelSidebar.revalidate();
+        panelSidebar.repaint();
+    }
+    
     private void initPageMenuMap() {
         pageMenuMap.put(PageMenu.DASHBOARD, lblDashboard);
         pageMenuMap.put(PageMenu.PENGGUNA, lblPengguna);
@@ -189,14 +400,20 @@ public class DashboardMainFrame extends javax.swing.JFrame {
     
     private void setSelectedMenu(PageMenu menu) {
         selectedMenu = menu;
-        getMenuLabel(menu).setBackground(new Color(46,204,113));
-        getMenuLabel(menu).setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        if (getMenuLabel(menu) != null) {
+            getMenuLabel(menu).setBackground(new Color(46,204,113));
+            getMenuLabel(menu).setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            getMenuLabel(menu).repaint();
+            getMenuLabel(menu).revalidate();
+        }
     }
     
     private void removeSelectedMenu() {
         if (getMenuLabel(selectedMenu) != null) {
             getMenuLabel(selectedMenu).setBackground(new Color(52,73,94));
             getMenuLabel(selectedMenu).setCursor(Cursor.getDefaultCursor());
+            getMenuLabel(selectedMenu).repaint();
+            getMenuLabel(selectedMenu).revalidate();
         }
     }
     
