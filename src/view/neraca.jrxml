@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="8439fa54-cab6-45e6-9663-f1c12b356b4b">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<queryString language="SQL">
+		<![CDATA[-- Query Neraca (menampilkan semua akun dengan saldo)
+SELECT 
+    ROW_NUMBER() OVER (ORDER BY 
+        CASE 
+            WHEN a.type = 'asset' THEN 1
+            WHEN a.type = 'liabilitas' THEN 2
+            WHEN a.type = 'ekuitas' THEN 3
+        END, a.account_id
+    ) AS no_urut,
+    a.account_id AS kode,
+    a.name AS nama_akun,
+    CASE 
+        WHEN a.type = 'asset' THEN 'ASET'
+        WHEN a.type = 'liabilitas' THEN 'HUTANG'
+        WHEN a.type = 'ekuitas' THEN 'MODAL'
+    END AS kategori,
+    FORMAT(
+        CASE 
+            WHEN a.type = 'asset' THEN
+                COALESCE(SUM(CASE WHEN je.debit_account_id = a.account_id THEN je.amount ELSE 0 END), 0) -
+                COALESCE(SUM(CASE WHEN je.credit_account_id = a.account_id THEN je.amount ELSE 0 END), 0)
+            WHEN a.type = 'liabilitas' THEN
+                COALESCE(SUM(CASE WHEN je.credit_account_id = a.account_id THEN je.amount ELSE 0 END), 0) -
+                COALESCE(SUM(CASE WHEN je.debit_account_id = a.account_id THEN je.amount ELSE 0 END), 0)
+            WHEN a.type = 'ekuitas' THEN
+                COALESCE(SUM(CASE WHEN je.credit_account_id = a.account_id THEN je.amount ELSE 0 END), 0) -
+                COALESCE(SUM(CASE WHEN je.debit_account_id = a.account_id THEN je.amount ELSE 0 END), 0)
+            ELSE 0
+        END, 0
+    ) AS saldo
+FROM accounts a
+LEFT JOIN journal_entries je ON (
+    (je.debit_account_id = a.account_id OR je.credit_account_id = a.account_id)
+    AND je.entry_date <= '2025-12-31'
+)
+WHERE a.type IN ('asset', 'liabilitas', 'ekuitas')
+GROUP BY a.account_id, a.name, a.type
+ORDER BY 
+    CASE 
+        WHEN a.type = 'asset' THEN 1
+        WHEN a.type = 'liabilitas' THEN 2
+        WHEN a.type = 'ekuitas' THEN 3
+    END, a.account_id;]]>
+	</queryString>
+	<field name="no_urut" class="java.lang.Long"/>
+	<field name="kode" class="java.lang.String"/>
+	<field name="nama_akun" class="java.lang.String"/>
+	<field name="kategori" class="java.lang.String"/>
+	<field name="saldo" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="73" splitType="Stretch">
+			<staticText>
+				<reportElement x="136" y="24" width="267" height="19" uuid="dc80ed6b-8572-4525-ab18-3156a469f400"/>
+				<textElement textAlignment="Center">
+					<font size="13"/>
+				</textElement>
+				<text><![CDATA[We Don't Sell Software, We Sell Solution]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="148" y="0" width="245" height="24" forecolor="#00CCCC" uuid="bc79dc1c-63b0-4b6a-8b89-c01fe501cb73"/>
+				<textElement textAlignment="Center">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PT Bentang Altur Teknologia]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="61" y="43" width="435" height="11" uuid="9d2041ef-625d-4078-b418-4cf2b566c986"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Jln. Madu Indah No 95, Mabes Hankam, Cipayung, RT.2/RW.3, Bambu Apus, Cipayung, East Jakarta City, Jakarta 13890]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="61" y="54" width="435" height="11" uuid="0e5719bd-338e-4f27-a7fd-272ebe414a8e"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Email: support@bentang.id Call Center: 021-84599218 Website: https://www.bentang.id/]]></text>
+			</staticText>
+			<image>
+				<reportElement x="8" y="9" width="53" height="45" uuid="dda1cf27-fe8c-4538-ab24-c40d528a6b81"/>
+				<imageExpression><![CDATA["C:\\Users\\saput\\Downloads\\logo.jpg"]]></imageExpression>
+			</image>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="32" splitType="Stretch">
+			<staticText>
+				<reportElement x="140" y="8" width="267" height="19" uuid="9465b143-7b1c-4817-9838-98c9a7c7096e"/>
+				<textElement textAlignment="Center">
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Neraca Saldo]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="28" splitType="Stretch">
+			<staticText>
+				<reportElement x="320" y="4" width="100" height="20" uuid="6586626e-4016-498b-af00-8e300e68e91a"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Kategori]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="20" y="4" width="100" height="20" uuid="db28a12d-d755-4ba3-a04d-cb306d4d6960"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[No]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="220" y="4" width="100" height="20" uuid="bcdd9310-10ea-40fe-81f4-b87edb2e64e1"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Nama Akun]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="420" y="4" width="100" height="20" uuid="1023b5f6-019c-4ace-bc17-4135be26aed3"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Saldo]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="120" y="4" width="100" height="20" uuid="519a6820-0ded-4e91-bc4e-6e70a7519ec6"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Kode]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="37" splitType="Stretch">
+			<textField>
+				<reportElement x="20" y="10" width="100" height="20" uuid="b1842d34-d21e-49b6-bc94-a8bfbad6726b"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{no_urut}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="120" y="10" width="100" height="20" uuid="3e212518-eaed-463f-92ad-c5bb25baf1d0"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{kode}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="220" y="10" width="100" height="20" uuid="3001fc22-5cde-498d-9071-a74d00094a75"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{nama_akun}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="320" y="10" width="100" height="20" uuid="9facb654-f6b6-496a-8c50-c3b84d15b7b9"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{kategori}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="420" y="10" width="100" height="20" uuid="fdf40e21-037b-46e4-b444-c0813838fa34"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{saldo}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

@@ -108,25 +108,16 @@ public class MasterClientPage extends javax.swing.JFrame {
     }
     
     private void save() {
-//        User user = new User();
-//        user.setUserId(txtClientId.getText());
-//        user.setUsername(txtName.getText());
-//        user.setContact_Person(txtContact_Person.getText());
-//        user.setPhone(txtPhone.getText());
-//        user.setEmail(txtEmail.getText());
-//        user.setPayment_Terms(txtPayment_Terms.getText());
-//        user.setCredit_Limit(txtCredit_Limit.getText());
-//        
-//        boolean isCreateUser = btnSimpan.getText().equals("Tambah");
-//        
-//        if (isCreateUser) {
-//            String create = userCtr.createUser(user);
-//            JOptionPane.showMessageDialog(null, create);
-//        } else {
-//            String update = userCtr.updateUser(user);
-//            JOptionPane.showMessageDialog(null, update);
-//        }
-
+        Client client = new Client();
+        client.setClientId(txtClientId.getText());
+        client.setName(txtName.getText());
+        client.setContactPerson(txtContact_Person.getText());
+        client.setPhone(txtPhone1.getText());
+        client.setEmail(txtEmail.getText());
+        client.setPaymentTerms(txtPayment_Terms.getText());
+        client.setCreditLimit(Double.valueOf(txtCredit_Limit.getText()));
+        
+ 
 
         loadDataTable();
        

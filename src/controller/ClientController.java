@@ -27,7 +27,7 @@ public class ClientController {
     public String createClient(Client client) {
         System.out.println("---- Creating new user -----");
         try {
-            String sql = "INSERT INTO users (client_id, name, contact_person, phone, email, payment_terms, credit_limit) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO clients (client_id, name, contact_person, phone, email, payment_terms, credit_limit) VALUES (?, ?, ?, ?, ?, ?, ?)";
             ps = conn.prepareStatement(sql);
             ps.setString(1, client.getClientId());
             ps.setString(2, client.getName());

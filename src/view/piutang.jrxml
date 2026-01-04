@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="70fb63bd-83a9-4f85-9160-16922df088c1">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<queryString language="SQL">
+		<![CDATA[-- Query Laporan Daftar Piutang
+SELECT 
+    ROW_NUMBER() OVER (ORDER BY 
+        CASE 
+            WHEN i.status = 'overdue' THEN 1
+            WHEN i.status = 'sent' THEN 2
+            ELSE 3
+        END, 
+        i.due_date
+    ) AS no,
+    i.invoice_number AS no_invoice,
+    c.name AS nama_klien,
+    i.invoice_date AS tgl_invoice,
+    i.due_date AS jatuh_tempo,
+    FORMAT(i.total_amount - COALESCE(i.paid_amount, 0), 0) AS sisa_piutang,
+    CASE 
+        WHEN i.status = 'paid' THEN 'LUNAS'
+        WHEN i.status = 'overdue' THEN 'OVERDUE'
+        WHEN i.status = 'sent' AND CURDATE() > i.due_date THEN 'TERLAMBAT'
+        WHEN i.status = 'sent' AND CURDATE() <= i.due_date THEN 'BELUM JATUH TEMPO'
+        WHEN i.status = 'draft' THEN 'DRAFT'
+        ELSE 'UNKNOWN'
+    END AS status_piutang,
+    CASE 
+        WHEN i.status = 'paid' THEN 0
+        WHEN CURDATE() <= i.due_date THEN 0
+        ELSE DATEDIFF(CURDATE(), i.due_date)
+    END AS hari_terlambat
+FROM invoices i
+JOIN clients c ON i.client_id = c.client_id
+WHERE (i.total_amount - COALESCE(i.paid_amount, 0)) > 0  -- Hanya yang masih ada sisa piutang
+ORDER BY 
+    CASE 
+        WHEN i.status = 'overdue' THEN 1
+        WHEN i.status = 'sent' AND CURDATE() > i.due_date THEN 2
+        WHEN i.status = 'sent' THEN 3
+        ELSE 4
+    END, 
+    i.due_date;]]>
+	</queryString>
+	<field name="no" class="java.lang.Long"/>
+	<field name="no_invoice" class="java.lang.String"/>
+	<field name="nama_klien" class="java.lang.String"/>
+	<field name="tgl_invoice" class="java.sql.Date"/>
+	<field name="jatuh_tempo" class="java.sql.Date"/>
+	<field name="sisa_piutang" class="java.lang.String"/>
+	<field name="status_piutang" class="java.lang.String"/>
+	<field name="hari_terlambat" class="java.lang.Integer"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch">
+			<image>
+				<reportElement x="17" y="13" width="53" height="45" uuid="aa72964d-02ed-4b25-90d9-466270bd3980"/>
+				<imageExpression><![CDATA["C:\\Users\\saput\\Downloads\\logo.jpg"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="70" y="47" width="435" height="11" uuid="3ff19e1f-1ed0-4062-b87b-ff5dc4266376"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Jln. Madu Indah No 95, Mabes Hankam, Cipayung, RT.2/RW.3, Bambu Apus, Cipayung, East Jakarta City, Jakarta 13890]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="157" y="4" width="245" height="24" forecolor="#00CCCC" uuid="60b3fef3-5cda-4f1a-a245-1a76ff6d500c"/>
+				<textElement textAlignment="Center">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PT Bentang Altur Teknologia]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="70" y="58" width="435" height="11" uuid="ad194595-d034-48f4-95fb-0cf10e52966f"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Email: support@bentang.id Call Center: 021-84599218 Website: https://www.bentang.id/]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="145" y="28" width="267" height="19" uuid="c0c69484-6ef3-42e4-baf9-8db66a793a7c"/>
+				<textElement textAlignment="Center">
+					<font size="13"/>
+				</textElement>
+				<text><![CDATA[We Don't Sell Software, We Sell Solution]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch">
+			<staticText>
+				<reportElement x="141" y="6" width="267" height="19" uuid="15cafc8b-4551-4841-abe2-f451d0d220be"/>
+				<textElement textAlignment="Center">
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Laporan Piutang]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="37" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="11" width="54" height="20" uuid="35744835-ea76-4c6c-a9be-fb82278d94dd"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[No]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="123" y="11" width="69" height="20" uuid="df8e9d09-5857-4928-a984-6da1c7c8d2fb"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[Tgl Invoice]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="192" y="11" width="69" height="20" uuid="293df608-9d6d-4afc-bc63-bdcf1f664537"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[Jatuh Tempo]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="264" y="11" width="69" height="20" uuid="dc99a7d1-2225-4932-b6e6-edf77f566f1a"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[Nama Klien]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="333" y="11" width="69" height="20" uuid="7c096d28-d1e2-4eb5-9b2a-9bdab9f97e6a"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[Sisa Piutang]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="402" y="11" width="81" height="20" uuid="8dec9fc2-8a27-489b-ac57-971470bc6c35"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[Status Piutang]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="483" y="11" width="69" height="20" uuid="b73724f7-f2b6-4604-87cc-3c81cfa8ca26"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[Hari Terlambat]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="54" y="11" width="69" height="20" uuid="e87e8db5-df6b-4486-9f13-9cabf896050a"/>
+				<textElement textAlignment="Center"/>
+				<text><![CDATA[No Invoice]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="43" splitType="Stretch">
+			<textField>
+				<reportElement x="1" y="11" width="53" height="20" uuid="5bfea49d-8162-450a-b43e-cc6b15bd7ad0"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{no}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="123" y="11" width="69" height="20" uuid="1de690fd-7ac9-4b68-8464-8129a02e8181"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{tgl_invoice}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="192" y="11" width="69" height="20" uuid="691f7a20-ef18-4b9c-8ff9-9bfe7f2e52d3"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{jatuh_tempo}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="264" y="11" width="69" height="20" uuid="1df494fd-ddfe-422a-8a2d-6ca8dddaec0a"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{nama_klien}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="339" y="11" width="69" height="20" uuid="a7746095-bb7d-487e-bf56-4af04a70c630"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{sisa_piutang}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="408" y="11" width="69" height="20" uuid="1ae469cc-b347-4a38-9b0a-e4e052f746d3"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{status_piutang}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="477" y="11" width="69" height="20" uuid="e1ac345d-98d4-48e8-ade1-b242f3bc1b37"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{hari_terlambat}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="54" y="11" width="69" height="20" uuid="d7b5a381-acb9-47b1-ba5f-6a12c8c8b3e2"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{no_invoice}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>
