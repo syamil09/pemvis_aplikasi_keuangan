@@ -435,10 +435,15 @@ public class TransactionPayrollPage2 extends JFrame {
                                   (payroll.getBpjs() != null ? payroll.getBpjs() : 0) +
                                   (payroll.getOtherDeductions() != null ? payroll.getOtherDeductions() : 0);
                 
+                // Format period as dd/MM/yyyy (e.g., "01/01/2025")
+                String periodFormatted = String.format("01/%02d/%04d", 
+                    payroll.getPeriodMonth(), 
+                    payroll.getPeriodYear());
+                
                 tableModel.addRow(new Object[]{
                     payroll.getPayrollId(),
                     payroll.getEmployeeName(),
-                    payroll.getFormattedPeriod(),
+                    periodFormatted,  // Changed from getFormattedPeriod()
                     CurrencyHelper.formatForTable(payroll.getBasicSalary(), true),
                     CurrencyHelper.formatForTable(payroll.getAllowance(), true),
                     CurrencyHelper.formatForTable(deductions, true),
@@ -541,15 +546,34 @@ public class TransactionPayrollPage2 extends JFrame {
                 return;
             }
             
-            Payroll payroll = new Payroll();
-            payroll.setPayrollId(txtPayrollId.getText().trim());
-            payroll.setEmployeeId(txtEmployeeId.getText().trim());
-            payroll.setPeriodMonth(cbPeriodMonth.getSelectedIndex() + 1);
-            payroll.setPeriodYear((Integer) cbPeriodYear.getSelectedItem());
-            payroll.setTotalGaji(txtTotalGaji.getDoubleValue());
-            payroll.setStatus((String) cbStatus.getSelectedItem());
-            
             boolean isCreate = btnSimpan.getText().equals("Tambah");
+            
+            Payroll payroll;
+            if (isCreate) {
+                // Create new payroll object from scratch
+                payroll = new Payroll();
+                payroll.setPayrollId(txtPayrollId.getText().trim());
+                payroll.setEmployeeId(txtEmployeeId.getText().trim());
+                payroll.setPeriodMonth(cbPeriodMonth.getSelectedIndex() + 1);
+                payroll.setPeriodYear((Integer) cbPeriodYear.getSelectedItem());
+                payroll.setTotalGaji(txtTotalGaji.getDoubleValue());
+                payroll.setStatus((String) cbStatus.getSelectedItem());
+            } else {
+                // Update: Load existing data first to preserve salary fields
+                payroll = payrollController.getById(txtPayrollId.getText().trim());
+                if (payroll == null) {
+                    JOptionPane.showMessageDialog(null, "Data payroll tidak ditemukan");
+                    return;
+                }
+                
+                // Only update editable fields
+                payroll.setPeriodMonth(cbPeriodMonth.getSelectedIndex() + 1);
+                payroll.setPeriodYear((Integer) cbPeriodYear.getSelectedItem());
+                payroll.setStatus((String) cbStatus.getSelectedItem());
+                // Note: Salary fields (basic, allowance, tax, bpjs, deductions) remain unchanged
+                // They should only be changed from employee master data or regeneration
+            }
+            
             String result = isCreate ? payrollController.create(payroll) : payrollController.update(payroll);
             
             JOptionPane.showMessageDialog(null, result);

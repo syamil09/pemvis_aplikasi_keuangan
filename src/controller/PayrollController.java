@@ -308,9 +308,15 @@ public class PayrollController {
                 return "Tidak ada karyawan aktif untuk diproses";
             }
             
+            System.out.println("Found " + activeEmployees.size() + " active employees");
+            
             // Create payroll entry for each active employee with salary copied from employees
             int successCount = 0;
+            StringBuilder errorLog = new StringBuilder();
+            
             for (Employee emp : activeEmployees) {
+                System.out.println("\nProcessing employee: " + emp.getEmployeeId() + " - " + emp.getFullname());
+                
                 Payroll payroll = new Payroll(emp.getEmployeeId(), emp.getFullname(), month, year);
                 
                 // Copy salary from employee master (Option A!)
@@ -320,18 +326,42 @@ public class PayrollController {
                 payroll.setBpjs(emp.getBpjs() != null ? emp.getBpjs() : 0.0);
                 payroll.setOtherDeductions(emp.getOtherDeductions() != null ? emp.getOtherDeductions() : 0.0);
                 
+                System.out.println("Salary data - Basic: " + payroll.getBasicSalary() + 
+                                 ", Allowance: " + payroll.getAllowance() + 
+                                 ", Tax: " + payroll.getTaxPph21() +
+                                 ", BPJS: " + payroll.getBpjs() +
+                                 ", Other: " + payroll.getOtherDeductions());
+                
                 payroll.calculateTotal();
+                System.out.println("Total Gaji calculated: " + payroll.getTotalGaji());
+                
                 payroll.setNotes("Gaji " + payroll.getFormattedPeriod() + " - Draft");
                 
+                System.out.println("Validating payroll... isValid: " + payroll.isValid());
+                
                 String result = create(payroll);
+                System.out.println("Create result: " + result);
+                
                 if (result.contains("berhasil")) {
                     successCount++;
+                    System.out.println("SUCCESS for " + emp.getFullname());
+                } else {
+                    System.out.println("FAILED for " + emp.getFullname() + ": " + result);
+                    errorLog.append("\n- ").append(emp.getFullname()).append(": ").append(result);
                 }
             }
             
-            return "Berhasil generate " + successCount + " dari " + activeEmployees.size() + " karyawan untuk periode " + month + "/" + year;
+            String finalMessage = "Berhasil generate " + successCount + " dari " + activeEmployees.size() + 
+                                " karyawan untuk periode " + month + "/" + year;
+            
+            if (successCount == 0 && errorLog.length() > 0) {
+                finalMessage += "\n\nError details:" + errorLog.toString();
+            }
+            
+            return finalMessage;
             
         } catch (Exception e) {
+            e.printStackTrace();
             return "Error generate payroll: " + e.getMessage();
         }
     }
@@ -412,13 +442,15 @@ public class PayrollController {
      * @return String payroll ID
      */
     public String generateNextId() {
+        PreparedStatement psLocal = null;  // Use local variable to avoid overwriting instance ps
+        ResultSet rsLocal = null;
         try {
             String sql = "SELECT payroll_id FROM payrolls WHERE payroll_id LIKE 'PAY%' ORDER BY payroll_id DESC LIMIT 1";
-            ps = connection.prepareStatement(sql);
-            rs = ps.executeQuery();
+            psLocal = connection.prepareStatement(sql);
+            rsLocal = psLocal.executeQuery();
             
-            if (rs.next()) {
-                String lastId = rs.getString("payroll_id");
+            if (rsLocal.next()) {
+                String lastId = rsLocal.getString("payroll_id");
                 // Extract nomor dari PAY001 -> 001
                 String numericPart = lastId.substring(3);
                 int nextNumber = Integer.parseInt(numericPart) + 1;
@@ -430,6 +462,14 @@ public class PayrollController {
         } catch (SQLException | NumberFormatException e) {
             System.out.println("Error generate payroll ID: " + e.getMessage());
             return "PAY001";
+        } finally {
+            // Clean up local resources
+            try {
+                if (rsLocal != null) rsLocal.close();
+                if (psLocal != null) psLocal.close();
+            } catch (SQLException e) {
+                // Ignore cleanup errors
+            }
         }
     }
     

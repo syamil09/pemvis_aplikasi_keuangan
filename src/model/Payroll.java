@@ -325,14 +325,28 @@ public class Payroll {
      * @return true jika valid, false jika tidak
      */
     public boolean isValid() {
-        return employeeId != null && !employeeId.trim().isEmpty()
-                && periodMonth >= 1 && periodMonth <= 12
-                && periodYear > 2000
-                && basicSalary != null && basicSalary >= 0
-                && allowance != null && allowance >= 0
-                && taxPph21 != null && taxPph21 >= 0
-                && bpjs != null && bpjs >= 0
-                && otherDeductions != null && otherDeductions >= 0;
+        // Basic fields harus ada
+        if (employeeId == null || employeeId.trim().isEmpty()) {
+            return false;
+        }
+        
+        if (periodMonth < 1 || periodMonth > 12) {
+            return false;
+        }
+        
+        if (periodYear <= 2000) {
+            return false;
+        }
+        
+        // Salary fields boleh null (akan di-default ke 0 di constructor atau setter)
+        // Jika ada value, pastikan >= 0
+        if (basicSalary != null && basicSalary < 0) return false;
+        if (allowance != null && allowance < 0) return false;
+        if (taxPph21 != null && taxPph21 < 0) return false;
+        if (bpjs != null && bpjs < 0) return false;
+        if (otherDeductions != null && otherDeductions < 0) return false;
+        
+        return true;
     }
     
     @Override
