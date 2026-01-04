@@ -52,10 +52,6 @@ ORDER BY je.entry_date, je.entry_number;]]>
 				</textElement>
 				<text><![CDATA[Jln. Madu Indah No 95, Mabes Hankam, Cipayung, RT.2/RW.3, Bambu Apus, Cipayung, East Jakarta City, Jakarta 13890]]></text>
 			</staticText>
-			<image>
-				<reportElement x="9" y="7" width="53" height="45" uuid="315f3185-30fb-4635-af7c-1b6c9c99a881"/>
-				<imageExpression><![CDATA["C:\\Users\\saput\\Downloads\\logo.jpg"]]></imageExpression>
-			</image>
 			<staticText>
 				<reportElement x="62" y="52" width="435" height="11" uuid="1436c955-4ef9-406e-ae4b-96f60ca51d64"/>
 				<textElement textAlignment="Center">
@@ -168,7 +164,24 @@ ORDER BY je.entry_date, je.entry_number;]]>
 		<band height="45" splitType="Stretch"/>
 	</columnFooter>
 	<pageFooter>
-		<band height="54" splitType="Stretch"/>
+		<band height="129" splitType="Stretch">
+			<staticText>
+				<reportElement x="400" y="85" width="154" height="44" uuid="59c71c34-f1bd-4308-ac3d-52d8e24c03d8"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Aries Purwono Aji
+
+Direktur]]></text>
+			</staticText>
+			<textField pattern="&apos;Jakarta, &apos; EEEE dd MMMM yyyy">
+				<reportElement x="400" y="0" width="154" height="20" uuid="991570d3-d068-45c1-b3fd-619f603dfa92"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
 	</pageFooter>
 	<summary>
 		<band height="42" splitType="Stretch"/>
