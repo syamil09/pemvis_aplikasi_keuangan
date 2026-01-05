@@ -490,6 +490,8 @@ public class DashboardMainFrame extends javax.swing.JFrame {
         panelTopBar = new javax.swing.JPanel();
         lblWelcome = new javax.swing.JLabel();
         lblUserProfile = new javax.swing.JLabel();
+        lblTimer = new javax.swing.JLabel();
+        lblWaktu = new javax.swing.JLabel();
         panelMainContent = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -815,17 +817,25 @@ public class DashboardMainFrame extends javax.swing.JFrame {
         panelTopBar.setBackground(new java.awt.Color(255, 255, 255));
         panelTopBar.setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 20, 10, 20));
         panelTopBar.setPreferredSize(new java.awt.Dimension(750, 60));
-        panelTopBar.setLayout(new java.awt.BorderLayout());
+        panelTopBar.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         lblWelcome.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         lblWelcome.setText("Selamat datang, Hanif Maulana!");
-        panelTopBar.add(lblWelcome, java.awt.BorderLayout.CENTER);
+        panelTopBar.add(lblWelcome, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, 640, 40));
 
         lblUserProfile.setFont(new java.awt.Font("Segoe UI Emoji", 1, 24)); // NOI18N
         lblUserProfile.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         lblUserProfile.setText("👤 ");
         lblUserProfile.setToolTipText("Profil Pengguna");
-        panelTopBar.add(lblUserProfile, java.awt.BorderLayout.EAST);
+        panelTopBar.add(lblUserProfile, new org.netbeans.lib.awtextra.AbsoluteConstraints(888, 10, -1, 40));
+
+        lblTimer.setFont(new java.awt.Font("Segoe UI Emoji", 0, 14)); // NOI18N
+        lblTimer.setText("timer");
+        panelTopBar.add(lblTimer, new org.netbeans.lib.awtextra.AbsoluteConstraints(760, 20, -1, -1));
+
+        lblWaktu.setFont(new java.awt.Font("Segoe UI Emoji", 0, 14)); // NOI18N
+        lblWaktu.setText("waktu : ");
+        panelTopBar.add(lblWaktu, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 20, -1, -1));
 
         panelMainArea.add(panelTopBar, java.awt.BorderLayout.NORTH);
 
@@ -849,14 +859,14 @@ public class DashboardMainFrame extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1200, Short.MAX_VALUE)
+            .addGap(0, 1232, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
-                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addGap(0, 16, Short.MAX_VALUE)
                     .addComponent(panelSidebar, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGap(0, 0, 0)
                     .addComponent(panelMainArea, javax.swing.GroupLayout.PREFERRED_SIZE, 950, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(0, 0, Short.MAX_VALUE)))
+                    .addGap(0, 16, Short.MAX_VALUE)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1019,8 +1029,10 @@ public class DashboardMainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel lblPengeluaran;
     private javax.swing.JLabel lblPengguna;
     private javax.swing.JLabel lblProyek;
+    private javax.swing.JLabel lblTimer;
     private javax.swing.JLabel lblTransaksi;
     private javax.swing.JLabel lblUserProfile;
+    private javax.swing.JLabel lblWaktu;
     private javax.swing.JLabel lblWelcome;
     private javax.swing.JPanel panelMainArea;
     private javax.swing.JPanel panelMainContent;

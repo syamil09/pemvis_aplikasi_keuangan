@@ -17,8 +17,14 @@ public class CurrencyHelper {
     // NumberFormat untuk Rupiah
     private static final NumberFormat RUPIAH_FORMAT = NumberFormat.getCurrencyInstance(LOCALE_ID);
     
-    // DecimalFormat untuk custom formatting
-    private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#,###");
+    // DecimalFormat untuk custom formatting (titik sebagai separator ribuan)
+    private static final DecimalFormat DECIMAL_FORMAT;
+    
+    static {
+        java.text.DecimalFormatSymbols symbols = new java.text.DecimalFormatSymbols();
+        symbols.setGroupingSeparator('.');
+        DECIMAL_FORMAT = new DecimalFormat("#,###", symbols);
+    }
     
     /**
      * Format double ke format Rupiah lengkap (Rp 1.000.000,00)
@@ -35,7 +41,7 @@ public class CurrencyHelper {
      * @return string format Rupiah tanpa desimal
      */
     public static String formatToRupiahWithoutDecimal(double amount) {
-        return "Rp " + DECIMAL_FORMAT.format(Math.round(amount));
+        return "Rp" + DECIMAL_FORMAT.format(Math.round(amount));
     }
     
     /**
@@ -57,7 +63,7 @@ public class CurrencyHelper {
             double value = Double.parseDouble(amount);
             return formatToRupiah(value);
         } catch (NumberFormatException e) {
-            return "Rp 0";
+            return "Rp0";
         }
     }
     
@@ -115,7 +121,7 @@ public class CurrencyHelper {
      */
     public static String formatForTable(double amount, boolean showPrefix) {
         String formatted = DECIMAL_FORMAT.format(Math.round(amount));
-        return showPrefix ? "Rp " + formatted : formatted;
+        return showPrefix ? "Rp" + formatted : formatted;
     }
     
     /**
@@ -145,7 +151,7 @@ public class CurrencyHelper {
      * @return string format Rupiah
      */
     public static String formatToRupiah(Long amount) {
-        if (amount == null) return "Rp 0";
+        if (amount == null) return "Rp0";
         return formatToRupiah(amount.doubleValue());
     }
     
@@ -155,7 +161,7 @@ public class CurrencyHelper {
      * @return string format Rupiah
      */
     public static String formatToRupiah(Integer amount) {
-        if (amount == null) return "Rp 0";
+        if (amount == null) return "Rp0";
         return formatToRupiah(amount.doubleValue());
     }
     
