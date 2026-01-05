@@ -241,16 +241,13 @@ public class DashboardMainFrame extends javax.swing.JFrame {
         // Laporan section
         menuItems.add(new SidebarMenu("LAPORAN")); // Header
         menuItems.add(new SidebarMenu("📈", "Laba/Rugi", PageMenu.LABA_RUGI, () -> {
-//            ReportProfitLossPage page = new ReportProfitLossPage();
-//            showContentFromPanel(page.getMainPanel());
+            helper.ReportHelper.showLabaRugiReport();
         }));
         menuItems.add(new SidebarMenu("📊", "Neraca", PageMenu.NERACA, () -> {
-//            ReportBalanceSheetPage page = new ReportBalanceSheetPage();
-//            showContentFromPanel(page.getMainPanel());
+            helper.ReportHelper.showNeracaReport();
         }));
         menuItems.add(new SidebarMenu("📒", "Daftar Piutang", PageMenu.PIUTANG, () -> {
-//            ReportAccountsReceivablePage page = new ReportAccountsReceivablePage();
-//            showContentFromPanel(page.getMainPanel());
+            helper.ReportHelper.showPiutangReport();
         }));
         menuItems.add(new SidebarMenu("📚", "Keseluruhan Jurnal", PageMenu.JURNAL, () -> {
             helper.ReportHelper.showJournalReport();

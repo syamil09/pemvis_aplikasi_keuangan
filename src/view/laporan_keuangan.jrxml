@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="48234102-8522-48d1-9bf2-9b985c851562">
-	<property name="ireport.zoom" value="1.4641000000000017"/>
+	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.y" value="109"/>
+	<parameter name="startDate" class="java.lang.String">
+		<defaultValueExpression><![CDATA["2025-01-01"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="endDate" class="java.lang.String">
+		<defaultValueExpression><![CDATA["2025-12-31"]]></defaultValueExpression>
+	</parameter>
 	<queryString language="SQL">
 		<![CDATA[SELECT 
     a.account_id AS kode,
@@ -18,8 +24,8 @@
     ) AS nominal
 FROM accounts a
 LEFT JOIN journal_entries je ON (
-    (a.type = 'pendapatan' AND je.credit_account_id = a.account_id AND je.entry_date BETWEEN '2025-01-01' AND '2025-12-31') OR
-    (a.type = 'beban' AND je.debit_account_id = a.account_id AND je.entry_date BETWEEN '2025-01-01' AND '2025-12-31')
+    (a.type = 'pendapatan' AND je.credit_account_id = a.account_id AND je.entry_date BETWEEN $P{startDate} AND $P{endDate}) OR
+    (a.type = 'beban' AND je.debit_account_id = a.account_id AND je.entry_date BETWEEN $P{startDate} AND $P{endDate})
 )
 WHERE a.type IN ('pendapatan', 'beban')
 GROUP BY a.account_id, a.name, a.type
@@ -49,8 +55,8 @@ ORDER BY a.type, a.account_id;]]>
 				<text><![CDATA[Email: support@bentang.id Call Center: 021-84599218 Website: https://www.bentang.id/]]></text>
 			</staticText>
 			<image>
-				<reportElement x="21" y="10" width="58" height="58" uuid="512f42a1-d05d-4195-a5fd-82f76a0cb986"/>
-				<imageExpression><![CDATA["F:\\Document\\tugas\\pemrograman visual\\project pemvis\\pemvis_aplikasi_keuangan\\src\\images\\logo-pt-bentang.jpg"]]></imageExpression>
+				<reportElement x="21" y="10" width="56" height="58" uuid="512f42a1-d05d-4195-a5fd-82f76a0cb986"/>
+				<imageExpression><![CDATA["src/images/logo-pt-bentang.jpg"]]></imageExpression>
 			</image>
 			<staticText>
 				<reportElement x="166" y="3" width="245" height="24" forecolor="#00CCCC" uuid="f7d6fa57-b614-42c2-9ad4-e8c0912933f9"/>
@@ -164,7 +170,24 @@ ORDER BY a.type, a.account_id;]]>
 		<band height="45" splitType="Stretch"/>
 	</columnFooter>
 	<pageFooter>
-		<band height="54" splitType="Stretch"/>
+		<band height="102" splitType="Stretch">
+			<textField pattern="&apos;Jakarta, &apos; EEEE dd MMMM yyyy">
+				<reportElement x="401" y="0" width="154" height="20" uuid="9b635565-b65f-4a33-8cd6-6ff6865af961"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="401" y="58" width="154" height="44" uuid="e8301570-078c-49f7-81fb-670f6281907d"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Aries Purwono Aji
+
+Direktur]]></text>
+			</staticText>
+		</band>
 	</pageFooter>
 	<summary>
 		<band height="42" splitType="Stretch"/>

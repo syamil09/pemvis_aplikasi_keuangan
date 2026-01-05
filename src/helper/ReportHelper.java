@@ -95,6 +95,44 @@ public class ReportHelper {
     }
     
     /**
+     * Tampilkan laporan laba rugi dengan input tanggal dari popup
+     */
+    public static void showLabaRugiReport() {
+        String[] dates = PopupReportDateRange.showDialog();
+        
+        if (dates != null) {
+            Map<String, Object> params = new HashMap<>();
+            params.put("startDate", dates[0]);
+            params.put("endDate", dates[1]);
+            
+            showReport("src/view/laporan_keuangan.jrxml", params);
+        }
+    }
+    
+    /**
+     * Tampilkan laporan neraca dengan input tanggal dari popup
+     * Neraca hanya butuh tanggal akhir (per tanggal tertentu)
+     */
+    public static void showNeracaReport() {
+        String[] dates = PopupReportDateRange.showDialog();
+        
+        if (dates != null) {
+            Map<String, Object> params = new HashMap<>();
+            params.put("endDate", dates[1]); // neraca hanya pakai tanggal akhir
+            
+            showReport("src/view/neraca.jrxml", params);
+        }
+    }
+    
+    /**
+     * Tampilkan laporan piutang langsung tanpa popup
+     * Report piutang tidak perlu filter tanggal
+     */
+    public static void showPiutangReport() {
+        showReport("src/view/piutang.jrxml");
+    }
+    
+    /**
      * Show loading dialog
      */
     private static void showLoading() {
