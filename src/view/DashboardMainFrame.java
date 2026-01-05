@@ -82,6 +82,41 @@ public class DashboardMainFrame extends javax.swing.JFrame {
         makeMainContentScrollable();
         validateMenuBasedOnRole();
         
+        // initialize date and time display
+        initDateTime();
+    }
+    
+    /**
+     * Initialize date and time labels with live update
+     */
+    private void initDateTime() {
+        // set locale Indonesia
+        java.util.Locale localeId = new java.util.Locale("id", "ID");
+        java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("EEEE, d MMMM yyyy", localeId);
+        java.text.SimpleDateFormat timeFormat = new java.text.SimpleDateFormat("HH:mm:ss");
+        
+        // set initial date
+        java.util.Date now = new java.util.Date();
+        lblWaktu.setText(dateFormat.format(now));
+        lblTimer.setText(timeFormat.format(now));
+        
+        // create timer to update time every second
+        Timer timer = new Timer(1000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                java.util.Date current = new java.util.Date();
+                lblTimer.setText(timeFormat.format(current));
+                
+                // update date at midnight (when hour is 0 and minute is 0 and second is 0)
+                java.util.Calendar cal = java.util.Calendar.getInstance();
+                if (cal.get(java.util.Calendar.HOUR_OF_DAY) == 0 
+                    && cal.get(java.util.Calendar.MINUTE) == 0 
+                    && cal.get(java.util.Calendar.SECOND) == 0) {
+                    lblWaktu.setText(dateFormat.format(current));
+                }
+            }
+        });
+        timer.start();
     }
     
     private void validateMenuBasedOnRole() {
@@ -821,7 +856,7 @@ public class DashboardMainFrame extends javax.swing.JFrame {
 
         lblWelcome.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         lblWelcome.setText("Selamat datang, Hanif Maulana!");
-        panelTopBar.add(lblWelcome, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, 640, 40));
+        panelTopBar.add(lblWelcome, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, 480, 40));
 
         lblUserProfile.setFont(new java.awt.Font("Segoe UI Emoji", 1, 24)); // NOI18N
         lblUserProfile.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
@@ -835,7 +870,7 @@ public class DashboardMainFrame extends javax.swing.JFrame {
 
         lblWaktu.setFont(new java.awt.Font("Segoe UI Emoji", 0, 14)); // NOI18N
         lblWaktu.setText("waktu : ");
-        panelTopBar.add(lblWaktu, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 20, -1, -1));
+        panelTopBar.add(lblWaktu, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 20, -1, -1));
 
         panelMainArea.add(panelTopBar, java.awt.BorderLayout.NORTH);
 
