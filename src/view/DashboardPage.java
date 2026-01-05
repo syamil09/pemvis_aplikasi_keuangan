@@ -5,7 +5,11 @@
 package view;
 
 import components.CustomTable;
+import controller.DashboardController;
+import helper.CurrencyHelper;
+import model.JournalEntry;
 import java.awt.Container;
+import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.table.DefaultTableModel;
@@ -16,23 +20,99 @@ import javax.swing.table.DefaultTableModel;
  */
 public class DashboardPage extends javax.swing.JFrame {
 
+    private DashboardController dashboardController;
+    
     /**
      * Creates new form MasterUserForm
      */
     public DashboardPage() {
+        dashboardController = new DashboardController();
         initComponents();
+        loadDashboardData();
+    }
+    
+    /**
+     * Load real data to dashboard cards and table
+     */
+    private void loadDashboardData() {
+        System.out.println("===== DEBUG LOAD DASHBOARD DATA =====");
+        
+        // load active project count
+        int projectCount = dashboardController.getActiveProjectCount();
+        lblCoutProject.setText(String.valueOf(projectCount));
+        System.out.println("[DEBUG] Active projects: " + projectCount);
+        
+        // load current month income
+        double currentIncome = dashboardController.getCurrentMonthIncome();
+        double lastIncome = dashboardController.getLastMonthIncome();
+        lblTotalIncome.setText(CurrencyHelper.formatToRupiahWithoutDecimal(currentIncome));
+        System.out.println("[DEBUG] Current month income: " + currentIncome);
+        System.out.println("[DEBUG] Last month income: " + lastIncome);
+        
+        // calculate income change percentage
+        double incomeChange = dashboardController.calculatePercentageChange(currentIncome, lastIncome);
+        System.out.println("[DEBUG] Income change %: " + incomeChange);
+        if (incomeChange >= 0) {
+            lblStatusIncome.setText(String.format("Naik %.0f%% dari bulan lalu", incomeChange));
+            iconStatusIncome.setImageIconPath("images/icon_up.png");
+        } else {
+            lblStatusIncome.setText(String.format("Turun %.0f%% dari bulan lalu", Math.abs(incomeChange)));
+            iconStatusIncome.setImageIconPath("images/icon_down.png");
+        }
+        
+        // load current month expense
+        double currentExpense = dashboardController.getCurrentMonthExpense();
+        double lastExpense = dashboardController.getLastMonthExpense();
+        lblTotalOutcome.setText(CurrencyHelper.formatToRupiahWithoutDecimal(currentExpense));
+        System.out.println("[DEBUG] Current month expense: " + currentExpense);
+        System.out.println("[DEBUG] Last month expense: " + lastExpense);
+        
+        // calculate expense change percentage
+        double expenseChange = dashboardController.calculatePercentageChange(currentExpense, lastExpense);
+        System.out.println("[DEBUG] Expense change %: " + expenseChange);
+        if (expenseChange >= 0) {
+            lblStatusOutcome.setText(String.format("Naik %.0f%% dari bulan lalu", expenseChange));
+            iconStatusOutcome.setImageIconPath("images/icon_up.png");
+        } else {
+            lblStatusOutcome.setText(String.format("Turun %.0f%% dari bulan lalu", Math.abs(expenseChange)));
+            iconStatusOutcome.setImageIconPath("images/icon_down.png");
+        }
+        
+        System.out.println("===== END DEBUG =====");
+        
+        // load recent transactions to table
+        loadRecentTransactions();
+    }
+    
+    /**
+     * Load recent transactions to table
+     */
+    private void loadRecentTransactions() {
         DefaultTableModel tableModel = new DefaultTableModel();
-        Object[] colums = {"ID Pelanggan", "Nama", "Jenis Kelamin", "No. Telepon", "Aksi"};
-        tableModel.setColumnIdentifiers(colums);
-        tableModel.addRow(new Object[]{"PEL001", "John", "Laki-laki", "0912092109", ""});
-        tableModel.addRow(new Object[]{"PEL001", "John", "Laki-laki", "0912092109", ""});
-        tableModel.addRow(new Object[]{"PEL001", "John", "Laki-laki", "0912092109", ""});
-        tableModel.addRow(new Object[]{"PEL001", "John", "Laki-laki", "0912092109", ""});
-        tableModel.addRow(new Object[]{"PEL001", "John", "Laki-laki", "0912092109", ""});
-        tableModel.addRow(new Object[]{"PEL001", "John", "Laki-laki", "0912092109", ""});
-        tableModel.addRow(new Object[]{"PEL001", "John", "Laki-laki", "0912092109", ""});
-
-
+        Object[] columns = {"Tipe", "Tanggal", "Deskripsi", "Jumlah"};
+        tableModel.setColumnIdentifiers(columns);
+        
+        List<JournalEntry> transactions = dashboardController.getRecentTransactions(10);
+        for (JournalEntry entry : transactions) {
+            tableModel.addRow(new Object[]{
+                entry.getTransactionTypeLabel(),
+                entry.getEntryDate(),
+                entry.getDescription(),
+                CurrencyHelper.formatForTable(entry.getAmount(), true)
+            });
+        }
+        
+        customTable1.setModel(tableModel);
+        
+        // setup column widths
+        CustomTable.ColumnConfig[] configs = {
+            new CustomTable.ColumnConfig(100, CustomTable.ALIGN_CENTER),
+            new CustomTable.ColumnConfig(100, CustomTable.ALIGN_CENTER),
+            new CustomTable.ColumnConfig(300, CustomTable.ALIGN_LEFT),
+            new CustomTable.ColumnConfig(120, CustomTable.ALIGN_RIGHT)
+        };
+        customTable1.setColumnConfigs(configs);
+        customTable1.setShowActionButtons(false);
     }
     
     public JPanel getMainPanel() {
@@ -61,20 +141,20 @@ public class DashboardPage extends javax.swing.JFrame {
         roundedPanel1 = new components.RoundedPanel();
         cardItem1 = new components.RoundedPanel();
         jLabel2 = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
+        lblTotalIncome = new javax.swing.JLabel();
         customImageIcon2 = new components.CustomImageIcon();
-        jLabel10 = new javax.swing.JLabel();
-        customImageIcon3 = new components.CustomImageIcon();
+        lblStatusIncome = new javax.swing.JLabel();
+        iconStatusIncome = new components.CustomImageIcon();
         cardItem2 = new components.RoundedPanel();
         jLabel3 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
+        lblTotalOutcome = new javax.swing.JLabel();
         customImageIcon4 = new components.CustomImageIcon();
-        jLabel11 = new javax.swing.JLabel();
-        customImageIcon5 = new components.CustomImageIcon();
+        lblStatusOutcome = new javax.swing.JLabel();
+        iconStatusOutcome = new components.CustomImageIcon();
         cardItem = new components.RoundedPanel();
         jLabel1 = new javax.swing.JLabel();
         customImageIcon1 = new components.CustomImageIcon();
-        jLabel4 = new javax.swing.JLabel();
+        lblCoutProject = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         panelHighlight1 = new components.RoundedPanel();
         panelHighlightText1 = new javax.swing.JPanel();
@@ -104,20 +184,20 @@ public class DashboardPage extends javax.swing.JFrame {
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel2.setText("Pemasukan Bulan Ini");
 
-        jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        jLabel8.setForeground(new java.awt.Color(53, 222, 222));
-        jLabel8.setText("Rp53.420.000");
+        lblTotalIncome.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        lblTotalIncome.setForeground(new java.awt.Color(53, 222, 222));
+        lblTotalIncome.setText("Rp53.420.000");
 
         customImageIcon2.setImageIconPath("images/icon_income.png");
         customImageIcon2.setInheritsPopupMenu(false);
 
-        jLabel10.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel10.setText("Naik 8% dari bulan lalu");
+        lblStatusIncome.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        lblStatusIncome.setText("Naik 8% dari bulan lalu");
 
-        customImageIcon3.setImageIconHeight(15);
-        customImageIcon3.setImageIconPath("images/icon_up.png");
-        customImageIcon3.setImageIconWidth(15);
-        customImageIcon3.setInheritsPopupMenu(false);
+        iconStatusIncome.setImageIconHeight(15);
+        iconStatusIncome.setImageIconPath("images/icon_up.png");
+        iconStatusIncome.setImageIconWidth(15);
+        iconStatusIncome.setInheritsPopupMenu(false);
 
         javax.swing.GroupLayout cardItem1Layout = new javax.swing.GroupLayout(cardItem1);
         cardItem1.setLayout(cardItem1Layout);
@@ -133,11 +213,11 @@ public class DashboardPage extends javax.swing.JFrame {
                     .addGroup(cardItem1Layout.createSequentialGroup()
                         .addGap(18, 18, 18)
                         .addGroup(cardItem1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel8)
+                            .addComponent(lblTotalIncome)
                             .addGroup(cardItem1Layout.createSequentialGroup()
-                                .addComponent(customImageIcon3, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(iconStatusIncome, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel10)))))
+                                .addComponent(lblStatusIncome)))))
                 .addGap(0, 45, Short.MAX_VALUE))
         );
         cardItem1Layout.setVerticalGroup(
@@ -151,11 +231,11 @@ public class DashboardPage extends javax.swing.JFrame {
                         .addGap(28, 28, 28)
                         .addComponent(customImageIcon2, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel8)
+                .addComponent(lblTotalIncome)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(cardItem1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel10)
-                    .addComponent(customImageIcon3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(lblStatusIncome)
+                    .addComponent(iconStatusIncome, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(13, 13, 13))
         );
 
@@ -165,20 +245,20 @@ public class DashboardPage extends javax.swing.JFrame {
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel3.setText("Pengeluaran Bulan Ini");
 
-        jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        jLabel9.setForeground(new java.awt.Color(156, 39, 176));
-        jLabel9.setText("Rp13.340.000");
+        lblTotalOutcome.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        lblTotalOutcome.setForeground(new java.awt.Color(156, 39, 176));
+        lblTotalOutcome.setText("Rp13.340.000");
 
         customImageIcon4.setImageIconPath("images/icon_expense.png");
         customImageIcon4.setInheritsPopupMenu(false);
 
-        jLabel11.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel11.setText("Turun 3% dari bulan lalu");
+        lblStatusOutcome.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        lblStatusOutcome.setText("Turun 3% dari bulan lalu");
 
-        customImageIcon5.setImageIconHeight(15);
-        customImageIcon5.setImageIconPath("images/icon_down.png");
-        customImageIcon5.setImageIconWidth(15);
-        customImageIcon5.setInheritsPopupMenu(false);
+        iconStatusOutcome.setImageIconHeight(15);
+        iconStatusOutcome.setImageIconPath("images/icon_down.png");
+        iconStatusOutcome.setImageIconWidth(15);
+        iconStatusOutcome.setInheritsPopupMenu(false);
 
         javax.swing.GroupLayout cardItem2Layout = new javax.swing.GroupLayout(cardItem2);
         cardItem2.setLayout(cardItem2Layout);
@@ -195,10 +275,10 @@ public class DashboardPage extends javax.swing.JFrame {
                         .addGap(20, 20, 20)
                         .addGroup(cardItem2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(cardItem2Layout.createSequentialGroup()
-                                .addComponent(customImageIcon5, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(iconStatusOutcome, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel11))
-                            .addComponent(jLabel9))))
+                                .addComponent(lblStatusOutcome))
+                            .addComponent(lblTotalOutcome))))
                 .addGap(0, 39, Short.MAX_VALUE))
         );
         cardItem2Layout.setVerticalGroup(
@@ -212,11 +292,11 @@ public class DashboardPage extends javax.swing.JFrame {
                         .addGap(30, 30, 30)
                         .addComponent(customImageIcon4, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(18, 18, 18)
-                .addComponent(jLabel9)
+                .addComponent(lblTotalOutcome)
                 .addGap(12, 12, 12)
                 .addGroup(cardItem2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel11)
-                    .addComponent(customImageIcon5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(lblStatusOutcome)
+                    .addComponent(iconStatusOutcome, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 15, Short.MAX_VALUE))
         );
 
@@ -229,9 +309,9 @@ public class DashboardPage extends javax.swing.JFrame {
         customImageIcon1.setImageIconPath("images/icon_project.png");
         customImageIcon1.setInheritsPopupMenu(false);
 
-        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(46, 204, 113));
-        jLabel4.setText("8");
+        lblCoutProject.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        lblCoutProject.setForeground(new java.awt.Color(46, 204, 113));
+        lblCoutProject.setText("8");
 
         jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(46, 204, 113));
@@ -245,7 +325,7 @@ public class DashboardPage extends javax.swing.JFrame {
                 .addGroup(cardItemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(cardItemLayout.createSequentialGroup()
                         .addGap(23, 23, 23)
-                        .addComponent(jLabel4)
+                        .addComponent(lblCoutProject)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel7))
                     .addGroup(cardItemLayout.createSequentialGroup()
@@ -267,7 +347,7 @@ public class DashboardPage extends javax.swing.JFrame {
                         .addComponent(jLabel1)))
                 .addGap(18, 18, 18)
                 .addGroup(cardItemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
+                    .addComponent(lblCoutProject)
                     .addComponent(jLabel7))
                 .addGap(0, 0, Short.MAX_VALUE))
         );
@@ -476,23 +556,23 @@ public class DashboardPage extends javax.swing.JFrame {
     private components.RoundedPanel cardItem2;
     private components.CustomImageIcon customImageIcon1;
     private components.CustomImageIcon customImageIcon2;
-    private components.CustomImageIcon customImageIcon3;
     private components.CustomImageIcon customImageIcon4;
-    private components.CustomImageIcon customImageIcon5;
     private components.CustomTable customTable1;
+    private components.CustomImageIcon iconStatusIncome;
+    private components.CustomImageIcon iconStatusOutcome;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JLabel lblChartIcon1;
+    private javax.swing.JLabel lblCoutProject;
     private javax.swing.JLabel lblKelolaSemua1;
     private javax.swing.JLabel lblPantauKeuangan1;
+    private javax.swing.JLabel lblStatusIncome;
+    private javax.swing.JLabel lblStatusOutcome;
+    private javax.swing.JLabel lblTotalIncome;
+    private javax.swing.JLabel lblTotalOutcome;
     private javax.swing.JPanel mainPanel;
     private components.RoundedPanel panelHighlight1;
     private javax.swing.JPanel panelHighlightText1;

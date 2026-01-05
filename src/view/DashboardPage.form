@@ -142,11 +142,11 @@
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="jLabel8" min="-2" max="-2" attributes="0"/>
+                                      <Component id="lblTotalIncome" min="-2" max="-2" attributes="0"/>
                                       <Group type="102" attributes="0">
-                                          <Component id="customImageIcon3" min="-2" pref="22" max="-2" attributes="0"/>
+                                          <Component id="iconStatusIncome" min="-2" pref="22" max="-2" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="jLabel10" min="-2" max="-2" attributes="0"/>
+                                          <Component id="lblStatusIncome" min="-2" max="-2" attributes="0"/>
                                       </Group>
                                   </Group>
                               </Group>
@@ -169,11 +169,11 @@
                               </Group>
                           </Group>
                           <EmptySpace max="32767" attributes="0"/>
-                          <Component id="jLabel8" min="-2" max="-2" attributes="0"/>
+                          <Component id="lblTotalIncome" min="-2" max="-2" attributes="0"/>
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="1" attributes="0">
-                              <Component id="jLabel10" min="-2" max="-2" attributes="0"/>
-                              <Component id="customImageIcon3" min="-2" max="-2" attributes="0"/>
+                              <Component id="lblStatusIncome" min="-2" max="-2" attributes="0"/>
+                              <Component id="iconStatusIncome" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace min="-2" pref="13" max="-2" attributes="0"/>
                       </Group>
@@ -189,7 +189,7 @@
                     <Property name="text" type="java.lang.String" value="Pemasukan Bulan Ini"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JLabel" name="jLabel8">
+                <Component class="javax.swing.JLabel" name="lblTotalIncome">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                       <Font name="Segoe UI" size="24" style="1"/>
@@ -206,7 +206,7 @@
                     <Property name="inheritsPopupMenu" type="boolean" value="false"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JLabel" name="jLabel10">
+                <Component class="javax.swing.JLabel" name="lblStatusIncome">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                       <Font name="Segoe UI" size="14" style="0"/>
@@ -214,7 +214,7 @@
                     <Property name="text" type="java.lang.String" value="Naik 8% dari bulan lalu"/>
                   </Properties>
                 </Component>
-                <Component class="components.CustomImageIcon" name="customImageIcon3">
+                <Component class="components.CustomImageIcon" name="iconStatusIncome">
                   <Properties>
                     <Property name="imageIconHeight" type="int" value="15"/>
                     <Property name="imageIconPath" type="java.lang.String" value="images/icon_up.png"/>
@@ -245,11 +245,11 @@
                                   <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Group type="102" attributes="0">
-                                          <Component id="customImageIcon5" min="-2" pref="22" max="-2" attributes="0"/>
+                                          <Component id="iconStatusOutcome" min="-2" pref="22" max="-2" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="jLabel11" min="-2" max="-2" attributes="0"/>
+                                          <Component id="lblStatusOutcome" min="-2" max="-2" attributes="0"/>
                                       </Group>
-                                      <Component id="jLabel9" min="-2" max="-2" attributes="0"/>
+                                      <Component id="lblTotalOutcome" min="-2" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
                           </Group>
@@ -271,11 +271,11 @@
                               </Group>
                           </Group>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
-                          <Component id="jLabel9" min="-2" max="-2" attributes="0"/>
+                          <Component id="lblTotalOutcome" min="-2" max="-2" attributes="0"/>
                           <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="1" attributes="0">
-                              <Component id="jLabel11" min="-2" max="-2" attributes="0"/>
-                              <Component id="customImageIcon5" min="-2" max="-2" attributes="0"/>
+                              <Component id="lblStatusOutcome" min="-2" max="-2" attributes="0"/>
+                              <Component id="iconStatusOutcome" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace min="0" pref="15" max="32767" attributes="0"/>
                       </Group>
@@ -291,7 +291,7 @@
                     <Property name="text" type="java.lang.String" value="Pengeluaran Bulan Ini"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JLabel" name="jLabel9">
+                <Component class="javax.swing.JLabel" name="lblTotalOutcome">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                       <Font name="Segoe UI" size="24" style="1"/>
@@ -308,7 +308,7 @@
                     <Property name="inheritsPopupMenu" type="boolean" value="false"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JLabel" name="jLabel11">
+                <Component class="javax.swing.JLabel" name="lblStatusOutcome">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                       <Font name="Segoe UI" size="14" style="0"/>
@@ -316,7 +316,7 @@
                     <Property name="text" type="java.lang.String" value="Turun 3% dari bulan lalu"/>
                   </Properties>
                 </Component>
-                <Component class="components.CustomImageIcon" name="customImageIcon5">
+                <Component class="components.CustomImageIcon" name="iconStatusOutcome">
                   <Properties>
                     <Property name="imageIconHeight" type="int" value="15"/>
                     <Property name="imageIconPath" type="java.lang.String" value="images/icon_down.png"/>
@@ -339,7 +339,7 @@
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" attributes="0">
                                   <EmptySpace min="-2" pref="23" max="-2" attributes="0"/>
-                                  <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
+                                  <Component id="lblCoutProject" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="jLabel7" min="-2" max="-2" attributes="0"/>
                               </Group>
@@ -369,7 +369,7 @@
                           </Group>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="jLabel4" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="lblCoutProject" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="jLabel7" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
@@ -392,7 +392,7 @@
                     <Property name="inheritsPopupMenu" type="boolean" value="false"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JLabel" name="jLabel4">
+                <Component class="javax.swing.JLabel" name="lblCoutProject">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                       <Font name="Segoe UI" size="24" style="1"/>
