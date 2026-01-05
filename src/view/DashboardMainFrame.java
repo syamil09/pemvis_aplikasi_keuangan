@@ -253,8 +253,7 @@ public class DashboardMainFrame extends javax.swing.JFrame {
 //            showContentFromPanel(page.getMainPanel());
         }));
         menuItems.add(new SidebarMenu("📚", "Keseluruhan Jurnal", PageMenu.JURNAL, () -> {
-//            ReportJournalPage page = new ReportJournalPage();
-//            showContentFromPanel(page.getMainPanel());
+            helper.ReportHelper.showJournalReport();
         }));
     }
     

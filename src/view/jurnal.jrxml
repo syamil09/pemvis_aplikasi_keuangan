@@ -3,6 +3,12 @@
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="1"/>
+	<parameter name="startDate" class="java.lang.String">
+		<defaultValueExpression><![CDATA["2025-01-01"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="endDate" class="java.lang.String">
+		<defaultValueExpression><![CDATA["2025-12-31"]]></defaultValueExpression>
+	</parameter>
 	<queryString language="SQL">
 		<![CDATA[-- Laporan Jurnal Sederhana - Hanya dari table journal_entries
 SELECT 
@@ -15,7 +21,7 @@ SELECT
     FORMAT(je.amount, 0) AS jumlah,
     je.reference_number AS referensi
 FROM journal_entries je
-WHERE je.entry_date BETWEEN '2025-01-01' AND '2025-12-31'
+WHERE je.entry_date BETWEEN $P{startDate} AND $P{endDate}
 ORDER BY je.entry_date, je.entry_number;]]>
 	</queryString>
 	<field name="no_urut" class="java.lang.Long"/>
