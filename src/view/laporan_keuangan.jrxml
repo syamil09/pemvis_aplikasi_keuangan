@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="48234102-8522-48d1-9bf2-9b985c851562">
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="109"/>
+	<property name="ireport.y" value="13"/>
 	<parameter name="startDate" class="java.lang.String">
 		<defaultValueExpression><![CDATA["2025-01-01"]]></defaultValueExpression>
 	</parameter>
@@ -170,16 +170,19 @@ ORDER BY a.type, a.account_id;]]>
 		<band height="45" splitType="Stretch"/>
 	</columnFooter>
 	<pageFooter>
-		<band height="102" splitType="Stretch">
-			<textField pattern="&apos;Jakarta, &apos; EEEE dd MMMM yyyy">
-				<reportElement x="401" y="0" width="154" height="20" uuid="9b635565-b65f-4a33-8cd6-6ff6865af961"/>
+		<band height="23" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="112" splitType="Stretch">
+				<textField>
+				<reportElement x="396" y="5" width="154" height="20" uuid="9b635565-b65f-4a33-8cd6-6ff6865af961"/>
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+				<textFieldExpression><![CDATA[new java.text.SimpleDateFormat("'Jakarta, ' EEEE dd MMMM yyyy", new java.util.Locale("id", "ID")).format(new java.util.Date())]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="401" y="58" width="154" height="44" uuid="e8301570-078c-49f7-81fb-670f6281907d"/>
+				<reportElement x="396" y="63" width="154" height="44" uuid="e8301570-078c-49f7-81fb-670f6281907d"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
@@ -188,8 +191,5 @@ ORDER BY a.type, a.account_id;]]>
 Direktur]]></text>
 			</staticText>
 		</band>
-	</pageFooter>
-	<summary>
-		<band height="42" splitType="Stretch"/>
 	</summary>
 </jasperReport>

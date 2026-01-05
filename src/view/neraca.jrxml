@@ -165,12 +165,12 @@ ORDER BY
 	</columnFooter>
 	<pageFooter>
 		<band height="120" splitType="Stretch">
-			<textField pattern="&apos;Jakarta, &apos; EEEE dd MMMM yyyy">
+			<textField>
 				<reportElement x="403" y="0" width="154" height="20" uuid="cbc1f37c-c07e-4e83-9f78-89402ea09ea7"/>
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+				<textFieldExpression><![CDATA[new java.text.SimpleDateFormat("'Jakarta, ' EEEE dd MMMM yyyy", new java.util.Locale("id", "ID")).format(new java.util.Date())]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="401" y="76" width="154" height="44" uuid="98b8b6a2-c50d-42ab-a331-d0774038df57"/>

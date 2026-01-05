@@ -127,7 +127,7 @@ public class TransactionPayrollPage2 extends JFrame {
             layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(mainPanel, GroupLayout.DEFAULT_SIZE, 960, Short.MAX_VALUE)
+                    .addComponent(mainPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -257,7 +257,7 @@ public class TransactionPayrollPage2 extends JFrame {
         btnGeneratePayroll = new RoundedButton("⚡ Generate Payroll");
         btnGeneratePayroll.setCustomCornerRadius(12);
         btnGeneratePayroll.setCustomColorScheme(RoundedButton.ColorScheme.SUCCESS);
-        btnGeneratePayroll.setPreferredSize(new Dimension(180, 33));
+        btnGeneratePayroll.setPreferredSize(new Dimension(160, 33));
         btnGeneratePayroll.addActionListener(e -> generatePayrollForPeriod());
         
         btnSimpan = new RoundedButton("Tambah");
@@ -307,8 +307,8 @@ public class TransactionPayrollPage2 extends JFrame {
                                     .addComponent(txtEmployeeId, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                                     .addGap(10, 10, 10)
                                     .addComponent(btnSearchEmployee, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                                .addComponent(txtEmployeeName, GroupLayout.PREFERRED_SIZE, 300, GroupLayout.PREFERRED_SIZE))
-                            .addGap(50, 50, 50)
+                                .addComponent(txtEmployeeName, GroupLayout.PREFERRED_SIZE, 250, GroupLayout.PREFERRED_SIZE))
+                            .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 30, Short.MAX_VALUE)
                             .addGroup(formLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
                                 .addComponent(lblTotalGaji)
                                 .addComponent(lblStatus))
