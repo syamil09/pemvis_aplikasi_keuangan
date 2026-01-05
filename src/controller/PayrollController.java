@@ -7,6 +7,7 @@ package controller;
 import connection.DBConnection;
 import model.Payroll;
 import model.Employee;
+import model.JournalEntry;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,9 +25,11 @@ public class PayrollController {
     private final Connection connection;
     private PreparedStatement ps;
     private ResultSet rs;
+    private final JournalEntryController journalCtr;
     
     public PayrollController() {
         this.connection = DBConnection.getConnection();
+        this.journalCtr = new JournalEntryController();
     }
     
     /**
@@ -42,19 +45,75 @@ public class PayrollController {
             String sql;
             
             if (searchItem != null && !searchItem.trim().isEmpty()) {
-                sql = "SELECT * FROM payrolls " +
-                      "WHERE payroll_id LIKE ? OR " +
-                      "employee_name LIKE ? OR " +
-                      "notes LIKE ? " +
-                      "ORDER BY period_year DESC, period_month DESC, created_at DESC";
-                ps = connection.prepareStatement(sql);
+                String searchTrimmed = searchItem.trim();
                 
-                String searchPattern = "%" + searchItem.trim() + "%";
-                ps.setString(1, searchPattern);
-                ps.setString(2, searchPattern);
-                ps.setString(3, searchPattern);
+                // check if search is period format (e.g., "01/2025", "1/2025", "Januari 2025")
+                boolean isPeriodSearch = false;
+                int searchMonth = 0;
+                int searchYear = 0;
                 
-                System.out.println("Searching for: " + searchItem);
+                // try parse format "MM/YYYY" or "M/YYYY"
+                if (searchTrimmed.contains("/")) {
+                    String[] parts = searchTrimmed.split("/");
+                    if (parts.length == 2) {
+                        try {
+                            searchMonth = Integer.parseInt(parts[0].trim());
+                            searchYear = Integer.parseInt(parts[1].trim());
+                            if (searchMonth >= 1 && searchMonth <= 12 && searchYear >= 2000) {
+                                isPeriodSearch = true;
+                            }
+                        } catch (NumberFormatException e) {
+                            // not a valid period format, continue with text search
+                        }
+                    }
+                }
+                
+                // try parse month name + year (e.g., "Januari 2025")
+                if (!isPeriodSearch) {
+                    String[] monthNames = {"januari", "februari", "maret", "april", "mei", "juni",
+                                          "juli", "agustus", "september", "oktober", "november", "desember"};
+                    String lowerSearch = searchTrimmed.toLowerCase();
+                    for (int i = 0; i < monthNames.length; i++) {
+                        if (lowerSearch.contains(monthNames[i])) {
+                            // extract year
+                            String yearPart = lowerSearch.replace(monthNames[i], "").trim();
+                            try {
+                                searchYear = Integer.parseInt(yearPart);
+                                if (searchYear >= 2000) {
+                                    searchMonth = i + 1;
+                                    isPeriodSearch = true;
+                                    break;
+                                }
+                            } catch (NumberFormatException e) {
+                                // not a valid year
+                            }
+                        }
+                    }
+                }
+                
+                if (isPeriodSearch) {
+                    sql = "SELECT * FROM payrolls WHERE period_month = ? AND period_year = ? " +
+                          "ORDER BY employee_name ASC";
+                    ps = connection.prepareStatement(sql);
+                    ps.setInt(1, searchMonth);
+                    ps.setInt(2, searchYear);
+                    System.out.println("Searching by period: " + searchMonth + "/" + searchYear);
+                } else {
+                    // text search
+                    sql = "SELECT * FROM payrolls " +
+                          "WHERE payroll_id LIKE ? OR " +
+                          "employee_name LIKE ? OR " +
+                          "notes LIKE ? " +
+                          "ORDER BY period_year DESC, period_month DESC, created_at DESC";
+                    ps = connection.prepareStatement(sql);
+                    
+                    String searchPattern = "%" + searchTrimmed + "%";
+                    ps.setString(1, searchPattern);
+                    ps.setString(2, searchPattern);
+                    ps.setString(3, searchPattern);
+                    
+                    System.out.println("Searching for: " + searchItem);
+                }
             } else {
                 sql = "SELECT * FROM payrolls ORDER BY period_year DESC, period_month DESC, created_at DESC";
                 ps = connection.prepareStatement(sql);
@@ -215,6 +274,11 @@ public class PayrollController {
                 return "Tidak dapat mengubah payroll yang sudah dibayar";
             }
             
+            // check if status is changing to paid
+            boolean isChangingToPaid = existing != null 
+                && !existing.isPaid() 
+                && "paid".equals(payroll.getStatus());
+            
             String sql = "UPDATE payrolls " +
                         "SET period_month = ?, period_year = ?, payment_date = ?, " +
                         "status = ?, employee_id = ?, employee_name = ?, " +
@@ -243,6 +307,24 @@ public class PayrollController {
             
             int result = ps.executeUpdate();
             if (result > 0) {
+                // auto-create journal entry jika status berubah ke paid
+                if (isChangingToPaid) {
+                    String paymentDate = payroll.getPaymentDate();
+                    if (paymentDate == null || paymentDate.isEmpty()) {
+                        // use current date if no payment date
+                        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
+                        paymentDate = sdf.format(new java.util.Date());
+                    }
+                    journalCtr.createFromPayroll(
+                        payroll.getPayrollId(),
+                        payroll.getEmployeeName(),
+                        payroll.getTotalGaji(),
+                        paymentDate,
+                        payroll.getPeriodMonth(),
+                        payroll.getPeriodYear(),
+                        null // created_by
+                    );
+                }
                 return "Data payroll berhasil diupdate : " + payroll.getPayrollId();
             } else {
                 return "Data payroll gagal diupdate - ID tidak ditemukan";
@@ -267,6 +349,9 @@ public class PayrollController {
             if (existing != null && existing.isPaid()) {
                 return "Tidak dapat menghapus payroll yang sudah dibayar";
             }
+            
+            // delete journal entry first (if any)
+            journalCtr.deleteByTransactionId(payrollId, JournalEntry.TYPE_PAYROLL);
             
             String sql = "DELETE FROM payrolls WHERE payroll_id = ?";
             ps = connection.prepareStatement(sql);
@@ -418,6 +503,9 @@ public class PayrollController {
         System.out.println("---- Marking period as paid: " + month + "/" + year + " -----");
         
         try {
+            // get all draft payrolls for this period
+            List<Payroll> draftPayrolls = getByPeriod(month, year);
+            
             String sql = "UPDATE payrolls SET status = 'paid', payment_date = ? " +
                         "WHERE period_month = ? AND period_year = ? AND status = 'draft'";
             ps = connection.prepareStatement(sql);
@@ -427,6 +515,20 @@ public class PayrollController {
             
             int result = ps.executeUpdate();
             if (result > 0) {
+                // create journal entries for each paid payroll
+                for (Payroll payroll : draftPayrolls) {
+                    if ("draft".equals(payroll.getStatus())) {
+                        journalCtr.createFromPayroll(
+                            payroll.getPayrollId(),
+                            payroll.getEmployeeName(),
+                            payroll.getTotalGaji(),
+                            paymentDate,
+                            month,
+                            year,
+                            null // created_by from session if available
+                        );
+                    }
+                }
                 return "Berhasil menandai " + result + " payroll sebagai dibayar untuk periode " + month + "/" + year;
             } else {
                 return "Tidak ada payroll draft untuk periode ini";

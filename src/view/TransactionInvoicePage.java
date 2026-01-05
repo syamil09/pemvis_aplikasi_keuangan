@@ -53,7 +53,7 @@ public class TransactionInvoicePage extends javax.swing.JFrame {
         try {
             String cariData = txtCari.getText();
             List<Invoice> listInvoice = invoiceController.getData(cariData);
-            Object[] columns = {"Invoice ID", "Invoice Number", "Client ID", "Project ID", "Invoice Date", "Due Date", "Total Amount", "Paid Amount", "Status", "Aksi"};
+            Object[] columns = {"Invoice ID", "Invoice Number", "Client ID", "Project ID", "Invoice Date", "Due Date", "Total Amount", "Status", "Aksi"};
             tableModel.setColumnIdentifiers(columns);
             
             for (Invoice invoice : listInvoice) {
@@ -65,7 +65,6 @@ public class TransactionInvoicePage extends javax.swing.JFrame {
                     invoice.getFormattedInvoiceDate(),
                     invoice.getFormattedDueDate(),
                     CurrencyHelper.formatForTable(invoice.getTotalAmount(), true),
-                    CurrencyHelper.formatForTable(invoice.getPaidAmount(), true),
                     invoice.getStatusDisplay(),
                     "" // kolom aksi
                 });
@@ -82,7 +81,6 @@ public class TransactionInvoicePage extends javax.swing.JFrame {
                 new CustomTable.ColumnConfig(100, CustomTable.ALIGN_CENTER),    // Invoice Date
                 new CustomTable.ColumnConfig(100, CustomTable.ALIGN_CENTER),    // Due Date
                 new CustomTable.ColumnConfig(120, CustomTable.ALIGN_RIGHT),     // Total Amount
-                new CustomTable.ColumnConfig(120, CustomTable.ALIGN_RIGHT),     // Paid Amount
                 new CustomTable.ColumnConfig(100, CustomTable.ALIGN_CENTER),    // Status
                 new CustomTable.ColumnConfig(120, CustomTable.ALIGN_CENTER)     // Aksi
             };
@@ -218,9 +216,10 @@ public class TransactionInvoicePage extends javax.swing.JFrame {
             invoice.setInvoiceDate(txtStartDate.getDateSQLString());
             invoice.setDueDate(txtEndDate.getDateSQLString());
             invoice.setSubtotal(numberSubTotal.getDoubleValue());
-//            invoice.setTaxAmount(numberTaxAmount.getDoubleValue());
-//            invoice.setTotalAmount(numberTotalAmount.getDoubleValue());
-//            invoice.setPaidAmount(numberPaidAmount.getDoubleValue());
+            // totalAmount = subtotal karena field tax tidak digunakan
+            invoice.setTotalAmount(numberSubTotal.getDoubleValue());
+            invoice.setTaxAmount(0.0);
+            invoice.setPaidAmount(0.0);
             invoice.setStatus(cbStatus.getSelectedItem().toString());
             invoice.setCreatedBy("USR001"); // TODO: Get from session
             invoice.setCreatedAt(new Timestamp(System.currentTimeMillis()));

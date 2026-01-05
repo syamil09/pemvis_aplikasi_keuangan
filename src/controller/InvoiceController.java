@@ -9,6 +9,7 @@ package controller;
  * @author Leonovo
  */
 import connection.DBConnection;
+import model.JournalEntry;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -26,9 +27,11 @@ public class InvoiceController {
     private final Connection conn;
     private PreparedStatement ps;
     private ResultSet rs;
+    private final JournalEntryController journalCtr;
     
     public InvoiceController() {
         conn = DBConnection.getConnection();
+        journalCtr = new JournalEntryController();
     }
     
     // CREATE - Add new invoice
@@ -53,6 +56,17 @@ public class InvoiceController {
             
             int result = ps.executeUpdate();
             if (result > 0) {
+                // auto-create journal entry
+                String description = "Faktur " + invoice.getInvoiceNumber();
+                journalCtr.createFromInvoice(
+                    invoice.getInvoiceId(),
+                    null, // no category, will use default accounts
+                    description,
+                    invoice.getTotalAmount(),
+                    invoice.getInvoiceDate(),
+                    invoice.getInvoiceNumber(),
+                    invoice.getCreatedBy()
+                );
                 return "Data invoice berhasil ditambah: " + invoice.getInvoiceId();
             } else {
                 return "Data invoice gagal ditambah";
@@ -202,6 +216,9 @@ public class InvoiceController {
         System.out.println("---- Deleting invoice: " + invoiceId + " -----");
         
         try {
+            // delete journal entry first
+            journalCtr.deleteByTransactionId(invoiceId, JournalEntry.TYPE_INVOICE);
+            
             String sql = "DELETE FROM invoices WHERE invoice_id = ?";
             ps = conn.prepareStatement(sql);
             ps.setString(1, invoiceId);

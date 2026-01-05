@@ -6,6 +6,7 @@ package controller;
 
 import connection.DBConnection;
 import model.OtherReceipt;
+import model.JournalEntry;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,9 +22,11 @@ public class OtherReceiptController {
     private final Connection connection;
     private PreparedStatement ps;
     private ResultSet rs;
+    private final JournalEntryController journalCtr;
     
     public OtherReceiptController() {
         this.connection = DBConnection.getConnection();
+        this.journalCtr = new JournalEntryController();
     }
     
     /**
@@ -187,6 +190,16 @@ public class OtherReceiptController {
             
             int result = ps.executeUpdate();
             if (result > 0) {
+                // auto-create journal entry
+                journalCtr.createFromReceipt(
+                    receipt.getReceiptId(),
+                    receipt.getCategoryId(),
+                    receipt.getDescription(),
+                    receipt.getAmount(),
+                    receipt.getReceiptDate(),
+                    receipt.getSource(),
+                    receipt.getCreatedBy()
+                );
                 return "Data penerimaan lain berhasil ditambah : " + receipt.getReceiptId();
             } else {
                 return "Data penerimaan lain gagal ditambah";
@@ -244,6 +257,9 @@ public class OtherReceiptController {
         System.out.println("---- Deleting other receipt: " + receiptId + " -----");
         
         try {
+            // delete journal entry first
+            journalCtr.deleteByTransactionId(receiptId, JournalEntry.TYPE_RECEIPT);
+            
             String sql = "DELETE FROM other_receipts WHERE receipt_id = ?";
             ps = connection.prepareStatement(sql);
             ps.setString(1, receiptId);

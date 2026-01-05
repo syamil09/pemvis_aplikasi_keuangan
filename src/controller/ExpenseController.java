@@ -6,11 +6,10 @@ package controller;
 
 import connection.DBConnection;
 import model.Expense;
+import model.JournalEntry;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-
-import java.sql.SQLException;
 
 /**
  * Controller untuk mengelola operasi CRUD pada tabel expenses
@@ -23,9 +22,11 @@ public class ExpenseController {
     private final Connection connection;
     private PreparedStatement ps;
     private ResultSet rs;
+    private final JournalEntryController journalCtr;
     
     public ExpenseController() {
         this.connection = DBConnection.getConnection();
+        this.journalCtr = new JournalEntryController();
     }
     
     /**
@@ -204,6 +205,16 @@ public class ExpenseController {
             
             int result = ps.executeUpdate();
             if (result > 0) {
+                // auto-create journal entry
+                journalCtr.createFromExpense(
+                    expense.getExpenseId(),
+                    expense.getCategoryId(),
+                    expense.getDescription(),
+                    expense.getAmount(),
+                    expense.getExpenseDate(),
+                    expense.getReceiptNumber(),
+                    expense.getCreatedBy()
+                );
                 return "Data expense berhasil ditambah : " + expense.getExpenseId();
             } else {
                 return "Data expense gagal ditambah";
@@ -262,6 +273,9 @@ public class ExpenseController {
         System.out.println("---- Deleting expense: " + expenseId + " -----");
         
         try {
+            // delete journal entry first
+            journalCtr.deleteByTransactionId(expenseId, JournalEntry.TYPE_EXPENSE);
+            
             String sql = "DELETE FROM expenses WHERE expense_id = ?";
             ps = connection.prepareStatement(sql);
             ps.setString(1, expenseId);

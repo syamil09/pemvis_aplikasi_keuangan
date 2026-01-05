@@ -86,10 +86,6 @@ ORDER BY
 				</textElement>
 				<text><![CDATA[Email: support@bentang.id Call Center: 021-84599218 Website: https://www.bentang.id/]]></text>
 			</staticText>
-			<image>
-				<reportElement x="8" y="9" width="53" height="45" uuid="dda1cf27-fe8c-4538-ab24-c40d528a6b81"/>
-				<imageExpression><![CDATA["C:\\Users\\saput\\Downloads\\logo.jpg"]]></imageExpression>
-			</image>
 		</band>
 	</title>
 	<pageHeader>
