@@ -114,11 +114,11 @@ public class ReportHelper {
      * Neraca hanya butuh tanggal akhir (per tanggal tertentu)
      */
     public static void showNeracaReport() {
-        String[] dates = PopupReportDateRange.showDialog();
+        String endDate = PopupReportDateRange.showSingleDateDialog();
         
-        if (dates != null) {
+        if (endDate != null) {
             Map<String, Object> params = new HashMap<>();
-            params.put("endDate", dates[1]); // neraca hanya pakai tanggal akhir
+            params.put("endDate", endDate);
             
             showReport("src/view/neraca.jrxml", params);
         }

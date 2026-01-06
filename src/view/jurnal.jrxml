@@ -65,6 +65,10 @@ ORDER BY je.entry_date, je.entry_number;]]>
 				</textElement>
 				<text><![CDATA[Email: support@bentang.id Call Center: 021-84599218 Website: https://www.bentang.id/]]></text>
 			</staticText>
+			<image>
+				<reportElement x="6" y="5" width="56" height="58" uuid="9f646444-0d00-4f96-a727-3e0dd21501bb"/>
+				<imageExpression><![CDATA["src/images/logo-pt-bentang.jpg"]]></imageExpression>
+			</image>
 		</band>
 	</title>
 	<pageHeader>

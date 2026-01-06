@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="8439fa54-cab6-45e6-9663-f1c12b356b4b">
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="156"/>
+	<property name="ireport.y" value="0"/>
 	<parameter name="endDate" class="java.lang.String">
 		<defaultValueExpression><![CDATA["2025-12-31"]]></defaultValueExpression>
 	</parameter>
@@ -89,6 +89,10 @@ ORDER BY
 				</textElement>
 				<text><![CDATA[Email: support@bentang.id Call Center: 021-84599218 Website: https://www.bentang.id/]]></text>
 			</staticText>
+			<image>
+				<reportElement x="5" y="7" width="56" height="58" uuid="6cde1a7e-3c90-49f2-a6a8-9192ebc3a655"/>
+				<imageExpression><![CDATA["src/images/logo-pt-bentang.jpg"]]></imageExpression>
+			</image>
 		</band>
 	</title>
 	<pageHeader>
@@ -98,7 +102,7 @@ ORDER BY
 				<textElement textAlignment="Center">
 					<font size="13" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Neraca Saldo]]></text>
+				<text><![CDATA[Neraca]]></text>
 			</staticText>
 		</band>
 	</pageHeader>
