@@ -174,9 +174,12 @@ ORDER BY je.entry_date, je.entry_number;]]>
 		<band height="45" splitType="Stretch"/>
 	</columnFooter>
 	<pageFooter>
-		<band height="129" splitType="Stretch">
+		<band height="20" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="135" splitType="Stretch">
 			<staticText>
-				<reportElement x="401" y="85" width="154" height="44" uuid="59c71c34-f1bd-4308-ac3d-52d8e24c03d8"/>
+				<reportElement x="398" y="86" width="154" height="44" uuid="59c71c34-f1bd-4308-ac3d-52d8e24c03d8"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
 					<font isBold="true"/>
 				</textElement>
@@ -185,15 +188,12 @@ ORDER BY je.entry_date, je.entry_number;]]>
 Direktur]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="400" y="0" width="154" height="20" uuid="991570d3-d068-45c1-b3fd-619f603dfa92"/>
+				<reportElement x="397" y="1" width="154" height="20" uuid="991570d3-d068-45c1-b3fd-619f603dfa92"/>
 				<textElement>
 					<font isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[new java.text.SimpleDateFormat("'Jakarta, ' EEEE dd MMMM yyyy", new java.util.Locale("id", "ID")).format(new java.util.Date())]]></textFieldExpression>
 			</textField>
 		</band>
-	</pageFooter>
-	<summary>
-		<band height="42" splitType="Stretch"/>
 	</summary>
 </jasperReport>

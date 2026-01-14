@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="8439fa54-cab6-45e6-9663-f1c12b356b4b">
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.y" value="34"/>
 	<parameter name="endDate" class="java.lang.String">
 		<defaultValueExpression><![CDATA["2025-12-31"]]></defaultValueExpression>
 	</parameter>
@@ -168,7 +168,10 @@ ORDER BY
 		<band height="45" splitType="Stretch"/>
 	</columnFooter>
 	<pageFooter>
-		<band height="120" splitType="Stretch">
+		<band height="18" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="123" splitType="Stretch">
 			<textField>
 				<reportElement x="403" y="0" width="154" height="20" uuid="cbc1f37c-c07e-4e83-9f78-89402ea09ea7"/>
 				<textElement>
@@ -186,8 +189,5 @@ ORDER BY
 Direktur]]></text>
 			</staticText>
 		</band>
-	</pageFooter>
-	<summary>
-		<band height="42" splitType="Stretch"/>
 	</summary>
 </jasperReport>
